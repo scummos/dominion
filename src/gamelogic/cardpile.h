@@ -17,6 +17,7 @@ public:
     void put(Cards cards);
 
     void moveCardTo(int index, CardPile& target);
+    void moveCardTo(Card* card, CardPile& target);
     void moveAllTo(CardPile& target);
 
     Cards& cards();

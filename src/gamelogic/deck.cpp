@@ -43,6 +43,11 @@ Cards Deck::drawCards(int n)
     return m_drawPile.drawWithShuffle(n, m_discardPile);
 }
 
+int Deck::totalCards() const
+{
+    return m_drawPile.cards().size() + m_discardPile.cards().size() + m_currentHand.cards().size();
+}
+
 int Deck::countScoreInDrawPile() const
 {
     int score = 0;

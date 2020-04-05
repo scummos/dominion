@@ -2,4 +2,4 @@
 
 #include "gold.h"
 
-using Silver = PlainTreasure<3, 2>;
+using Silver = PlainTreasure<3, 2, CardId::Silver>;

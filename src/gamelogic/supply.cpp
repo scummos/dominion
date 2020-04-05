@@ -11,7 +11,10 @@ Supply::Supply()
     createPile<Gold>(30);
     createPile<Estate>(11);
     createPile<Duchy>(8);
-    createPile<Province>(8);
+    createPile<Province>(4);
+    createPile<Smithy>(10);
+    createPile<Festival>(10);
+    createPile<Chapel>(10);
 }
 
 Supply::~Supply()
@@ -27,4 +30,19 @@ int Supply::countEmptyPiles() const {
         ret += pile.empty();
     }
     return ret;
+}
+
+CardPile* Supply::discardPile()
+{
+    return &m_discardPile;
+}
+
+CardPile* Supply::pile(const CardId id)
+{
+    for (auto& pile: m_piles) {
+        if (pile.kind == id) {
+            return &pile;
+        }
+    }
+    throw NoSuchPileError{"The requested pile does not exist."};
 }

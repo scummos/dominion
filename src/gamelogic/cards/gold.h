@@ -2,15 +2,16 @@
 
 #include "turn.h"
 
-template<int COST, int VALUE>
+template<int COST, int VALUE, CardId ID>
 class PlainTreasure : public Card {
 public:
-    Cost cost() const override {
-        return COST;
-    }
-
-    Card::Type types() const override {
-        return Card::Treasure;
+    virtual BasicInfo basicInfo() const override {
+        return {
+            ID,
+            Card::Treasure,
+            NoHints,
+            Cost{COST}
+        };
     }
 
     void playTreasure(TurnInternal* turn, CardOption* /*option*/) override {
@@ -18,4 +19,4 @@ public:
     }
 };
 
-using Gold = PlainTreasure<6, 3>;
+using Gold = PlainTreasure<6, 3, CardId::Gold>;

@@ -22,6 +22,6 @@ public:
 
     PayResult canPay(Resources const& resources) const;
 
-private:
+public: // FIXME
     int m_gold;
 };

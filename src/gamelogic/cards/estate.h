@@ -2,4 +2,4 @@
 
 #include "province.h"
 
-using Estate = PlainVictory<2, 1>;
+using Estate = PlainVictory<2, 1, CardId::Estate>;

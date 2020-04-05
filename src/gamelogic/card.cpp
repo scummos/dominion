@@ -2,15 +2,15 @@
 
 bool Card::hasType(const Card::Type& type) const
 {
-    return types() & type;
+    return basicInfo().types & type;
 }
 
-void Card::playAction(Turn* /*turn*/, CardOption* /*option*/)
+void Card::playAction(TurnInternal* /*turn*/, CardOption* /*option*/)
 {
     throw InvalidCardUsage{"This card cannot be played as an action."};
 }
 
-void Card::playTreasure(Turn* /*turn*/, CardOption* /*option*/)
+void Card::playTreasure(TurnInternal* /*turn*/, CardOption* /*option*/)
 {
     throw InvalidCardUsage{"This card cannot be played as a treasure."};
 }
@@ -18,4 +18,19 @@ void Card::playTreasure(Turn* /*turn*/, CardOption* /*option*/)
 int Card::victoryPoints() const
 {
     return 0;
+}
+
+char const* Card::name()
+{
+    return cardName(basicInfo().id);
+}
+
+Card::Hints Card::hints()
+{
+    return basicInfo().hints;
+}
+
+Card::Type Card::types()
+{
+    return basicInfo().types;
 }

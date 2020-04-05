@@ -2,15 +2,16 @@
 
 #include "card.h"
 
-template<int COST, int VP>
+template<int COST, int VP, CardId ID>
 class PlainVictory : public Card {
 public:
-    Cost cost() const override {
-        return COST;
-    }
-
-    Card::Type types() const override {
-        return Card::Victory;
+    virtual BasicInfo basicInfo() const override {
+        return {
+            ID,
+            Card::Victory,
+            NoHints,
+            Cost{COST}
+        };
     }
 
     int victoryPoints() const override {
@@ -18,4 +19,4 @@ public:
     }
 };
 
-using Province = PlainVictory<8, 6>;
+using Province = PlainVictory<8, 6, CardId::Province>;

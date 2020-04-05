@@ -4,3 +4,9 @@
 #include "estate.h"
 #include "duchy.h"
 #include "province.h"
+
+#include "smithy.h"
+#include "festival.h"
+#include "chapel.h"
+
+#include "cardid.h"

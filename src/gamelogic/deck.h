@@ -16,6 +16,7 @@ public:
 
     Cards drawCards(int n);
     int countScoreInDrawPile() const;
+    int totalCards() const;
 
 private:
     CardPile m_drawPile;

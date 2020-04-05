@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <random>
 
+std::random_device rd;
+std::mt19937 gen(rd());
+
 CardPile::CardPile(Cards cards)
     : m_cards(cards)
 {
@@ -20,12 +23,13 @@ Card* CardPile::draw()
 
 Cards CardPile::drawWithShuffle(int n, CardPile& reserve)
 {
-    std::vector<Card*> ret;
+    Cards ret;
+    ret.reserve(n);
     for (int i = 0; i < n && !(empty() && reserve.empty()); i++) {
-        try {
+        if (!empty()) {
             ret.push_back(draw());
         }
-        catch (CardMoveError) {
+        else {
             reserve.moveAllTo(*this);
             shuffle();
             i--;
@@ -63,6 +67,17 @@ void CardPile::moveCardTo(int index, CardPile& target)
     m_cards.erase(m_cards.begin() + index);
 }
 
+void CardPile::moveCardTo(Card* card, CardPile& target)
+{
+    auto it = std::find(m_cards.begin(), m_cards.end(), card);
+    if (it == m_cards.end()) {
+        throw CardMoveError{"Card not in pile."};
+    }
+
+    m_cards.erase(it);
+    target.put(card);
+}
+
 void CardPile::put(Card* card)
 {
     m_cards.push_back(card);
@@ -76,8 +91,9 @@ void CardPile::moveAllTo(CardPile& target)
     m_cards.clear();
 }
 
-void CardPile::put(std::vector<Card*> cards)
+void CardPile::put(Cards cards)
 {
+    m_cards.reserve(m_cards.size() + cards.size());
     for (auto* card: cards) {
         put(card);
     }
@@ -85,7 +101,5 @@ void CardPile::put(std::vector<Card*> cards)
 
 void CardPile::shuffle()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::shuffle(m_cards.begin(), m_cards.end(), gen);
 }

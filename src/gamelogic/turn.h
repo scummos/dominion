@@ -4,9 +4,14 @@
 #include "deck.h"
 #include "supply.h"
 
+#include <iostream>
+
 struct Hand;
 struct ActiveCard;
 class Turn;
+
+// using ActiveCards = QVarLengthArray<ActiveCard, 16>;
+using ActiveCards = std::vector<ActiveCard>;
 
 enum class TurnPhase {
     Action,
@@ -35,6 +40,10 @@ struct TurnInternal {
     int actions = 1;
     int buys = 1;
     int money = 0;
+
+    // Some useful primitives used to implement cards.
+    void draw(int n);
+    void trashFromHand(Card* card);
 };
 
 /// The Turn state machine. Tracks turn state and allows to perform actions
@@ -44,15 +53,17 @@ public:
     Turn(Supply* supply, Deck* deck);
 
     Hand currentHand();
-    std::vector<ActiveCard> cardsInPlay() const;
+    ActiveCards cardsInPlay() const;
     TurnPhase currentPhase();
     void endTurn();
 
     int currentMoney() const;
+    int currentTotalCards() const;
+    int currentActions() const;
 
     Cards doFinalDraw();
 
-    template<typename CardT> bool buy();
+    void buy(CardId id);
 
 private:
     friend struct ActiveCard;
@@ -82,22 +93,11 @@ struct ActiveCard {
 
 /// Convenience wrapper which represents cards in your hand.
 struct Hand {
-    std::vector<ActiveCard> cards;
+    ActiveCards cards;
 
-    std::vector<ActiveCard> treasureCards() const;
+    ActiveCards treasureCards() const;
+    ActiveCards findCards(CardId id) const;
+    ActiveCards findCards(Card::Hints hints) const;
+    bool hasCard(CardId id) const;
 };
 
-template<typename CardT> bool Turn::buy()
-{
-    if (currentPhase() > TurnPhase::Buy) {
-        throw InvalidPlayError{"You already ended your buy phase."};
-    }
-    m_internal.phase = TurnPhase::Buy;
-
-    auto* pile = m_internal.supply->pile<CardT>();
-    if (pile->empty()) {
-        return false;
-    }
-
-    pile->moveCardTo(0, m_internal.deck->discardPile());
-}

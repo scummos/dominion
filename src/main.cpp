@@ -1,6 +1,8 @@
 #include "game.h"
 
 int main() {
-    Game game;
-    game.run();
+    for (int i = 0; i < 20000; i++) {
+        Game game;
+        game.run();
+    }
 }
