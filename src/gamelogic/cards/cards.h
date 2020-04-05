@@ -8,5 +8,6 @@
 #include "smithy.h"
 #include "festival.h"
 #include "chapel.h"
+#include "shepherd.h"
 
 #include "cardid.h"

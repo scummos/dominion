@@ -10,6 +10,7 @@ enum class CardId {
     Smithy,
     Festival,
     Chapel,
+    Shepherd,
 };
 
 static char const* cardName(CardId const id) {
@@ -23,6 +24,7 @@ static char const* cardName(CardId const id) {
         case CardId::Smithy:    return "Smithy";
         case CardId::Festival:  return "Festival";
         case CardId::Chapel:    return "Chapel";
+        case CardId::Shepherd:  return "Shepherd";
         default:                return "Unnamed card";
     }
 }

@@ -44,6 +44,7 @@ struct TurnInternal {
     // Some useful primitives used to implement cards.
     void draw(int n);
     void trashFromHand(Card* card);
+    void discardFromHand(Card* card);
 };
 
 /// The Turn state machine. Tracks turn state and allows to perform actions
@@ -97,6 +98,7 @@ struct Hand {
 
     ActiveCards treasureCards() const;
     ActiveCards findCards(CardId id) const;
+    ActiveCards findCards(Card::Type type) const;
     ActiveCards findCards(Card::Hints hints) const;
     bool hasCard(CardId id) const;
 };

@@ -3,6 +3,7 @@
 #include "cards.h"
 #include "bigmoneyactor.h"
 #include "engineactor.h"
+#include "shepherdactor.h"
 
 #include <iostream>
 

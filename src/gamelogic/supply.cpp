@@ -15,6 +15,7 @@ Supply::Supply()
     createPile<Smithy>(10);
     createPile<Festival>(10);
     createPile<Chapel>(10);
+    createPile<Shepherd>(10);
 }
 
 Supply::~Supply()

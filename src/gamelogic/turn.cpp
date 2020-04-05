@@ -31,6 +31,17 @@ ActiveCards Hand::findCards(CardId id) const
     return ret;
 }
 
+ActiveCards Hand::findCards(Card::Type type) const
+{
+    ActiveCards ret;
+    for (auto const& card: cards) {
+        if (card.card->hasType(type)) {
+            ret.push_back(card);
+        }
+    }
+    return ret;
+}
+
 ActiveCards Hand::findCards(Card::Hints hints) const
 {
     ActiveCards ret;
@@ -162,5 +173,10 @@ void TurnInternal::draw(int n)
 void TurnInternal::trashFromHand(Card* card)
 {
     deck->currentHand()->moveCardTo(card, *supply->discardPile());
+}
+
+void TurnInternal::discardFromHand(Card* card)
+{
+    deck->currentHand()->moveCardTo(card, *deck->discardPile());
 }
 
