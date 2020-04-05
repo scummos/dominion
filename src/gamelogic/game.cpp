@@ -30,7 +30,7 @@ bool Game::gameEnded()
 
 void Game::run()
 {
-    m_actors.emplace_back(std::make_unique<EngineActor>(&m_supply, &m_players.at(0)));
+    m_actors.emplace_back(std::make_unique<BigMoneyActor>(&m_supply, &m_players.at(0)));
 
     int currentPlayer = 0;
     for (auto& player: m_players) {

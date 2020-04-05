@@ -45,11 +45,11 @@ void BigMoneyActor::executeTurn(Turn* turn)
     else if (turn->currentMoney() >= 6) {
         turn->buy(CardId::Gold);
     }
-    else if (turn->currentMoney() >= 5 && festivals < 10) {
-        turn->buy(CardId::Festival);
-        festivals++;
-    }
-    else if (turn->currentMoney() >= 4 && smithies <= 3) {
+//     else if (turn->currentMoney() >= 5 && festivals < 10) {
+//         turn->buy(CardId::Festival);
+//         festivals++;
+//     }
+    else if (turn->currentMoney() >= 4 && smithies <= 2) {
         turn->buy(CardId::Smithy);
         smithies++;
     }
