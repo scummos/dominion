@@ -11,7 +11,7 @@ class Game {
 public:
     Game();
 
-    Deck createStartingDeck();
+    Cards createStartingDeck();
 
     void run();
     bool gameEnded();

@@ -9,24 +9,24 @@
 
 Game::Game()
 {
-    m_players.push_back(createStartingDeck());
+    m_players.emplace_back(createStartingDeck());
 }
 
-Deck Game::createStartingDeck()
+Cards Game::createStartingDeck()
 {
     std::vector<Card*> cards;
     for (int i = 0; i < 7; i++) {
-        cards.push_back(m_supply.pile(CardId::Copper)->draw());
+        cards.push_back(m_supply.pile(CardId::Copper).draw());
     }
     for (int i = 0; i < 3; i++) {
-        cards.push_back(m_supply.pile(CardId::Estate)->draw());
+        cards.push_back(m_supply.pile(CardId::Estate).draw());
     }
-    return Deck(cards);
+    return cards;
 }
 
 bool Game::gameEnded()
 {
-    return m_supply.pile(CardId::Province)->empty() || m_supply.countEmptyPiles() >= 3;
+    return m_supply.pile(CardId::Province).empty() || m_supply.countEmptyPiles() >= 3;
 }
 
 void Game::run()
@@ -36,7 +36,7 @@ void Game::run()
     int currentPlayer = 0;
     for (auto& player: m_players) {
         Turn turn(&m_supply, &player);
-        *player.currentHand() = turn.doFinalDraw();
+        turn.doFinalDraw();
     }
 
     int turncount = 0;
@@ -45,15 +45,13 @@ void Game::run()
         Turn turn(&m_supply, player);
         m_actors.at(currentPlayer)->executeTurn(&turn);
         turn.endTurn();
-        *player->currentHand() = turn.doFinalDraw();
+        turn.doFinalDraw();
         currentPlayer = (currentPlayer + 1) % m_players.size();
         turncount++;
     }
 
     for (auto& player: m_players) {
-        player.discardPile()->moveAllTo(*player.drawPile());
-        player.currentHand()->moveAllTo(*player.drawPile());
-        std::cout << turncount << "\t" << player.countScoreInDrawPile() << "\n";
+        std::cout << turncount << "\t" << player.countScore() << "\n";
     }
 }
 

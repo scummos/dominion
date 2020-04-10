@@ -1,6 +1,9 @@
 #include "turn.h"
 
+#include "error.h"
+
 #include <algorithm>
+#include <utility>
 
 Turn::Turn(Supply* supply, Deck* deck)
 {
@@ -67,22 +70,17 @@ void Turn::buy(CardId id)
     }
     m_internal.phase = TurnPhase::Buy;
 
-    auto* pile = m_internal.supply->pile(id);
-    if (pile->empty()) {
-        throw InvalidPlayError{"This supply pile is empty."};
-    }
-
     if (m_internal.buys <= 0) {
         throw InvalidCardUsage{"You have no buys."};
     }
     m_internal.buys--;
 
-    pile->moveCardTo(0, *m_internal.deck->discardPile());
+    deck()->gainFromSupply(m_internal.supply, id);
 }
 
 Hand Turn::currentHand()
 {
-    auto cards = m_internal.deck->currentHand()->cards();
+    auto const& cards = static_cast<const Deck*>(m_internal.deck)->hand().cards();
 
     Hand ret;
     ret.cards.reserve(cards.size());
@@ -130,7 +128,7 @@ void Turn::playAction(Card* card, CardOption* option)
     m_internal.actions--;
 
     card->playAction(&m_internal, option);
-    deck()->currentHand()->moveCardTo(card, m_internal.cardsInPlay);
+    deck()->moveCard(card, Areas::Hand, Areas::InPlay);
 }
 
 void Turn::playTreasure(Card* card, CardOption* option)
@@ -141,7 +139,7 @@ void Turn::playTreasure(Card* card, CardOption* option)
     m_internal.phase = TurnPhase::PlayTreasures;
 
     card->playTreasure(&m_internal, option);
-    deck()->currentHand()->moveCardTo(card, m_internal.cardsInPlay);
+    deck()->moveCard(card, Areas::Hand, Areas::InPlay);
 }
 
 void Turn::endTurn()
@@ -151,11 +149,11 @@ void Turn::endTurn()
     }
     m_internal.phase = TurnPhase::Cleanup;
 
-    m_internal.cardsInPlay.moveAllTo(*deck()->discardPile());
-    deck()->currentHand()->moveAllTo(*deck()->discardPile());
+    deck()->moveAllCards(Areas::InPlay, Areas::DiscardPile);
+    deck()->moveAllCards(Areas::Hand, Areas::DiscardPile);
 }
 
-Cards Turn::doFinalDraw()
+int Turn::doFinalDraw()
 {
     if (currentPhase() > TurnPhase::DrawNext) {
         throw InvalidPlayError{"Attempting to draw next hand twice"};
@@ -165,18 +163,18 @@ Cards Turn::doFinalDraw()
     return m_internal.deck->drawCards(5);
 }
 
-void TurnInternal::draw(int n)
+int TurnInternal::draw(int n)
 {
-    deck->currentHand()->put(deck->drawCards(n));
+    return deck->drawCards(n);
 }
 
 void TurnInternal::trashFromHand(Card* card)
 {
-    deck->currentHand()->moveCardTo(card, *supply->discardPile());
+    deck->trash(supply, card, Areas::Hand);
 }
 
 void TurnInternal::discardFromHand(Card* card)
 {
-    deck->currentHand()->moveCardTo(card, *deck->discardPile());
+    deck->moveCard(card, Areas::Hand, Areas::DiscardPile);
 }
 

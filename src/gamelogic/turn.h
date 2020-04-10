@@ -22,16 +22,11 @@ enum class TurnPhase {
     Ended
 };
 
-struct InvalidPlayError {
-    std::string error;
-};
-
 /// Internal state of a turn. This is hidden from the actor, but provided
 /// to the card executors because they need to modify it.
 struct TurnInternal {
     Turn* turn;
 
-    CardPile cardsInPlay;
     TurnPhase phase = TurnPhase::Action;
 
     Supply* supply;
@@ -42,7 +37,7 @@ struct TurnInternal {
     int money = 0;
 
     // Some useful primitives used to implement cards.
-    void draw(int n);
+    int draw(int n);
     void trashFromHand(Card* card);
     void discardFromHand(Card* card);
 };
@@ -62,7 +57,7 @@ public:
     int currentTotalCards() const;
     int currentActions() const;
 
-    Cards doFinalDraw();
+    int doFinalDraw();
 
     void buy(CardId id);
 

@@ -6,22 +6,22 @@ Actor::Actor(Supply const* supply, Deck const* deck)
 {
 }
 
-const CardPile* Actor::discardPile() const
+CardPile const& Actor::discardPile() const
 {
     return m_deck->discardPile();
 }
 
-const CardPile* Actor::drawPile() const
+CardPile const& Actor::drawPile() const
 {
     return m_deck->drawPile();
 }
 
-const Deck* Actor::deck() const
+Deck const* Actor::deck() const
 {
     return m_deck;
 }
 
-const Supply* Actor::supply() const
+Supply const* Actor::supply() const
 {
     return m_supply;
 }

@@ -2,6 +2,7 @@
 
 #include "cost.h"
 #include "cardid.h"
+#include "error.h"
 
 // #include <QVarLengthArray>
 #include <string>

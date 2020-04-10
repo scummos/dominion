@@ -20,8 +20,8 @@ public:
     Supply();
     ~Supply();
 
-    CardPile* pile(CardId const id);
-    CardPile* discardPile();
+    CardPile& pile(CardId const id);
+    CardPile& trashPile();
 
     int countEmptyPiles() const;
 
@@ -31,7 +31,7 @@ protected:
 
 private:
     std::vector<SupplyCardPile> m_piles;
-    CardPile m_discardPile;
+    CardPile m_trashPile;
 };
 
 // template implementations

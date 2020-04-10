@@ -1,60 +1,102 @@
 #include "deck.h"
 
+#include "error.h"
+
+#include <numeric>
+#include <algorithm>
+
+CardPile const& Deck::area(Areas area) const
+{
+    return m_areas.at(static_cast<int>(area));
+}
+
+CardPile& Deck::area(Areas area)
+{
+    return m_areas.at(static_cast<int>(area));
+}
+
 Deck::Deck(std::vector<Card*> startingCards)
 {
+    m_areas.resize(static_cast<int>(Areas::NumAreas));
+
     for (auto* card: startingCards) {
-        m_drawPile.put(card);
+        drawPile().put(card);
     }
-    m_drawPile.shuffle();
+    drawPile().shuffle();
 }
 
-CardPile* Deck::discardPile()
+Deck::Deck(Deck && other)
 {
-    return &m_discardPile;
+    m_areas = other.m_areas;
+    other.m_areas.clear();
 }
 
-CardPile* Deck::drawPile()
+Deck::~Deck()
 {
-    return &m_drawPile;
+    for (auto& pile: m_areas) {
+        std::for_each(pile.cards().begin(), pile.cards().end(), [](Card* c) { delete c; });
+    }
 }
 
-const CardPile* Deck::discardPile() const
+int Deck::drawCards(int n)
 {
-    return &m_discardPile;
+    auto cards = drawPile().drawWithShuffle(n, discardPile());
+    hand().put(cards);
+    return cards.size();
 }
 
-const CardPile* Deck::drawPile() const
+int Deck::uncoverCards(int n)
 {
-    return &m_drawPile;
+    auto cards = drawPile().drawWithShuffle(n, discardPile());
+    uncoveredDrawPile().put(cards);
+    return cards.size();
 }
 
-CardPile * Deck::currentHand()
+void Deck::putUncoveredBack()
 {
-    return &m_currentHand;
+    uncoveredDrawPile().moveAllTo(drawPile());
 }
 
-const CardPile * Deck::currentHand() const
+void Deck::trash(Supply* supply, Card* card, Areas sourceArea)
 {
-    return &m_currentHand;
+    area(sourceArea).moveCardTo(card, supply->trashPile());
 }
 
-Cards Deck::drawCards(int n)
+void Deck::moveCard(int index, Areas from, Areas to)
 {
-    return m_drawPile.drawWithShuffle(n, m_discardPile);
+    area(from).moveCardTo(index, area(to));
+}
+
+void Deck::moveCard(Card* card, Areas from, Areas to)
+{
+    area(from).moveCardTo(card, area(to));
+}
+
+void Deck::moveAllCards(Areas from, Areas to)
+{
+    area(from).moveAllTo(area(to));
+}
+
+void Deck::gainFromSupply(Supply* supply, const CardId id, Areas targetArea)
+{
+    auto& pile = supply->pile(id);
+    if (pile.empty()) {
+        throw InvalidPlayError{"This supply pile is empty."};
+    }
+
+    pile.moveCardTo(0, area(targetArea));
 }
 
 int Deck::totalCards() const
 {
-    return m_drawPile.cards().size() + m_discardPile.cards().size() + m_currentHand.cards().size();
+    return std::accumulate(m_areas.begin(), m_areas.end(), 0, [](int k, auto const& v) { return k + v.count(); });
 }
 
-int Deck::countScoreInDrawPile() const
+int Deck::countScore() const
 {
-    int score = 0;
-
-    for (auto const* card: m_drawPile.cards()) {
-        score += card->victoryPoints();
-    }
-
-    return score;
+    return std::accumulate(m_areas.begin(), m_areas.end(), 0, [](int k, auto const& v) {
+        return k + std::accumulate(v.cards().begin(), v.cards().end(), 0, [](int r, auto const* w) {
+            return r + w->victoryPoints();
+        });
+    });
 }

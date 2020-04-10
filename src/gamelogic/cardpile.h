@@ -20,6 +20,7 @@ public:
     void moveCardTo(Card* card, CardPile& target);
     void moveAllTo(CardPile& target);
 
+    int count() const;
     Cards& cards();
     Cards const& cards() const;
     Card* topCard();

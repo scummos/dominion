@@ -33,17 +33,17 @@ int Supply::countEmptyPiles() const {
     return ret;
 }
 
-CardPile* Supply::discardPile()
+CardPile& Supply::trashPile()
 {
-    return &m_discardPile;
+    return m_trashPile;
 }
 
-CardPile* Supply::pile(const CardId id)
+CardPile& Supply::pile(const CardId id)
 {
-    for (auto& pile: m_piles) {
-        if (pile.kind == id) {
-            return &pile;
-        }
+    auto pile = std::find_if(m_piles.begin(), m_piles.end(), [id](auto const& pile) { return pile.kind == id; });
+    if (pile == m_piles.end()) {
+        throw NoSuchPileError{"The requested pile does not exist."};
     }
-    throw NoSuchPileError{"The requested pile does not exist."};
+    return *pile;
+
 }

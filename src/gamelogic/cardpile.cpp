@@ -43,12 +43,17 @@ Card* CardPile::topCard()
     return m_cards.back();
 }
 
+int CardPile::count() const
+{
+    return m_cards.size();
+}
+
 Cards& CardPile::cards()
 {
     return m_cards;
 }
 
-const Cards & CardPile::cards() const
+const Cards& CardPile::cards() const
 {
     return m_cards;
 }
