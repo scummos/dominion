@@ -4,14 +4,16 @@
 
 #include <algorithm>
 
-Supply::Supply()
+Supply::Supply(int nplayers)
 {
-    createPile<Copper>(30);
-    createPile<Silver>(30);
-    createPile<Gold>(30);
-    createPile<Estate>(11);
-    createPile<Duchy>(8);
-    createPile<Province>(4);
+    auto nVictoryCards = nplayers == 1 ? 4 : nplayers == 2 ? 8 : 12;
+
+    createPile<Copper>(100);
+    createPile<Silver>(100);
+    createPile<Gold>(100);
+    createPile<Estate>(nVictoryCards + 3*nplayers);
+    createPile<Duchy>(nVictoryCards);
+    createPile<Province>(nVictoryCards);
     createPile<Smithy>(10);
     createPile<Festival>(10);
     createPile<Chapel>(10);

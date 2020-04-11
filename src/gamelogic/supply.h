@@ -17,7 +17,7 @@ public:
 
 class Supply {
 public:
-    Supply();
+    Supply(int nplayers);
     ~Supply();
 
     CardPile& pile(CardId const id);

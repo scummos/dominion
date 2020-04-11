@@ -1,6 +1,7 @@
 #include "turn.h"
 
 #include "error.h"
+#include "logger.h"
 
 #include <algorithm>
 #include <utility>
@@ -70,6 +71,9 @@ void Turn::buy(CardId id)
     }
     m_internal.phase = TurnPhase::Buy;
 
+    // FIXME this breaks when there are multiple buys and is generally wrong
+//     Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TurnPeakMoney, m_internal.money);
+
     if (m_internal.buys <= 0) {
         throw InvalidCardUsage{"You have no buys."};
     }
@@ -108,6 +112,11 @@ Deck* Turn::deck()
 int Turn::currentTotalCards() const
 {
     return m_internal.deck->totalCards();
+}
+
+int Turn::leftInSupply(CardId id) const
+{
+    return m_internal.supply->pile(id).count();
 }
 
 int Turn::currentActions() const
@@ -151,6 +160,10 @@ void Turn::endTurn()
 
     deck()->moveAllCards(Areas::InPlay, Areas::DiscardPile);
     deck()->moveAllCards(Areas::Hand, Areas::DiscardPile);
+
+    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TotalCards, deck()->totalCards());
+    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TotalMoney, deck()->totalMoney());
+    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TotalScore, deck()->countScore());
 }
 
 int Turn::doFinalDraw()
@@ -159,8 +172,14 @@ int Turn::doFinalDraw()
         throw InvalidPlayError{"Attempting to draw next hand twice"};
     }
     m_internal.phase = TurnPhase::Ended;
+    deck()->countTurn();
 
     return m_internal.deck->drawCards(5);
+}
+
+int Turn::turnCount()
+{
+    return deck()->turnCount();
 }
 
 int TurnInternal::draw(int n)

@@ -9,12 +9,15 @@
 
 class Game {
 public:
-    Game();
+    Game(std::vector<std::string> const& actors);
 
     Cards createStartingDeck();
 
-    void run();
+    int run();
     bool gameEnded();
+
+    int numPlayers() const;
+    int playerIndex(Deck* deck) const;
 
 private:
     Supply m_supply;

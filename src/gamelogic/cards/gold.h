@@ -14,6 +14,12 @@ public:
         };
     }
 
+    virtual CardTraits traits() const override {
+        return CardTraits{
+            VALUE
+        };
+    };
+
     void playTreasure(TurnInternal* turn, CardOption* /*option*/) override {
         turn->money += VALUE;
     }

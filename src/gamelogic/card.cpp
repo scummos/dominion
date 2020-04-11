@@ -34,3 +34,8 @@ Card::Type Card::types()
 {
     return basicInfo().types;
 }
+
+CardTraits Card::traits() const
+{
+    return {};
+}

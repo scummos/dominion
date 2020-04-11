@@ -15,7 +15,8 @@ CardPile& Deck::area(Areas area)
     return m_areas.at(static_cast<int>(area));
 }
 
-Deck::Deck(std::vector<Card*> startingCards)
+Deck::Deck(std::vector<Card*> startingCards, int playerIndex)
+    : m_playerIndex(playerIndex)
 {
     m_areas.resize(static_cast<int>(Areas::NumAreas));
 
@@ -92,11 +93,42 @@ int Deck::totalCards() const
     return std::accumulate(m_areas.begin(), m_areas.end(), 0, [](int k, auto const& v) { return k + v.count(); });
 }
 
+void Deck::forEachCard(std::function<void(Card const*)> func) const
+{
+    std::for_each(m_areas.begin(), m_areas.end(), [&func](auto const& area) {
+        std::for_each(area.cards().begin(), area.cards().end(), func);
+    });
+}
+
 int Deck::countScore() const
 {
-    return std::accumulate(m_areas.begin(), m_areas.end(), 0, [](int k, auto const& v) {
-        return k + std::accumulate(v.cards().begin(), v.cards().end(), 0, [](int r, auto const* w) {
-            return r + w->victoryPoints();
-        });
+    int score = 0;
+    forEachCard([&score](Card const* card) {
+        score += card->victoryPoints();
     });
+    return score;
+}
+
+int Deck::totalMoney() const
+{
+    int money = 0;
+    forEachCard([&money](Card const* card) {
+        money += card->traits().treasureValue;
+    });
+    return money;
+}
+
+void Deck::countTurn()
+{
+    m_turnCount++;
+}
+
+int Deck::turnCount() const
+{
+    return m_turnCount;
+}
+
+int Deck::playerIndex() const
+{
+    return m_playerIndex;
 }

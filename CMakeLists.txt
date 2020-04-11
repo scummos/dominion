@@ -14,6 +14,7 @@ add_executable(main
     src/gamelogic/supply.cpp
     src/gamelogic/turn.cpp
     src/gamelogic/actor.cpp
+    src/gamelogic/logger.cpp
 )
 
 target_include_directories(main PRIVATE src/ src/gamelogic/ src/gamelogic/cards/ src/gamelogic/actors/)

@@ -16,6 +16,10 @@ struct InvalidCardUsage {
     std::string err;
 };
 
+struct CardTraits {
+    int treasureValue = 0;
+};
+
 class Card {
 public:
     enum Type {
@@ -46,8 +50,11 @@ public:
 
     virtual ~Card() = default;
 
-    // These must be implemented in each derived card.
+    // This must be implemented in each derived card.
     virtual BasicInfo basicInfo() const = 0;
+
+    // This can be overriden by cards to ease their generic use.
+    virtual CardTraits traits() const;
 
     // These by default do nothing or return a zero value, but most cards will override some.
     virtual int victoryPoints() const;

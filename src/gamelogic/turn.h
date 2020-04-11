@@ -51,11 +51,14 @@ public:
     Hand currentHand();
     ActiveCards cardsInPlay() const;
     TurnPhase currentPhase();
+    int turnCount();
     void endTurn();
 
     int currentMoney() const;
     int currentTotalCards() const;
     int currentActions() const;
+
+    int leftInSupply(CardId id) const;
 
     int doFinalDraw();
 

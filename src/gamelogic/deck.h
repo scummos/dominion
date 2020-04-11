@@ -3,6 +3,8 @@
 #include "cardpile.h"
 #include "supply.h"
 
+#include <functional>
+
 enum class Areas {
     DrawPile,
     UncoveredDrawPile,
@@ -16,7 +18,7 @@ enum class Areas {
 // The deck has ownership of all contained cards.
 class Deck {
 public:
-    Deck(std::vector<Card*> startingCards);
+    Deck(std::vector<Card*> startingCards, int playerIndex);
     Deck(Deck&& other);
     ~Deck();
 
@@ -50,6 +52,16 @@ public:
     /// Trash the given @p card from @p sourceArea, putting it into @p supply's trash.
     void trash(Supply* supply, Card* card, Areas sourceArea);
 
+    /// Mark that we completed a turn.
+    void countTurn();
+
+    /// Return the amount of turns we played so far.
+    int turnCount() const;
+
+    /// Run @p func for each card in the deck, no matter where it is. This can
+    /// for example be used to count score.
+    void forEachCard(std::function<void(Card const*)> func) const;
+
     /// Convenience getters for the piles.
     auto const& drawPile() const          { return area(Areas::DrawPile); }
     auto const& uncoveredDrawPile() const { return area(Areas::UncoveredDrawPile); }
@@ -58,6 +70,8 @@ public:
 
     int countScore() const;
     int totalCards() const;
+    int totalMoney() const;
+    int playerIndex() const;
 
 private:
     auto& drawPile()                { return area(Areas::DrawPile); }
@@ -68,6 +82,8 @@ private:
 
 private:
     std::vector<CardPile> m_areas;
+    int m_turnCount = 0;
+    int m_playerIndex = 0; // used for logging
     Deck(Deck const& other) = delete;
 };
 
