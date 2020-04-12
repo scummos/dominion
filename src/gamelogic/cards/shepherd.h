@@ -22,7 +22,7 @@ public:
             turn->discardFromHand(card);
         }
         turn->draw(2 * option->discard.size());
-        turn->actions++;
+        turn->addActions(1);
     }
 
     virtual BasicInfo basicInfo() const override {

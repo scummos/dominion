@@ -43,7 +43,12 @@ void BigMoneyActor::executeTurn(Turn* turn)
         turn->buy(CardId::Province);
     }
     else if (turn->currentMoney() >= 6) {
-        turn->buy(CardId::Gold);
+//         if (turn->leftInSupply(CardId::Province) <= 2) {
+//             turn->buy(CardId::Duchy);
+//         }
+//         else {
+            turn->buy(CardId::Gold);
+//         }
     }
 //     else if (turn->currentMoney() >= 5 && festivals < 10) {
 //         turn->buy(CardId::Festival);

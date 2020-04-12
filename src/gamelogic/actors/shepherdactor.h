@@ -53,7 +53,7 @@ void ShepherdActor::executeTurn(Turn* turn)
     else if (turn->currentMoney() >= 3) {
         turn->buy(CardId::Silver);
     }
-    else if (turn->currentMoney() >= 2) {
+    else if (turn->currentMoney() >= 2 && turn->leftInSupply(CardId::Estate) > 0) {
         turn->buy(CardId::Estate);
     }
 }

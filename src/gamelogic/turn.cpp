@@ -71,13 +71,10 @@ void Turn::buy(CardId id)
     }
     m_internal.phase = TurnPhase::Buy;
 
-    // FIXME this breaks when there are multiple buys and is generally wrong
-//     Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TurnPeakMoney, m_internal.money);
-
-    if (m_internal.buys <= 0) {
+    if (m_internal.buys() <= 0) {
         throw InvalidCardUsage{"You have no buys."};
     }
-    m_internal.buys--;
+    m_internal.addBuys(-1);
 
     deck()->gainFromSupply(m_internal.supply, id);
 }
@@ -96,7 +93,7 @@ Hand Turn::currentHand()
 
 int Turn::currentMoney() const
 {
-    return m_internal.money;
+    return m_internal.money();
 }
 
 TurnPhase Turn::currentPhase()
@@ -121,7 +118,7 @@ int Turn::leftInSupply(CardId id) const
 
 int Turn::currentActions() const
 {
-    return m_internal.actions;
+    return m_internal.actions();
 }
 
 void Turn::playAction(Card* card, CardOption* option)
@@ -131,10 +128,10 @@ void Turn::playAction(Card* card, CardOption* option)
     }
     m_internal.phase = TurnPhase::Action;
 
-    if (m_internal.actions <= 0) {
+    if (m_internal.actions() <= 0) {
         throw InvalidPlayError{"You have no actions left."};
     }
-    m_internal.actions--;
+    m_internal.addActions(-1);
 
     card->playAction(&m_internal, option);
     deck()->moveCard(card, Areas::Hand, Areas::InPlay);
@@ -164,6 +161,9 @@ void Turn::endTurn()
     Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TotalCards, deck()->totalCards());
     Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TotalMoney, deck()->totalMoney());
     Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TotalScore, deck()->countScore());
+    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TurnPeakMoney, m_internal.m_maxMoney);
+    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::CardsSeen, m_internal.m_totalCardsSeen);
+    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TurnNumber, deck()->turnCount());
 }
 
 int Turn::doFinalDraw()
@@ -174,7 +174,7 @@ int Turn::doFinalDraw()
     m_internal.phase = TurnPhase::Ended;
     deck()->countTurn();
 
-    return m_internal.deck->drawCards(5);
+    return m_internal.draw(5);
 }
 
 int Turn::turnCount()
@@ -184,7 +184,9 @@ int Turn::turnCount()
 
 int TurnInternal::draw(int n)
 {
-    return deck->drawCards(n);
+    int ret = deck->drawCards(n);
+    m_totalCardsSeen += ret;
+    return ret;
 }
 
 void TurnInternal::trashFromHand(Card* card)

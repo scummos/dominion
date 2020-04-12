@@ -2,10 +2,9 @@ project(dominion)
 cmake_minimum_required(VERSION 3.14)
 set(CMAKE_CXX_STANDARD 17)
 
-# find_package(Qt5 COMPONENTS Core REQUIRED)
+enable_testing()
 
-add_executable(main
-    src/main.cpp
+add_library(dominion STATIC
     src/gamelogic/card.cpp
     src/gamelogic/cardpile.cpp
     src/gamelogic/cost.cpp
@@ -17,5 +16,11 @@ add_executable(main
     src/gamelogic/logger.cpp
 )
 
-target_include_directories(main PRIVATE src/ src/gamelogic/ src/gamelogic/cards/ src/gamelogic/actors/)
-# target_link_libraries(main Qt5::Core)
+target_include_directories(dominion PUBLIC src/ src/gamelogic/ src/gamelogic/cards/ src/gamelogic/actors/)
+
+add_executable(main src/main.cpp)
+target_link_libraries(main dominion)
+
+add_executable(histogram_test src/gamelogic/tests/histogram_test.cpp)
+target_link_libraries(histogram_test dominion)
+add_test(histogram_test histogram_test)

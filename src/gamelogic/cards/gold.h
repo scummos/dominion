@@ -21,7 +21,7 @@ public:
     };
 
     void playTreasure(TurnInternal* turn, CardOption* /*option*/) override {
-        turn->money += VALUE;
+        turn->addMoney(VALUE);
     }
 };
 

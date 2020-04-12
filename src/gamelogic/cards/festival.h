@@ -5,9 +5,9 @@
 class Festival: public Card {
 public:
     void playAction(TurnInternal* turn, CardOption* /*option*/) override {
-        turn->actions += 2;
-        turn->money += 2;
-        turn->buys += 1;
+        turn->addActions(2);
+        turn->addMoney(2);
+        turn->addBuys(1);
     }
 
     virtual BasicInfo basicInfo() const override {

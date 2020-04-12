@@ -32,14 +32,45 @@ struct TurnInternal {
     Supply* supply;
     Deck* deck;
 
-    int actions = 1;
-    int buys = 1;
-    int money = 0;
+    void addActions(int actions) {
+        m_actions += actions;
+        m_maxActions = std::max(m_actions, m_maxActions);
+    }
+    void addBuys(int buys) {
+        m_buys += buys;
+        m_maxBuys = std::max(m_buys, m_maxBuys);
+    }
+    void addMoney(int money) {
+        m_money += money;
+        m_maxMoney = std::max(m_money, m_maxMoney);
+    }
+
+    int actions() const {
+        return m_actions;
+    }
+    int buys() const {
+        return m_buys;
+    }
+    int money() const {
+        return m_money;
+    }
 
     // Some useful primitives used to implement cards.
     int draw(int n);
     void trashFromHand(Card* card);
     void discardFromHand(Card* card);
+
+private:
+    int m_actions = 1;
+    int m_buys = 1;
+    int m_money = 0;
+
+    int m_maxActions = 0;
+    int m_maxBuys = 0;
+    int m_maxMoney = 0;
+    int m_totalCardsSeen = 0;
+
+    friend class Turn;
 };
 
 /// The Turn state machine. Tracks turn state and allows to perform actions

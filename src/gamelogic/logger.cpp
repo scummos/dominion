@@ -4,6 +4,76 @@
 #include "deck.h"
 
 #include <math.h>
+#include <numeric>
+#include <algorithm>
+#include <iostream>
+
+HistogramNd::HistogramNd(std::vector<HistogramDimension> const& dims)
+    : m_dims(dims)
+{
+    auto size = std::accumulate(dims.begin(), dims.end(), 1, [](int k, auto const& dim) {
+        return k * dim.bins;
+    });
+    m_data.resize(size, 0);
+}
+
+std::vector<int> HistogramNd::data() const
+{
+    return m_data;
+}
+
+int& HistogramNd::value(MultiIndex const& index)
+{
+    int mul = 1;
+    int offset = 0;
+    int n = 0;
+    for (auto const& rowOffset: index) {
+        offset += mul * rowOffset;
+        mul *= m_dims.at(n).bins;
+        n++;
+    }
+    return m_data.at(offset);
+}
+
+int HistogramNd::valueToRowIndex(PerTurnLogData dim, double value)
+{
+    auto dimInfo = std::find_if(m_dims.begin(), m_dims.end(), [dim](const auto& histoDim) {
+        return histoDim.dim == dim;
+    });
+    if (dimInfo == m_dims.end()) {
+        throw InvalidIndexError{"No such dimension."};
+    }
+
+    if (value <= dimInfo->lower) {
+        return 0;
+    }
+    if (value >= dimInfo->upper) {
+        return dimInfo->bins - 1;
+    }
+    auto const span = dimInfo->upper - dimInfo->lower;
+    auto const ret = static_cast<int> (((value - dimInfo->lower) * dimInfo->bins) / span);
+    return ret;
+}
+
+HistogramNd Logger::computeHistogramNd(int playerIndex, std::vector<HistogramDimension> const& dims)
+{
+    HistogramNd ret(dims);
+    MultiIndex multiIndex(dims.size());
+
+    for (auto const& game: m_games) {
+        auto const& vdata = game[playerIndex].m_vectorData;
+        for (int i = 0; i < vdata[0].size(); i++) {
+            for (int axis = 0; axis < dims.size(); axis++) {
+                auto const dim = dims[axis].dim;
+                auto const value = vdata[static_cast<int>(dim)][i];
+                multiIndex[axis] = ret.valueToRowIndex(dim, value);
+            }
+            ret.value(multiIndex)++;
+        }
+    }
+
+    return ret;
+}
 
 Logger::PlayerData::PlayerData()
 {
@@ -116,3 +186,38 @@ std::vector<DataPoint> Logger::computeTurnGraph(int playerIndex, PerTurnLogData 
 
     return ret;
 }
+
+#if 0
+
+    PlayerData const* playerData = nullptr;
+
+    std::function<void(int)> recurseDims = [&](int dimIndex) {
+        auto const dim = dims[dimIndex].dim;
+        auto const& vdata = playerData->m_vectorData[static_cast<int>(dim)];
+
+        if (dimIndex == dims.size()) {
+            // Innermost loop, this is where the histogram is actually computed.
+            std::cerr << "visit: ";
+            for (auto const i: multiIndex) {
+                std::cerr << i << " ";
+            }
+            std::cerr << std::endl;
+            ret.value(multiIndex)++;
+        }
+
+        // Otherwise, recurse further.
+        for (int i = dimIndex; i < dims.size(); i++) {
+            for (int j = 0; j < vdata.size(); j++) {
+                std::cerr << "  recurse: dim " << i << " index " << j << std::endl;
+                multiIndex[i] = ret.valueToRowIndex(dims[i].dim, vdata[j]);
+                recurseDims(i + 1);
+            }
+        }
+    };
+
+    for (auto const& game: m_games) {
+        playerData = &game.at(playerIndex);
+        recurseDims(0);
+    }
+
+#endif
