@@ -10,7 +10,7 @@ int main() {
 
     std::vector<int> winners(2);
     for (int i = 0; i < games; i++) {
-        Game game({"bigmoney", "bigmoney"});
+        Game game({"shepherd", "bigmoney"});
         game.run();
     }
 
@@ -51,12 +51,12 @@ int main() {
 
     auto dims = {
         HistogramDimension{
-            PerTurnLogData::TotalMoney,
+            PerTurnLogData::TurnNumber,
             40,
             0, 39
         },
         HistogramDimension{
-            PerTurnLogData::TurnPeakMoney,
+            PerTurnLogData::CardsSeen,
             20,
             0, 19
         }

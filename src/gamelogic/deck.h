@@ -2,6 +2,8 @@
 
 #include "cardpile.h"
 #include "supply.h"
+#include "event.h"
+#include "reaction.h"
 
 #include <functional>
 
@@ -18,7 +20,9 @@ enum class Areas {
 // The deck has ownership of all contained cards.
 class Deck {
 public:
-    Deck(std::vector<Card*> startingCards, int playerIndex);
+    using ReactCallback = std::function<void(EventReactOptions)>;
+
+    Deck(std::vector<Card*> startingCards, Supply* supply, int playerIndex);
     Deck(Deck&& other);
     ~Deck();
 
@@ -46,11 +50,15 @@ public:
     /// Draw up to @p n cards and put them into the hand. Returns the actual number of cards drawn.
     int drawCards(int n);
 
-    /// Gain a card identified by @p id from the supply @p supply, putting it to @p targetArea.
-    void gainFromSupply(Supply* supply, CardId const id, Areas targetArea = Areas::DiscardPile);
+    /// Gain a card identified by @p id from the supply, putting it to @p targetArea.
+    /// Returns true if the card was gained, false if the supply pile was empty.
+    bool gainFromSupply(CardId const id, Areas targetArea = Areas::DiscardPile);
 
-    /// Trash the given @p card from @p sourceArea, putting it into @p supply's trash.
-    void trash(Supply* supply, Card* card, Areas sourceArea);
+    /// Trash the given @p card from @p sourceArea, putting it into the supply's trash.
+    void trash(Card* card, Areas sourceArea);
+
+    /// Discard @p card from hand.
+    void discardFromHand(Card* card);
 
     /// Mark that we completed a turn.
     void countTurn();
@@ -58,9 +66,25 @@ public:
     /// Return the amount of turns we played so far.
     int turnCount() const;
 
+    /// Handle an attack on this deck.
+    void attacked(AttackEvent& event);
+
+    /// Handle some other event occuring (e.g. enemy gains a card, ...)
+    void eventOccured(Event& event);
+
     /// Run @p func for each card in the deck, no matter where it is. This can
     /// for example be used to count score.
     void forEachCard(std::function<void(Card const*)> func) const;
+
+    void setReactCallback(ReactCallback& cb);
+    void event(Event const& event);
+
+    EventReactOptions queryCardsForReactions(Event& event);
+
+    /// Get enemies in the game.
+    std::vector<Deck*> enemies() const;
+    /// Set enemies in the game.
+    void setEnemies(std::vector<Deck*> enemies);
 
     /// Convenience getters for the piles.
     auto const& drawPile() const          { return area(Areas::DrawPile); }
@@ -82,8 +106,11 @@ private:
 
 private:
     std::vector<CardPile> m_areas;
+    std::vector<Deck*> m_enemies;
+    Supply* m_supply;
     int m_turnCount = 0;
     int m_playerIndex = 0; // used for logging
+    ReactCallback m_react;
     Deck(Deck const& other) = delete;
 };
 

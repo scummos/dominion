@@ -18,6 +18,7 @@ Supply::Supply(int nplayers)
     createPile<Festival>(10);
     createPile<Chapel>(10);
     createPile<Shepherd>(10);
+    createPile<Curse>(10);
 }
 
 Supply::~Supply()

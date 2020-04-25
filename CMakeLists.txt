@@ -14,6 +14,8 @@ add_library(dominion STATIC
     src/gamelogic/turn.cpp
     src/gamelogic/actor.cpp
     src/gamelogic/logger.cpp
+    src/gamelogic/event.cpp
+    src/gamelogic/reaction.cpp
 )
 
 target_include_directories(dominion PUBLIC src/ src/gamelogic/ src/gamelogic/cards/ src/gamelogic/actors/)

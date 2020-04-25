@@ -11,9 +11,20 @@ Game::Game(std::vector<std::string> const& actors)
 {
     int i = 0;
     for (auto const& actorName: actors) {
-        auto& player = m_players.emplace_back(createStartingDeck(), i);
+        auto& player = m_players.emplace_back(createStartingDeck(), &m_supply, i);
         m_actors.emplace_back(createActor(actorName, &m_supply, &player));
         i++;
+    }
+
+    // TODO: order these such that the first in the list is the next player
+    for (int i = 0; i < m_players.size(); i++) {
+        std::vector<Deck*> enemies;
+        for (int j = 0; j < m_players.size(); j++) {
+            if (i == j)
+                continue;
+            enemies.push_back(&m_players[j]);
+        }
+        m_players[i].setEnemies(enemies);
     }
 }
 
@@ -63,10 +74,12 @@ int Game::run()
     int turncount = 0;
     while (!gameEnded()) {
         auto* player = &m_players.at(currentPlayer);
+        auto& actor = m_actors.at(currentPlayer);
+
         Turn turn(&m_supply, player);
-        m_actors.at(currentPlayer)->executeTurn(&turn);
+        actor->executeTurn(&turn);
         turn.endTurn();
-        turn.doFinalDraw();
+
         currentPlayer = (currentPlayer + 1) % m_players.size();
         turncount++;
     }

@@ -9,5 +9,7 @@
 #include "festival.h"
 #include "chapel.h"
 #include "shepherd.h"
+#include "torturer.h"
+#include "curse.h"
 
 #include "cardid.h"

@@ -3,6 +3,8 @@
 #include "cardpile.h"
 #include "deck.h"
 #include "supply.h"
+#include "event.h"
+#include "reaction.h"
 
 #include <iostream>
 
@@ -55,15 +57,20 @@ struct TurnInternal {
         return m_money;
     }
 
+    Cost cardCost(CardId id) const;
+
     // Some useful primitives used to implement cards.
     int draw(int n);
     void trashFromHand(Card* card);
     void discardFromHand(Card* card);
+    int countCardsInHand() const;
+    void attackEachEnemy(AttackReactOption::Ptr attack);
 
 private:
     int m_actions = 1;
     int m_buys = 1;
     int m_money = 0;
+    int m_discount = 0;
 
     int m_maxActions = 0;
     int m_maxBuys = 0;
@@ -88,8 +95,10 @@ public:
     int currentMoney() const;
     int currentTotalCards() const;
     int currentActions() const;
+    int currentBuys() const;
 
     int leftInSupply(CardId id) const;
+    Cost cardCost(CardId id) const;
 
     int doFinalDraw();
 

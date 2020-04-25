@@ -21,6 +21,8 @@ public:
     Cost(int gold);
 
     PayResult canPay(Resources const& resources) const;
+    int gold() const { return m_gold; }
+    bool hasAdvancedCost() const { return false; }
 
 public: // FIXME
     int m_gold;

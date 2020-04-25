@@ -7,8 +7,11 @@
 // #include <QVarLengthArray>
 #include <string>
 #include <vector>
+#include <memory>
 
 struct TurnInternal;
+struct Event;
+struct EventReactOption;
 
 struct CardOption { };
 
@@ -23,6 +26,7 @@ struct CardTraits {
 class Card {
 public:
     enum Type {
+        NoType = 0x0,
         Victory = 0x1,
         Treasure = 0x2,
         Action = 0x4,
@@ -39,6 +43,7 @@ public:
         PlusBuy = 0x20, //< gives +1 or more buy
         Choice = 0x40, //< there are choices when playing this card
         Trasher = 0x80, //< maybe can trash something using this card
+        Attack = 0x100, //< an attack card
     };
 
     struct BasicInfo {
@@ -57,7 +62,11 @@ public:
     virtual CardTraits traits() const;
 
     // These by default do nothing or return a zero value, but most cards will override some.
+    /// How many victory points this card is worth.
     virtual int victoryPoints() const;
+
+    /// Return a structure describing possible reactions if this card reacts to the given event.
+    virtual std::shared_ptr<EventReactOption> reactToEvent(Event& event) const;
 
     virtual void playAction(TurnInternal* turn, CardOption* option = nullptr);
     virtual void playTreasure(TurnInternal* turn, CardOption* option = nullptr);

@@ -25,3 +25,8 @@ Supply const* Actor::supply() const
 {
     return m_supply;
 }
+
+void Actor::react(EventReactOptions& /*options*/)
+{
+    // Default actor does nothing.
+}

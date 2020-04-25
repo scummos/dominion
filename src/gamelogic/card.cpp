@@ -39,3 +39,9 @@ CardTraits Card::traits() const
 {
     return {};
 }
+
+std::shared_ptr<EventReactOption> Card::reactToEvent(Event& event) const
+{
+    return {};
+}
+

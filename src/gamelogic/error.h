@@ -9,3 +9,7 @@ struct InvalidPlayError {
 struct SetupError {
     std::string error;
 };
+
+struct InternalError {
+    std::string error;
+};

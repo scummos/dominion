@@ -15,8 +15,9 @@ CardPile& Deck::area(Areas area)
     return m_areas.at(static_cast<int>(area));
 }
 
-Deck::Deck(std::vector<Card*> startingCards, int playerIndex)
-    : m_playerIndex(playerIndex)
+Deck::Deck(std::vector<Card*> startingCards, Supply* supply, int playerIndex)
+    : m_supply(supply)
+    , m_playerIndex(playerIndex)
 {
     m_areas.resize(static_cast<int>(Areas::NumAreas));
 
@@ -30,6 +31,11 @@ Deck::Deck(Deck && other)
 {
     m_areas = other.m_areas;
     other.m_areas.clear();
+    m_supply = other.m_supply;
+    m_enemies = other.m_enemies;
+    m_turnCount = other.m_turnCount;
+    m_playerIndex = other.m_playerIndex;
+    m_react = other.m_react;
 }
 
 Deck::~Deck()
@@ -58,9 +64,9 @@ void Deck::putUncoveredBack()
     uncoveredDrawPile().moveAllTo(drawPile());
 }
 
-void Deck::trash(Supply* supply, Card* card, Areas sourceArea)
+void Deck::trash(Card* card, Areas sourceArea)
 {
-    area(sourceArea).moveCardTo(card, supply->trashPile());
+    area(sourceArea).moveCardTo(card, m_supply->trashPile());
 }
 
 void Deck::moveCard(int index, Areas from, Areas to)
@@ -78,14 +84,47 @@ void Deck::moveAllCards(Areas from, Areas to)
     area(from).moveAllTo(area(to));
 }
 
-void Deck::gainFromSupply(Supply* supply, const CardId id, Areas targetArea)
+void Deck::discardFromHand(Card* card)
 {
-    auto& pile = supply->pile(id);
-    if (pile.empty()) {
-        throw InvalidPlayError{"This supply pile is empty."};
+    auto event = CardDiscardedFromHandEvent(card);
+    auto opts = queryCardsForReactions(event);
+    if (m_react && !opts.empty()) {
+        m_react(opts);
     }
 
-    pile.moveCardTo(0, area(targetArea));
+    if (!event.ignored) {
+        moveCard(card, Areas::Hand, Areas::DiscardPile);
+    }
+}
+
+bool Deck::gainFromSupply(const CardId id, Areas targetArea)
+{
+    auto& pile = m_supply->pile(id);
+    if (pile.empty()) {
+        return false;
+    }
+
+    auto event = YouGainACardEvent(pile.topCard());
+    auto opts = queryCardsForReactions(event);
+    if (m_react && !opts.empty()) {
+        m_react(opts);
+    }
+
+    if (!event.ignored) {
+        pile.moveCardTo(0, area(targetArea));
+    }
+
+    EnemyGainsACardEvent notify(event.card);
+    for (auto* other: enemies()) {
+        other->event(notify);
+    }
+
+    return true;
+}
+
+void Deck::event(const Event& event)
+{
+    // TODO
 }
 
 int Deck::totalCards() const
@@ -132,3 +171,66 @@ int Deck::playerIndex() const
 {
     return m_playerIndex;
 }
+
+std::vector<Deck*> Deck::enemies() const
+{
+    return m_enemies;
+}
+
+void Deck::setEnemies(std::vector<Deck *> enemies)
+{
+    m_enemies = enemies;
+}
+
+void Deck::setReactCallback(Deck::ReactCallback& cb)
+{
+    m_react = cb;
+}
+
+EventReactOptions Deck::queryCardsForReactions(Event& event)
+{
+    EventReactOptions opts;
+
+    for (auto* card: hand().cards()) {
+        auto opt = card->reactToEvent(event);
+        if (!opt) {
+            // Card doesn't react to (this type of?) attacks
+            continue;
+        }
+        opts.push_back(opt);
+    }
+
+    return opts;
+}
+
+void Deck::eventOccured(Event& event)
+{
+    // Look what cards we have to react to this event.
+    auto opts = queryCardsForReactions(event);
+
+    // Give the actor the chance to parametrize (accept, ignore, choose things) these cards.
+    if (m_react && !opts.empty()) {
+        m_react(opts);
+    }
+}
+
+void Deck::attacked(AttackEvent& event)
+{
+    // First, use generic event handler
+    eventOccured(event);
+
+    // Maybe we averted the attack?
+    if (event.ignored) {
+        return;
+    }
+
+    // Unlucky. Give the actor the chance to parametrize the effects of the actual attack.
+    if (m_react) {
+        m_react({event.attack});
+    }
+
+    // In any case, run the default handler of the action. This must check internally if the Actor
+    // has already accepted part of the effect (if he was given that opportunity by the option's API).
+    event.attack->defaultAction();
+}
+

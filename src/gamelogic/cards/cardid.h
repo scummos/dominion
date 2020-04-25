@@ -1,6 +1,7 @@
 #pragma once
 
 enum class CardId {
+    Invalid,
     Copper,
     Silver,
     Gold,
@@ -10,7 +11,25 @@ enum class CardId {
     Smithy,
     Festival,
     Chapel,
+    Cellar,
+    Village,
+    Workshop,
+    Buerocrat,
+    Militia,
+    Moneylender,
+    Remodel,
+    ThroneRoom,
+    CouncilRoom,
+    Laboratory,
+    Library,
+    Market,
+    Mine,
+    Witch,
+    Curse,
     Shepherd,
+    Moat,
+    Torturer,
+    Tunnel,
 };
 
 static char const* cardName(CardId const id) {

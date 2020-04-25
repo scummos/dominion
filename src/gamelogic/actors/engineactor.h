@@ -2,6 +2,7 @@
 
 #include "actor.h"
 #include "turn.h"
+#include "reaction.h"
 #include "actor_helpers.h"
 
 #include "cards.h"
@@ -14,6 +15,7 @@ class EngineActor: public Actor {
 public:
     using Actor::Actor;
     void executeTurn(Turn* turn) override;
+    void react(EventReactOptions& options) override;
 
     int smithies = 0;
     int festivals = 0;
@@ -21,6 +23,13 @@ public:
     int turnCount = 0;
     int silvers = 0;
 };
+
+void EngineActor::react(EventReactOptions& options)
+{
+    for (auto& option: options) {
+        defaultReact(*option);
+    }
+}
 
 void EngineActor::executeTurn(Turn* turn)
 {

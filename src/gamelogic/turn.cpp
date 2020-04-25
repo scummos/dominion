@@ -11,6 +11,7 @@ Turn::Turn(Supply* supply, Deck* deck)
     m_internal.turn = this;
     m_internal.supply = supply;
     m_internal.deck = deck;
+    m_internal.m_totalCardsSeen = static_cast<const Deck*>(deck)->hand().cards().size();
 }
 
 ActiveCards Hand::treasureCards() const
@@ -76,7 +77,7 @@ void Turn::buy(CardId id)
     }
     m_internal.addBuys(-1);
 
-    deck()->gainFromSupply(m_internal.supply, id);
+    deck()->gainFromSupply(id);
 }
 
 Hand Turn::currentHand()
@@ -121,6 +122,11 @@ int Turn::currentActions() const
     return m_internal.actions();
 }
 
+int Turn::currentBuys() const
+{
+    return m_internal.buys();
+}
+
 void Turn::playAction(Card* card, CardOption* option)
 {
     if (currentPhase() > TurnPhase::Action) {
@@ -132,9 +138,9 @@ void Turn::playAction(Card* card, CardOption* option)
         throw InvalidPlayError{"You have no actions left."};
     }
     m_internal.addActions(-1);
+    deck()->moveCard(card, Areas::Hand, Areas::InPlay);
 
     card->playAction(&m_internal, option);
-    deck()->moveCard(card, Areas::Hand, Areas::InPlay);
 }
 
 void Turn::playTreasure(Card* card, CardOption* option)
@@ -164,6 +170,10 @@ void Turn::endTurn()
     Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TurnPeakMoney, m_internal.m_maxMoney);
     Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::CardsSeen, m_internal.m_totalCardsSeen);
     Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TurnNumber, deck()->turnCount());
+
+    doFinalDraw();
+
+    m_internal.phase = TurnPhase::Ended;
 }
 
 int Turn::doFinalDraw()
@@ -171,7 +181,7 @@ int Turn::doFinalDraw()
     if (currentPhase() > TurnPhase::DrawNext) {
         throw InvalidPlayError{"Attempting to draw next hand twice"};
     }
-    m_internal.phase = TurnPhase::Ended;
+    m_internal.phase = TurnPhase::DrawNext;
     deck()->countTurn();
 
     return m_internal.draw(5);
@@ -180,6 +190,11 @@ int Turn::doFinalDraw()
 int Turn::turnCount()
 {
     return deck()->turnCount();
+}
+
+Cost Turn::cardCost(CardId id) const
+{
+    return m_internal.cardCost(id);
 }
 
 int TurnInternal::draw(int n)
@@ -191,11 +206,42 @@ int TurnInternal::draw(int n)
 
 void TurnInternal::trashFromHand(Card* card)
 {
-    deck->trash(supply, card, Areas::Hand);
+    deck->trash(card, Areas::Hand);
 }
 
 void TurnInternal::discardFromHand(Card* card)
 {
-    deck->moveCard(card, Areas::Hand, Areas::DiscardPile);
+    deck->discardFromHand(card);
+}
+
+int TurnInternal::countCardsInHand() const
+{
+    return static_cast<const Deck*>(deck)->hand().cards().size();
+}
+
+Cost TurnInternal::cardCost(CardId id) const
+{
+    auto& pile = supply->pile(id);
+    if (pile.empty()) {
+        return {0}; // cannot gain this anyways
+    }
+    auto cost = pile.topCard()->basicInfo().cost;
+    auto adjCost = Cost(cost.gold() - m_discount);
+    return adjCost;
+}
+
+void TurnInternal::attackEachEnemy(AttackReactOption::Ptr attack)
+{
+    // This is slightly complicated. The card itself constructs the attack parameter,
+    // which is actually a description of what options the attacked player has in *reaction*
+    // to what is happening. An example why this makes sense is e.g. Torturer: the Actor
+    // needs to have the choice whether to discard cards or take a curse.
+    // We then here wrap this attack into an event, and ask cards whether they can react to
+    // an attack event. In response, they might produce a *different* kind of react option,
+    // which e.g. enables the Actor to ignore the attack (Moat), or do something else before the attack.
+    auto event = AttackEvent(attack);
+    for (auto* enemy: deck->enemies()) {
+        enemy->attacked(event);
+    }
 }
 

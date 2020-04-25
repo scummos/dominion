@@ -12,7 +12,7 @@ inline std::unique_ptr<Actor> createActor(std::string const& which, Supply const
     if (which == "engine")
         return std::make_unique<EngineActor>(supply, deck);
 
-    if (which == "sheperd")
+    if (which == "shepherd")
         return std::make_unique<ShepherdActor>(supply, deck);
 
     throw SetupError{"No such actor"};
