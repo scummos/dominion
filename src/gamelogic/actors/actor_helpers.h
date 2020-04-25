@@ -20,7 +20,10 @@ void defaultVillageDraw(Turn* turn, int wantActionsRemain = 0) {
             // Nothing else to do, stop.
             break;
         }
-        draw.front().playAction();
+        std::sort(draw.begin(), draw.end(), [](ActiveCard const& c1, ActiveCard const& c2) {
+            return c1.card->cost().gold() < c2.card->cost().gold();
+        });
+        draw.back().playAction();
     }
 }
 

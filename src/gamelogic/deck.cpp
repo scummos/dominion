@@ -4,6 +4,7 @@
 
 #include <numeric>
 #include <algorithm>
+#include <iostream>
 
 CardPile const& Deck::area(Areas area) const
 {
@@ -193,7 +194,7 @@ void Deck::setEnemies(std::vector<Deck *> enemies)
     m_enemies = enemies;
 }
 
-void Deck::setReactCallback(Deck::ReactCallback& cb)
+void Deck::setReactCallback(Deck::ReactCallback cb)
 {
     m_react = cb;
 }
@@ -237,7 +238,8 @@ void Deck::attacked(AttackEvent& event)
 
     // Unlucky. Give the actor the chance to parametrize the effects of the actual attack.
     if (m_react) {
-        m_react({event.attack});
+        auto opts = EventReactOptions({event.attack});
+        m_react(opts);
     }
 
     // In any case, run the default handler of the action. This must check internally if the Actor

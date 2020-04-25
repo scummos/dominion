@@ -15,54 +15,16 @@ public:
     virtual bool fulfilled(Turn* turn) { return true; };
 };
 
-class HasMoney : public Condition {
+class Negate : public Condition {
 public:
-    HasMoney(int money) : m_money(money) {}
+    Negate(Condition::Ptr cond) : m_cond(cond) {}
 
     bool fulfilled(Turn* turn) override {
-        return turn->currentMoney() >= m_money;
+        return m_cond && !m_cond->fulfilled(turn);
     }
 
 private:
-    int m_money;
-};
-
-class TurnCountLessThan : public Condition {
-public:
-    TurnCountLessThan(int count) : m_count(count) {}
-
-    bool fulfilled(Turn* turn) override {
-        return turn->turnCount() < m_count;
-    }
-
-private:
-    int m_count;
-};
-
-class CardCountLessThan : public Condition {
-public:
-    CardCountLessThan(CardId id, int count) : m_id(id), m_count(count) {}
-
-    bool fulfilled(Turn* turn) override {
-        return turn->totalCards(m_id) < m_count;
-    }
-
-private:
-    CardId m_id;
-    int m_count;
-};
-
-class CardCountGreaterThan : public Condition {
-public:
-    CardCountGreaterThan(CardId id, int count) : m_id(id), m_count(count) {}
-
-    bool fulfilled(Turn* turn) override {
-        return turn->totalCards(m_id) > m_count;
-    }
-
-private:
-    CardId m_id;
-    int m_count;
+    Condition::Ptr m_cond;
 };
 
 class AllOf : public Condition {
@@ -103,4 +65,10 @@ template<typename T, typename... Args>
 Condition::Ptr If(Args... args) {
     static_assert(std::is_base_of_v<Condition, T>, "If must instantiate a Condition");
     return std::make_shared<T>(args...);
+}
+
+template<typename T, typename... Args>
+Condition::Ptr IfNot(Args... args) {
+    static_assert(std::is_base_of_v<Condition, T>, "If must instantiate a Condition");
+    return std::make_shared<Negate>(std::make_shared<T>(args...));
 }

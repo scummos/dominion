@@ -13,5 +13,6 @@
 #include "torturer.h"
 #include "witch.h"
 #include "mine.h"
+#include "moat.h"
 
 #include "cardid.h"

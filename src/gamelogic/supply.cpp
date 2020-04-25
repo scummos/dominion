@@ -21,6 +21,7 @@ Supply::Supply(int nplayers)
     createPile<Curse>(10);
     createPile<Witch>(10);
     createPile<Mine>(10);
+    createPile<Moat>(10);
 }
 
 Supply::~Supply()

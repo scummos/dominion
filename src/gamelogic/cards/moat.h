@@ -12,8 +12,8 @@ public:
         turn->draw(2);
     }
 
-    void std::shared_ptr<EventReactOption> reactToEvent(Event& event) const override {
-        if (!event.kind & EventKind::Attack) {
+    EventReactOption::Ptr reactToEvent(Event& event) const override {
+        if (event.kind != EventKind::Attack) {
             return {};
         }
         return std::make_shared<IgnoreAttackReactOption>(event);

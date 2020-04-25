@@ -20,7 +20,7 @@ enum class Areas {
 // The deck has ownership of all contained cards.
 class Deck {
 public:
-    using ReactCallback = std::function<void(EventReactOptions)>;
+    using ReactCallback = std::function<void(EventReactOptions&)>;
 
     Deck(std::vector<Card*> startingCards, Supply* supply, int playerIndex);
     Deck(Deck&& other);
@@ -76,7 +76,7 @@ public:
     /// for example be used to count score.
     void forEachCard(std::function<void(Card const*)> func) const;
 
-    void setReactCallback(ReactCallback& cb);
+    void setReactCallback(ReactCallback cb);
     void event(Event const& event);
 
     EventReactOptions queryCardsForReactions(Event& event);

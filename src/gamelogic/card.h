@@ -72,10 +72,11 @@ public:
     virtual void playTreasure(TurnInternal* turn, CardOption* option = nullptr);
 
     // Helper functions.
-    Type types();
+    Type types() const;
     bool hasType(Type const& type) const;
-    char const* name();
-    Hints hints();
+    char const* name() const;
+    Hints hints() const;
+    Cost cost() const;
 
 protected:
     friend class Supply;

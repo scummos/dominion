@@ -38,7 +38,7 @@ enum class ReactKind {
  */
 struct EventReactOption {
     using Ptr = std::shared_ptr<EventReactOption>;
-    EventReactOption(ReactKind kind, Deck* deck);
+    EventReactOption(ReactKind kind);
 
     /// This should e.g. discard 2 random cards for a "discard 2 cards" attack *if* the
     /// actor did not chose which ones to discard.
@@ -47,7 +47,6 @@ struct EventReactOption {
 
 protected:
     ReactKind m_kind;
-    Deck* m_deck;
 };
 
 using EventReactOptions = std::vector<EventReactOption::Ptr>;
@@ -58,7 +57,8 @@ public:
     using Factory = std::function<AttackReactOption::Ptr(Deck*)>;
 
 protected:
-    AttackReactOption(ReactKind kind, Deck* deck) : EventReactOption(kind, deck) {};
+    AttackReactOption(ReactKind kind, Deck* deck) : EventReactOption(kind), m_deck(deck) {};
+    Deck* m_deck;
 };
 
 /// Forces the player to discard down to N, or M cards from his hand, but lets him
@@ -94,7 +94,7 @@ private:
 
 /// Gives the Actor the option to ignore the attack (currently only created by Moat).
 struct IgnoreAttackReactOption : public EventReactOption {
-    IgnoreAttackReactOption(Deck* deck, Event& event);
+    IgnoreAttackReactOption(Event& event);
     void accept();
 
 private:

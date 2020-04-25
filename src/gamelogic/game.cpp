@@ -71,6 +71,12 @@ int Game::run()
         turn.doFinalDraw();
     }
 
+    for (int i = 0; i < m_players.size(); i++) {
+        auto& actor = m_actors[i];
+        Deck::ReactCallback cb = [&actor](EventReactOptions& options) { actor->react(options); };
+        m_players[i].setReactCallback(cb);
+    }
+
     int turncount = 0;
     while (!gameEnded()) {
         auto* player = &m_players.at(currentPlayer);

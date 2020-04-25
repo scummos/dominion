@@ -20,19 +20,24 @@ int Card::victoryPoints() const
     return 0;
 }
 
-char const* Card::name()
+char const* Card::name() const
 {
     return cardName(basicInfo().id);
 }
 
-Card::Hints Card::hints()
+Card::Hints Card::hints() const
 {
     return basicInfo().hints;
 }
 
-Card::Type Card::types()
+Card::Type Card::types() const
 {
     return basicInfo().types;
+}
+
+Cost Card::cost() const
+{
+    return basicInfo().cost;
 }
 
 CardTraits Card::traits() const

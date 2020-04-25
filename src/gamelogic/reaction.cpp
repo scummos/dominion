@@ -2,6 +2,8 @@
 #include "event.h"
 #include "deck.h"
 
+#include <iostream>
+
 GainAttackReactOption::GainAttackReactOption(Deck* deck, CardId gain, int count)
     : AttackReactOption(ReactKind::NoChoiceAttack, deck)
     , m_gain(gain)
@@ -28,9 +30,8 @@ CardId GainAttackReactOption::gain() const
     return m_gain;
 }
 
-EventReactOption::EventReactOption(ReactKind kind, Deck* deck)
+EventReactOption::EventReactOption(ReactKind kind)
     : m_kind(kind)
-    , m_deck(deck)
 {
 }
 
@@ -39,8 +40,8 @@ void IgnoreAttackReactOption::accept()
     event.ignored = true;
 }
 
-IgnoreAttackReactOption::IgnoreAttackReactOption(Deck* deck, Event& event)
-    : EventReactOption(ReactKind::IgnoreAttackReaction, deck)
+IgnoreAttackReactOption::IgnoreAttackReactOption(Event& event)
+    : EventReactOption(ReactKind::IgnoreAttackReaction)
     , event(event)
 {
 }
