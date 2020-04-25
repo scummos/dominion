@@ -1,5 +1,7 @@
 #include "cost.h"
 
+#include <iostream>
+
 int PayResult::goldRemain() const
 {
     return m_goldRemain;
@@ -18,7 +20,7 @@ PayResult::operator bool() const
 PayResult Cost::canPay(Resources const& resources) const
 {
     PayResult ret;
-    ret.m_goldRemain = m_gold - resources.gold;
+    ret.m_goldRemain = resources.gold - m_gold;
     return ret;
 }
 

@@ -75,7 +75,14 @@ void Turn::buy(CardId id)
     if (m_internal.buys() <= 0) {
         throw InvalidCardUsage{"You have no buys."};
     }
+
+    auto const cost = m_internal.cardCost(id);
+    if (!cost.canPay({currentMoney()})) {
+        throw InvalidPlayError{"You don't have enough money to pay for this card."};
+    }
+
     m_internal.addBuys(-1);
+    m_internal.addMoney(-cost.gold());
 
     deck()->gainFromSupply(id);
 }
@@ -110,6 +117,11 @@ Deck* Turn::deck()
 int Turn::currentTotalCards() const
 {
     return m_internal.deck->totalCards();
+}
+
+int Turn::totalCards(CardId id) const
+{
+    return m_internal.deck->totalCards(id);
 }
 
 int Turn::leftInSupply(CardId id) const
@@ -230,7 +242,7 @@ Cost TurnInternal::cardCost(CardId id) const
     return adjCost;
 }
 
-void TurnInternal::attackEachEnemy(AttackReactOption::Ptr attack)
+void TurnInternal::attackEachEnemy(AttackReactOption::Factory attackFactory)
 {
     // This is slightly complicated. The card itself constructs the attack parameter,
     // which is actually a description of what options the attacked player has in *reaction*
@@ -239,8 +251,9 @@ void TurnInternal::attackEachEnemy(AttackReactOption::Ptr attack)
     // We then here wrap this attack into an event, and ask cards whether they can react to
     // an attack event. In response, they might produce a *different* kind of react option,
     // which e.g. enables the Actor to ignore the attack (Moat), or do something else before the attack.
-    auto event = AttackEvent(attack);
     for (auto* enemy: deck->enemies()) {
+        auto attack = attackFactory(enemy);
+        auto event = AttackEvent(attack);
         enemy->attacked(event);
     }
 }

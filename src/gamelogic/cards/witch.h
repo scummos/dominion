@@ -8,8 +8,10 @@ public:
     void playAction(TurnInternal* turn, CardOption* /*option*/) override {
         turn->draw(2);
 
-        auto opt = std::make_shared<GainAttackReactOption>(CardId::Curse, 1);
-        turn->attackEachEnemy(opt);
+        auto attack = [](Deck* enemy) {
+            return std::make_shared<GainAttackReactOption>(enemy, CardId::Curse, 1);
+        };
+        turn->attackEachEnemy(attack);
     }
 
     virtual BasicInfo basicInfo() const override {

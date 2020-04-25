@@ -139,6 +139,17 @@ void Deck::forEachCard(std::function<void(Card const*)> func) const
     });
 }
 
+int Deck::totalCards(CardId id) const
+{
+    int count = 0;
+    forEachCard([&count, id](Card const* c) {
+        if (c->basicInfo().id == id) {
+            count++;
+        }
+    });
+    return count;
+}
+
 int Deck::countScore() const
 {
     int score = 0;

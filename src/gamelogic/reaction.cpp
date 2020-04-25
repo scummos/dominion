@@ -1,5 +1,6 @@
 #include "reaction.h"
 #include "event.h"
+#include "deck.h"
 
 GainAttackReactOption::GainAttackReactOption(Deck* deck, CardId gain, int count)
     : AttackReactOption(ReactKind::NoChoiceAttack, deck)
@@ -14,6 +15,7 @@ void DiscardAttackReactOption::defaultAction()
 
 void GainAttackReactOption::defaultAction()
 {
+    m_deck->gainFromSupply(CardId::Curse);
 }
 
 int GainAttackReactOption::count() const

@@ -4,12 +4,14 @@
 #include "estate.h"
 #include "duchy.h"
 #include "province.h"
+#include "curse.h"
 
 #include "smithy.h"
 #include "festival.h"
 #include "chapel.h"
 #include "shepherd.h"
 #include "torturer.h"
-#include "curse.h"
+#include "witch.h"
+#include "mine.h"
 
 #include "cardid.h"

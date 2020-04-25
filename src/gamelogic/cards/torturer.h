@@ -47,8 +47,10 @@ public:
     void playAction(TurnInternal* turn, CardOption* /*option*/) override {
         turn->draw(3);
 
-        auto opt = std::make_shared<TorturerAttackReactOption>(turn->deck);
-        turn->attackEachEnemy(opt);
+        auto attack = [](Deck* deck) {
+            return std::make_shared<TorturerAttackReactOption>(deck);
+        };
+        turn->attackEachEnemy(attack);
     }
 
     virtual BasicInfo basicInfo() const override {

@@ -9,10 +9,19 @@ int main() {
     Logger::instance(games);
 
     std::vector<int> winners(2);
+    int draws = 0;
     for (int i = 0; i < games; i++) {
-        Game game({"shepherd", "bigmoney"});
-        game.run();
+        Game game({"buylist", "buylistBM"});
+        auto winner = game.run();
+        if (winner >= 0) {
+            winners[winner]++;
+        }
+        else {
+            draws++;
+        }
     }
+
+    std::cout << "Player 1 wins " << winners.at(0) << " out of " << games << " games, " << draws << " draws" << std::endl;
 
     auto writeData = [](auto const& d, std::string fn) {
         std::ofstream fd;

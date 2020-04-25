@@ -24,19 +24,6 @@ void defaultVillageDraw(Turn* turn, int wantActionsRemain = 0) {
     }
 }
 
-void defaultPlay(Turn* turn, ActiveCard& card) {
-    if (turn->currentActions() <= 0) {
-        return;
-    }
-
-    if (!(card.card->hints() & Card::Choice)) {
-        card.playAction();
-    }
-    else {
-        std::cerr << "Warning: cannot default-play card" << card.card->name() << std::endl;
-    }
-}
-
 Cards garbageCards(Cards const& hand) {
     Cards ret;
     for (auto const& card: hand) {
@@ -68,6 +55,37 @@ void playAllTreasures(Hand& hand) {
             hcard.playTreasure();
         }
     }
+}
+
+enum class CardSortOrder {
+    LeastExpensive,
+    MostExpensive
+};
+
+Card* worstTreasure(Hand& hand, CardSortOrder order = CardSortOrder::LeastExpensive) {
+    Card* worst = nullptr;
+    int cost = order == CardSortOrder::LeastExpensive ? 1000 : -1000;
+    for (auto& hcard: hand.cards) {
+        if (!hcard.card->hasType(Card::Treasure)) {
+            continue;
+        }
+
+        auto const thisCost = hcard.card->basicInfo().cost.gold();
+        if (order == CardSortOrder::LeastExpensive ? thisCost <= cost : thisCost >= cost) {
+            worst = hcard.card;
+            cost = thisCost;
+        }
+    }
+    return worst;
+}
+
+CardId upgradeTreasure(CardId id) {
+    switch (id) {
+        case CardId::Copper: return CardId::Silver;
+        case CardId::Silver: return CardId::Gold;
+        default: break;
+    }
+    return CardId::Invalid;
 }
 
 void defaultReact(EventReactOption& option) {

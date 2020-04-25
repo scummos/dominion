@@ -94,6 +94,7 @@ public:
 
     int countScore() const;
     int totalCards() const;
+    int totalCards(CardId id) const;
     int totalMoney() const;
     int playerIndex() const;
 

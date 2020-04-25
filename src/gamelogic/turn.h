@@ -64,7 +64,7 @@ struct TurnInternal {
     void trashFromHand(Card* card);
     void discardFromHand(Card* card);
     int countCardsInHand() const;
-    void attackEachEnemy(AttackReactOption::Ptr attack);
+    void attackEachEnemy(AttackReactOption::Factory attack);
 
 private:
     int m_actions = 1;
@@ -98,6 +98,7 @@ public:
     int currentBuys() const;
 
     int leftInSupply(CardId id) const;
+    int totalCards(CardId id) const;
     Cost cardCost(CardId id) const;
 
     int doFinalDraw();

@@ -44,6 +44,9 @@ static char const* cardName(CardId const id) {
         case CardId::Festival:  return "Festival";
         case CardId::Chapel:    return "Chapel";
         case CardId::Shepherd:  return "Shepherd";
+        case CardId::Witch:     return "Witch";
+        case CardId::Curse:     return "Curse";
+        case CardId::Mine:      return "Mine";
         default:                return "Unnamed card";
     }
 }

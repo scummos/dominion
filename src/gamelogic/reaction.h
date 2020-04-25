@@ -6,6 +6,7 @@
 #include <optional>
 #include <vector>
 #include <memory>
+#include <functional>
 
 class Deck;
 
@@ -53,6 +54,9 @@ using EventReactOptions = std::vector<EventReactOption::Ptr>;
 
 /// Base type for attacks. These represent the attack itself, as well as possible options for it.
 struct AttackReactOption : public EventReactOption {
+public:
+    using Factory = std::function<AttackReactOption::Ptr(Deck*)>;
+
 protected:
     AttackReactOption(ReactKind kind, Deck* deck) : EventReactOption(kind, deck) {};
 };

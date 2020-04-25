@@ -4,13 +4,14 @@
 #include "turn.h"
 #include "reaction.h"
 #include "actor_helpers.h"
+#include "defaultplay.h"
 #include "buylist.h"
 
 #include "cards.h"
 
 #include <iostream>
 
-#define info(x) x
+#define info(x)
 
 class BuylistActor: public Actor {
 public:
@@ -30,7 +31,7 @@ void BuylistActor::react(EventReactOptions& options)
 
 void BuylistActor::executeTurn(Turn* turn)
 {
-    info(std::cerr << "*** Turn" << turn->turnCount() << std::endl);
+    info(std::cerr << "*** Turn " << turn->turnCount() << std::endl);
 
     defaultVillageDraw(turn, 0);
 
