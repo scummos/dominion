@@ -54,6 +54,20 @@ private:
     int m_count;
 };
 
+class Buy2ndDelayedAfter : public Condition {
+public:
+    Buy2ndDelayedAfter(CardId id, CardId delayTo) : m_id(id), m_delayTo(delayTo) { }
+
+    bool fulfilled(Turn* turn) override {
+        auto count = turn->totalCards(m_id);
+        return count == 0 || (count == 1 && turn->totalCards(m_delayTo) >= 1);
+    }
+
+private:
+    CardId m_id;
+    CardId m_delayTo;
+};
+
 class LateGame : public Condition {
 public:
     LateGame() = default;

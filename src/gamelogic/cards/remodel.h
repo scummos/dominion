@@ -19,7 +19,7 @@ public:
         }
 
         turn->trashFromHand(option->trash);
-        turn->deck->gainFromSupply(turn->supply, option->gain);
+        turn->deck->gainFromSupply(option->gain);
     }
 
     virtual BasicInfo basicInfo() const override {

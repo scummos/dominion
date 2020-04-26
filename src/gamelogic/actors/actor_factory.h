@@ -34,16 +34,7 @@ inline std::unique_ptr<Actor> createActor(std::string const& which, Supply const
                 If<CardCountGreaterThan>(CardId::Gold, 0), {CardId::Province}
             },
             Buylist {{
-                {
-                    If<AnyOf>(
-                        If<CardCountLessThan>(CardId::Smithy, 1),
-                        If<AllOf>(
-                            If<CardCountLessThan>(CardId::Smithy, 2),
-                            If<CardCountGreaterThan>(CardId::Gold, 0)
-                        )
-                    ),
-                    CardId::Smithy
-                },
+                { If<Buy2ndDelayedAfter>(CardId::Smithy, CardId::Gold), CardId::Smithy },
                 {
                     If<AllOf>(
                         If<CardCountLessThan>(CardId::Moat, 1),
@@ -70,7 +61,7 @@ inline std::unique_ptr<Actor> createActor(std::string const& which, Supply const
             },
             Buylist {{
                 { If<CardCountGreaterThan>(CardId::Gold, 0), CardId::Province },
-                { If<CardCountLessThan>(CardId::Witch, 2), CardId::Witch},
+                { If<Buy2ndDelayedAfter>(CardId::Witch, CardId::Gold), CardId::Witch },
             }},
             Buylist {
                 bestMoney()

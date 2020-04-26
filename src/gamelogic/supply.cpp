@@ -22,6 +22,9 @@ Supply::Supply(int nplayers)
     createPile<Witch>(10);
     createPile<Mine>(10);
     createPile<Moat>(10);
+    createPile<Moneylender>(10);
+    createPile<Torturer>(10);
+    createPile<CouncilRoom>(10);
 }
 
 Supply::~Supply()
