@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstring>
+
 enum class CardId {
     Invalid,
     Copper,
@@ -30,6 +32,7 @@ enum class CardId {
     Moat,
     Torturer,
     Tunnel,
+    NumCards
 };
 
 static char const* cardName(CardId const id) {
@@ -49,5 +52,15 @@ static char const* cardName(CardId const id) {
         case CardId::Mine:      return "Mine";
         default:                return "Unnamed card";
     }
+}
+
+static CardId cardId(char const* name) {
+    for (int i = 0; i < static_cast<int>(CardId::NumCards); i++) {
+        auto const cid = static_cast<CardId>(i);
+        if (!strcmp(name, cardName(cid))) {
+            return cid;
+        }
+    }
+    return CardId::Invalid;
 }
 

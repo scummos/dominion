@@ -1,0 +1,17 @@
+buylist
+    list if not Less(Supply:Province, 3)
+    end
+    list if not AllOf(Less(Supply:Province, 3), Less(EmptyPiles, 2))
+        Province, Duchy, Estate
+    end
+    list
+        Province, Duchy
+    end
+    list
+        Province if Has(Gold, 1),
+        Witch if HasExact(Witch, 0),
+        Gold,
+        Witch if HasExact(Witch, 1),
+        Silver
+    end
+end

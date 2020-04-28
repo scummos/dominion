@@ -16,9 +16,13 @@ add_library(dominion STATIC
     src/gamelogic/logger.cpp
     src/gamelogic/event.cpp
     src/gamelogic/reaction.cpp
+    src/gamelogic/buylist/parser.cpp
+    src/gamelogic/buylist/buylist.tab.cpp
+    src/gamelogic/buylist/lex.yy.cpp
+    src/gamelogic/buylist/conditionfactory.cpp
 )
 
-target_include_directories(dominion PUBLIC src/ src/gamelogic/ src/gamelogic/cards/ src/gamelogic/actors/)
+target_include_directories(dominion PUBLIC src/ src/gamelogic/ src/gamelogic/cards/ src/gamelogic/actors/ src/gamelogic/buylist/)
 
 add_executable(main src/main.cpp)
 target_link_libraries(main dominion)

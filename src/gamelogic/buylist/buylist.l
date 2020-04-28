@@ -1,6 +1,6 @@
 %{
-  #include "buylist.tab.h"
-  #define YY_DECL extern "C" int yylex()
+#include "buylist.tab.hpp"
+#define YY_DECL extern "C" int yylex()
 %}
 %option noyywrap
 %option nodefault

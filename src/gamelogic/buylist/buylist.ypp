@@ -1,0 +1,160 @@
+%code requires {
+  #include <vector>
+  #include "buylist.h"
+  #include "conditionfactory.h"
+}
+
+%{
+    #define YYERROR_VERBOSE
+    #include <cstdio>
+    #include <iostream>
+    #include "buylist.h"
+    using namespace std;
+
+    // stuff from flex that bison needs to know about:
+    extern "C" {
+        extern int yylex();
+        extern int yyparse(BuylistCollection& ret);
+        extern int yylineno;
+        extern FILE *yyin;
+
+        void yyerror(BuylistCollection&, const char *s);
+    }
+
+    extern int parse_buylist(char const* fn, BuylistCollection& ret);
+%}
+
+%locations
+
+%parse-param { BuylistCollection& ret }
+
+%language "c++"
+%define api.value.type variant
+
+// define the constant-string tokens:
+%token BUYLIST LIST END COMMENT LPAREN RPAREN NOT IF COMMA
+
+%token <int> INT
+%token <char*> STRING
+
+%nterm <std::vector<Buylist>> lists
+%nterm <Buylist> list
+%nterm <std::vector<BuyAction>> list_entries
+%nterm <BuyAction> list_entry
+
+%nterm <Condition::Ptr> condition
+%nterm <std::vector<std::any>> func_arglist
+%nterm <Condition::Ptr> condition_expr
+%nterm <char*> card_name
+
+%%
+
+buylist:
+  buylist_section {
+      cout << "done" << endl;
+    }
+  ;
+buylist_section:
+  BUYLIST lists END {
+      ret = BuylistCollection({$2});
+    }
+  ;
+lists:
+  lists list {
+      $$->push_back($2[0]);
+    }
+  | list {
+      $$ = std::vector<Buylist>{$1};
+    }
+  ;
+list:
+  LIST list_entries END {
+      $$ = new Buylist($2);
+    }
+  | LIST condition list_entries END {
+      $$ = new Buylist($2, $3);
+    }
+  ;
+list_entries:
+  list_entries list_separator list_entry {
+      $$->push_back($3[0]);
+    }
+  | list_entry {
+      $$ = {$1};
+    }
+  | %empty {
+      $$ = {};
+    }
+  ;
+list_separator:
+  ',' | '\n'
+  ;
+list_entry:
+  card_name {
+      $$ = new BuyAction(cardId($1));
+    }
+  | card_name condition {
+      $$ = new BuyAction($2, cardId($1));
+    }
+  ;
+card_name:
+  STRING {
+    cout << "card name:" << $1 << std::endl;
+    $$ = $1;
+  }
+  ;
+condition:
+  IF condition_expr {
+      $$ = $2;
+    }
+  | IF NOT condition_expr {
+      $$ = createCondition("Negate", {$3});
+    }
+  ;
+condition_expr:
+  STRING '(' func_arglist ')' {
+        $$ = createCondition;
+    }
+  ;
+func_arglist:
+  expr ',' func_arglist
+  | expr
+  ;
+expr:
+  constant
+  | condition_expr
+  ;
+constant:
+  INT
+  | cardname
+  | cardname_query
+  ;
+cardname:
+  STRING
+  ;
+cardname_query:
+  STRING ':' cardname
+%%
+
+int parse_buylist(char const* fn, BuylistCollection& ret) {
+  // open a file handle to a particular file:
+  FILE *myfile = fopen(fn, "r");
+  // make sure it's valid:
+  if (!myfile) {
+    cout << "error opening file" << endl;
+    return -1;
+  }
+  // Set flex to read from it instead of defaulting to STDIN:
+  yyin = myfile;
+
+  // Parse through the input:
+  int ok = yyparse(ret);
+  fclose(myfile);
+  return ok;
+}
+
+void yyerror(BuylistCollection&, const char *s) {
+  cout << "Parse error in line " << yylineno << ": " << s << endl;
+  exit(-1);
+}
+

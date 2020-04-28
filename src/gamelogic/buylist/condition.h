@@ -18,6 +18,7 @@ public:
 class Negate : public Condition {
 public:
     Negate(Condition::Ptr cond) : m_cond(cond) {}
+    static auto create(Condition::Ptr cond) { return std::make_shared<Negate>(cond); }
 
     bool fulfilled(Turn* turn) override {
         return m_cond && !m_cond->fulfilled(turn);
@@ -33,6 +34,9 @@ public:
     AllOf(Args... conds) {
         m_conds = {conds...};
     }
+
+    template<typename... Args>
+    static auto create(Args... conds) { return std::make_shared<AllOf>(conds...); }
 
     bool fulfilled(Turn* turn) override {
         return std::all_of(m_conds.begin(), m_conds.end(), [turn](Condition::Ptr p) {
@@ -50,6 +54,8 @@ public:
     AnyOf(Args... conds) {
         m_conds = {conds...};
     }
+    template<typename... Args>
+    static auto create(Args... conds) { return std::make_shared<AnyOf>(conds...); }
 
     bool fulfilled(Turn* turn) override {
         return std::any_of(m_conds.begin(), m_conds.end(), [turn](Condition::Ptr p) {

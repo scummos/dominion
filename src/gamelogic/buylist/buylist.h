@@ -18,6 +18,7 @@ struct Buylist {
     Condition::Ptr precondition;
     std::vector<BuyAction> actions;
 
+    Buylist() = default;
     Buylist(std::vector<BuyAction> actions) : actions(actions) {};
     Buylist(Condition::Ptr precondition, std::vector<BuyAction> actions) : precondition(precondition), actions(actions) {};
 

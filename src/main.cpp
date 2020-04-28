@@ -1,10 +1,14 @@
 #include "game.h"
 #include "logger.h"
 
+#include "buylist/parser.h"
+
 #include <iostream>
 #include <fstream>
 
 int main() {
+    parseBuylist("../src/gamelogic/buylist/test2.buylist");
+
     int const games = 10000;
     Logger::instance(games);
 
