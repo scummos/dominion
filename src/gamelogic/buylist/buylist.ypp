@@ -12,8 +12,6 @@
     #include "buylist.tab.hpp"
     using namespace std;
 
-    // stuff from flex that bison needs to know about:
-//     extern int yyparse(BuylistCollection& ret);
     extern int yylex(yy::parser::semantic_type*, yy::parser::location_type*);
     extern "C" {
         extern FILE *yyin;
