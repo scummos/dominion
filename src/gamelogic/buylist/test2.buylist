@@ -1,10 +1,8 @@
 buylist
-    list if not SupplyHasLess(Province, 3)
-    end
-    list if not AllOf(SupplyHasLess(Province, 3), SupplyEmptyPilesLess(2))
+    list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
         Province, Duchy, Estate
     end
-    list
+    list if SupplyHasLess(Province, 4)
         Province, Duchy
     end
     list

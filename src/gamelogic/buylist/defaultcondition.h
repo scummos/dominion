@@ -45,12 +45,14 @@ private:
     int m_count;
 };
 
+#include <iostream>
 class SupplyHasLess : public Condition {
 public:
-    SupplyHasLess(CardId id, int count) : m_id(id), m_count(count) {}
+    SupplyHasLess(CardId id, int count) : m_id(id), m_count(count) { }
     static auto create(CardId id, int count) { return std::make_shared<SupplyHasLess>(id, count); }
 
     bool fulfilled(Turn* turn) override {
+//         std::cout << "check supply has less: " << turn->leftInSupply(m_id) << " < " << m_count << std::endl;
         return turn->leftInSupply(m_id) < m_count;
     }
 
@@ -59,13 +61,13 @@ private:
     int m_count;
 };
 
-class SupplyEmptyPilesLess : public Condition {
+class SupplyEmptyPilesGreater : public Condition {
 public:
-    SupplyEmptyPilesLess(int count) : m_count(count) {}
-    static auto create(int count) { return std::make_shared<SupplyEmptyPilesLess>(count); }
+    SupplyEmptyPilesGreater(int count) : m_count(count) {}
+    static auto create(int count) { return std::make_shared<SupplyEmptyPilesGreater>(count); }
 
     bool fulfilled(Turn* turn) override {
-        return turn->emptySupplyPiles() < m_count;
+        return turn->emptySupplyPiles() > m_count;
     }
 
 private:

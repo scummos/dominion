@@ -60,7 +60,8 @@ buylist_section:
   ;
 lists:
   lists list {
-      $$.push_back($2);
+      $1.push_back($2);
+      $$ = $1;
     }
   | list {
       $$ = std::vector<Buylist>{$1};

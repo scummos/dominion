@@ -101,10 +101,12 @@ Condition::Ptr createCondition(std::string const& condition, const VariantList& 
         return construct_condition<HasExact>(args);
     if (condition == "SupplyHasLess")
         return construct_condition<SupplyHasLess>(args);
-    if (condition == "SupplyEmptyPilesLess")
-        return construct_condition<SupplyEmptyPilesLess>(args);
+    if (condition == "SupplyEmptyPilesGreater")
+        return construct_condition<SupplyEmptyPilesGreater>(args);
     if (condition == "AllOf")
         return construct_condition_nargs<AllOf, Condition::Ptr>(args);
+    if (condition == "AnyOf")
+        return construct_condition_nargs<AnyOf, Condition::Ptr>(args);
 
     throw InvalidConditionError{"No such condition: " + condition};
 }
