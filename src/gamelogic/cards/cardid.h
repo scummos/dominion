@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstring>
+#include <string>
 
 enum class CardId {
     Invalid,
@@ -54,10 +54,10 @@ static char const* cardName(CardId const id) {
     }
 }
 
-static CardId cardId(char const* name) {
+static CardId cardId(std::string name) {
     for (int i = 0; i < static_cast<int>(CardId::NumCards); i++) {
         auto const cid = static_cast<CardId>(i);
-        if (!strcmp(name, cardName(cid))) {
+        if (name == cardName(cid)) {
             return cid;
         }
     }

@@ -28,11 +28,12 @@ end            { return token::END; }
 not            { return token::NOT; }
 if             { return token::IF; }
 [0-9]+         {
-  yylval->build<int>(atoi(yytext));
+  yylval->emplace<int>(atoi(yytext));
   return token::INT;
 }
 [a-zA-Z0-9]+   {
-  yylval->build<std::string>(yytext);
+  std::cerr << "parsed string: " << yytext << std::endl;
+  yylval->emplace<std::string>(yytext);
   return token::STRING;
 }
 .              { return yytext[0]; }

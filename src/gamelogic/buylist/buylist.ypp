@@ -23,15 +23,16 @@
 %locations
 
 %parse-param { BuylistCollection& ret }
+%define parse.trace
 
 %language "c++"
 %define api.value.type variant
 
 // define the constant-string tokens:
-%token BUYLIST LIST END COMMENT LPAREN RPAREN NOT IF COMMA
+%token BUYLIST LIST END COMMENT LPAREN RPAREN NOT IF NEWLINE
 
 %token <int> INT
-%token <char*> STRING
+%token <std::string> STRING
 
 %nterm <std::vector<Buylist>> lists
 %nterm <Buylist> list
@@ -42,7 +43,6 @@
 %nterm <std::vector<std::any>> func_arglist
 %nterm <Condition::Ptr> condition_expr
 %nterm <CardId> card_name
-%nterm <CardId> card_query
 %nterm <std::any> expr
 %nterm <std::any> constant
 
@@ -86,7 +86,7 @@ list_entries:
     }
   ;
 list_separator:
-  ',' | '\n'
+  ',' | NEWLINE
   ;
 list_entry:
   card_name {
@@ -106,7 +106,13 @@ condition:
   ;
 condition_expr:
   STRING '(' func_arglist ')' {
-      $$ = createCondition($1, $3);
+      try {
+        std::cout << "condition: " << $1 << std::endl;
+        $$ = createCondition($1, $3);
+      }
+      catch (InvalidConditionError e) {
+        throw parser::syntax_error(yylhs.location, e.error);
+      }
     }
   ;
 func_arglist:
@@ -132,20 +138,11 @@ constant:
   | card_name {
       $$ = std::any($1);
     }
-  | card_query {
-      $$ = std::any($1);
-    }
   ;
 card_name:
   STRING {
       $$ = cardId($1);
     }
-  ;
-card_query:
-  STRING ':' card_name {
-    // FIXME
-    $$ = $3;
-  }
   ;
 %%
 
@@ -162,6 +159,7 @@ int parse_buylist(char const* fn, BuylistCollection& ret) {
 
   // Parse through the input:
   yy::parser p(ret);
+  p.set_debug_level(1);
   int ok = p.parse();
   fclose(myfile);
   return ok;

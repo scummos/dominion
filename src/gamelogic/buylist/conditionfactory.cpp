@@ -65,11 +65,11 @@ Condition::Ptr __construct_condition_nargs_tuple(const VariantList& argValues, s
     return __construct_condition<T, Args...>(&T::create, argValues);
 }
 
-template<typename T, typename ArgType, int N = 20>
+template<typename T, typename ArgType, int N = 10>
 Condition::Ptr construct_condition_nargs(const VariantList& argValues)
 {
     if constexpr (N < 0) {
-        throw OverflowError{"Maximum number of arguments (20) exceeded"};
+        throw OverflowError{"Maximum number of arguments (10) exceeded"};
     }
     else {
         if (argValues.size() == N) {
@@ -90,6 +90,6 @@ Condition::Ptr createCondition(std::string const& condition, const VariantList& 
     if (condition == "AllOf")
         return construct_condition_nargs<AllOf, Condition::Ptr>(args);
 
-    return Condition::None();
+    throw InvalidConditionError{"No such condition: " + condition};
 }
 

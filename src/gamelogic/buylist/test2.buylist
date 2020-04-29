@@ -1,7 +1,7 @@
 buylist
-    list if not Less(Supply:Province, 3)
+    list if not SupplyHasLess(Province, 3)
     end
-    list if not AllOf(Less(Supply:Province, 3), Less(EmptyPiles, 2))
+    list if not AllOf(SupplyHasLess(Province, 3), SupplyEmptyPilesLess(2))
         Province, Duchy, Estate
     end
     list
