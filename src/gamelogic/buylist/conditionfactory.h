@@ -11,4 +11,4 @@ struct OverflowError {
 
 using VariantList = std::vector<std::any>;
 
-Condition::Ptr createCondition(char const* condition, VariantList const& args);
+Condition::Ptr createCondition(std::string const& condition, VariantList const& args);

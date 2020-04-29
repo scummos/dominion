@@ -8,8 +8,9 @@ struct BuyAction {
     //  - can actually pay for the card and
     //  - pile of card is not empty.
     Condition::Ptr condition;
-    CardId card;
+    CardId card = CardId::Invalid;
 
+    BuyAction() = default;
     BuyAction(CardId card) : card(card) { }
     BuyAction(Condition::Ptr condition, CardId card) : condition(condition), card(card) { }
 };

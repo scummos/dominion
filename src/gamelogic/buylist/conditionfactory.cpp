@@ -81,7 +81,7 @@ Condition::Ptr construct_condition_nargs(const VariantList& argValues)
 
 }
 
-Condition::Ptr createCondition(std::string condition, const VariantList& args)
+Condition::Ptr createCondition(std::string const& condition, const VariantList& args)
 {
     if (condition == "Negate")
         return construct_condition<Negate>(args);
