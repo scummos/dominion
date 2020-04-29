@@ -76,7 +76,8 @@ list:
   ;
 list_entries:
   list_entries list_separator list_entry {
-      $$.push_back($3);
+      $1.push_back($3);
+      $$ = $1;
     }
   | list_entry {
       $$ = {$1};
@@ -107,7 +108,6 @@ condition:
 condition_expr:
   STRING '(' func_arglist ')' {
       try {
-        std::cout << "condition: " << $1 << std::endl;
         $$ = createCondition($1, $3);
       }
       catch (InvalidConditionError e) {
@@ -116,11 +116,12 @@ condition_expr:
     }
   ;
 func_arglist:
-  expr ',' func_arglist {
-      $$.insert($$.begin(), $1);
+  expr {
+      $$ = std::vector<std::any>{$1};
     }
-  | expr {
-      $$ = {$1};
+  | func_arglist ',' expr {
+      $1.push_back($3);
+      $$ = $1;
     }
   ;
 expr:

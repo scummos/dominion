@@ -98,6 +98,7 @@ public:
     int currentBuys() const;
 
     int leftInSupply(CardId id) const;
+    int emptySupplyPiles() const;
     int totalCards(CardId id) const;
     Cost cardCost(CardId id) const;
 

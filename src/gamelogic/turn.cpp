@@ -129,6 +129,11 @@ int Turn::leftInSupply(CardId id) const
     return m_internal.supply->pile(id).count();
 }
 
+int Turn::emptySupplyPiles() const
+{
+    return m_internal.supply->countEmptyPiles();
+}
+
 int Turn::currentActions() const
 {
     return m_internal.actions();

@@ -7,9 +7,7 @@
 #include <fstream>
 
 int main() {
-    parseBuylist("../src/gamelogic/buylist/test2.buylist");
-
-    int const games = 10000;
+    int const games = 1000;
     Logger::instance(games);
 
     std::vector<int> winners(2);

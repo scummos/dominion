@@ -6,6 +6,9 @@ template<typename First>
 std::tuple<First> listToTuple(VariantList& list)
 {
     static_assert(!std::is_reference<First>::value, "function must not be given a reference type");
+    if (list.empty()) {
+        throw InvalidConditionError{"Not enough arguments to condition"};
+    }
     auto first = list.front();
     list.erase(list.begin());
     auto arg = std::any_cast<typename std::decay<First>::type>(first);
@@ -37,6 +40,9 @@ template<typename T, typename... Args>
 Condition::Ptr __construct_condition(std::shared_ptr<T> (*)(Args...), const VariantList& argValues)
 {
     auto constexpr N = sizeof...(Args);
+    if (N != argValues.size()) {
+        throw InvalidConditionError{"Too many arguments to condition"};
+    }
     using IndexSeq = std::make_index_sequence<N>;
 
     auto argsCopy = argValues;
@@ -65,11 +71,11 @@ Condition::Ptr __construct_condition_nargs_tuple(const VariantList& argValues, s
     return __construct_condition<T, Args...>(&T::create, argValues);
 }
 
-template<typename T, typename ArgType, int N = 10>
+template<typename T, typename ArgType, int N = 8>
 Condition::Ptr construct_condition_nargs(const VariantList& argValues)
 {
     if constexpr (N < 0) {
-        throw OverflowError{"Maximum number of arguments (10) exceeded"};
+        throw InvalidConditionError{"Maximum number of arguments (8) exceeded"};
     }
     else {
         if (argValues.size() == N) {
@@ -83,10 +89,20 @@ Condition::Ptr construct_condition_nargs(const VariantList& argValues)
 
 Condition::Ptr createCondition(std::string const& condition, const VariantList& args)
 {
+    std::cout << "constructing " << condition << " with " << args.size() << " args" << std::endl;
+
     if (condition == "Negate")
         return construct_condition<Negate>(args);
     if (condition == "HasMoney")
         return construct_condition<HasMoney>(args);
+    if (condition == "Has")
+        return construct_condition<Has>(args);
+    if (condition == "HasExact")
+        return construct_condition<HasExact>(args);
+    if (condition == "SupplyHasLess")
+        return construct_condition<SupplyHasLess>(args);
+    if (condition == "SupplyEmptyPilesLess")
+        return construct_condition<SupplyEmptyPilesLess>(args);
     if (condition == "AllOf")
         return construct_condition_nargs<AllOf, Condition::Ptr>(args);
 

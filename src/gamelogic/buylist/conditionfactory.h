@@ -5,10 +5,6 @@
 
 #include <any>
 
-struct OverflowError {
-    std::string error;
-};
-
 struct InvalidConditionError {
     std::string error;
 };
