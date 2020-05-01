@@ -167,8 +167,8 @@ void Turn::playTreasure(Card* card, CardOption* option)
     }
     m_internal.phase = TurnPhase::PlayTreasures;
 
-    card->playTreasure(&m_internal, option);
     deck()->moveCard(card, Areas::Hand, Areas::InPlay);
+    card->playTreasure(&m_internal, option);
 }
 
 void Turn::endTurn()
@@ -240,7 +240,7 @@ Cost TurnInternal::cardCost(CardId id) const
 {
     auto& pile = supply->pile(id);
     if (pile.empty()) {
-        return {0}; // cannot gain this anyways
+        return {-1}; // cannot gain this anyways
     }
     auto cost = pile.topCard()->basicInfo().cost;
     auto adjCost = Cost(cost.gold() - m_discount);

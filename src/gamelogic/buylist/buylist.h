@@ -3,6 +3,8 @@
 #include "condition.h"
 #include "cardid.h"
 
+#define info(x)
+
 struct BuyAction {
     // This condition must be fulfilled in addition to
     //  - can actually pay for the card and
@@ -51,7 +53,7 @@ struct BuylistCollection {
 
             CardId choice = list.select(turn);
             while (turn->currentBuys() > 0 && choice != CardId::Invalid) {
-//                 std::cerr << "buy: " << cardName(choice) << std::endl;
+                info(std::cerr << "buy: " << cardName(choice) << std::endl);
                 turn->buy(choice);
                 choice = list.select(turn);
             }

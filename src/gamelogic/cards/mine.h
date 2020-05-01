@@ -41,8 +41,10 @@ public:
         turn->deck->gainFromSupply(option->gain, Areas::Hand);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Mine() {
+        m_info = {
             CardId::Mine,
             Card::Action,
             Choice,

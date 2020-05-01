@@ -89,9 +89,7 @@ Condition::Ptr construct_condition_nargs(const VariantList& argValues)
 
 Condition::Ptr createCondition(std::string const& condition, const VariantList& args)
 {
-    std::cout << "constructing " << condition << " with " << args.size() << " args" << std::endl;
-
-    if (condition == "Negate")
+    if (condition == "Not")
         return construct_condition<Negate>(args);
     if (condition == "HasMoney")
         return construct_condition<HasMoney>(args);

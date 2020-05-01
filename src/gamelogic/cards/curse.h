@@ -4,16 +4,18 @@
 
 class Curse : public Card {
 public:
-    virtual BasicInfo basicInfo() const override {
-        return {
+    int victoryPoints() const override {
+        return -1;
+    }
+
+protected:
+    friend class Supply;
+    Curse() {
+        m_info = {
             CardId::Curse,
             Card::NoType,
             NoHints,
             Cost{0}
         };
-    }
-
-    int victoryPoints() const override {
-        return -1;
     }
 };

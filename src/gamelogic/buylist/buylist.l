@@ -32,7 +32,6 @@ if             { return token::IF; }
   return token::INT;
 }
 [a-zA-Z0-9]+   {
-  std::cerr << "parsed string: " << yytext << std::endl;
   yylval->emplace<std::string>(yytext);
   return token::STRING;
 }

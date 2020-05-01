@@ -19,8 +19,10 @@ public:
         }
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Chapel() {
+        m_info = {
             CardId::Chapel,
             Card::Action,
             Choice | Trasher,

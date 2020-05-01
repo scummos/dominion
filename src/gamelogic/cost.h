@@ -18,12 +18,14 @@ struct Resources {
 
 class Cost {
 public:
+    Cost() = default;
     Cost(int gold);
 
     PayResult canPay(Resources const& resources) const;
     int gold() const { return m_gold; }
     bool hasAdvancedCost() const { return false; }
+    bool valid() const { return m_gold >= 0; }
 
 public: // FIXME
-    int m_gold;
+    int m_gold = 0;
 };

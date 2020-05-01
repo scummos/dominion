@@ -22,6 +22,11 @@ Supply::Supply(int nplayers)
     createPile<Witch>(10);
     createPile<Mine>(10);
     createPile<Moat>(10);
+    createPile<Moneylender>(10);
+    createPile<Torturer>(10);
+    createPile<Mandarin>(10);
+    createPile<FoolsGold>(10);
+    createPile<Rebuild>(10);
 }
 
 Supply::~Supply()
@@ -29,6 +34,7 @@ Supply::~Supply()
     for (auto& pile: m_piles) {
         std::for_each(pile.cards().begin(), pile.cards().end(), [](Card* c) { delete c; });
     }
+    std::for_each(m_trashPile.cards().begin(), m_trashPile.cards().end(), [](Card* c) { delete c; });
 }
 
 int Supply::countEmptyPiles() const {

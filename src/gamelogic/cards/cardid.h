@@ -32,6 +32,9 @@ enum class CardId {
     Moat,
     Torturer,
     Tunnel,
+    Mandarin,
+    FoolsGold,
+    Rebuild,
     NumCards
 };
 
@@ -50,6 +53,11 @@ static char const* cardName(CardId const id) {
         case CardId::Witch:     return "Witch";
         case CardId::Curse:     return "Curse";
         case CardId::Mine:      return "Mine";
+        case CardId::Moneylender: return "Moneylender";
+        case CardId::Torturer:  return "Torturer";
+        case CardId::Mandarin:  return "Mandarin";
+        case CardId::FoolsGold: return "FoolsGold";
+        case CardId::Rebuild:   return "Rebuild";
         default:                return "Unnamed card";
     }
 }

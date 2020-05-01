@@ -1,5 +1,10 @@
 #include "card.h"
 
+Card::BasicInfo const& Card::basicInfo() const
+{
+    return m_info;
+}
+
 bool Card::hasType(const Card::Type& type) const
 {
     return basicInfo().types & type;
@@ -45,7 +50,7 @@ CardTraits Card::traits() const
     return {};
 }
 
-std::shared_ptr<EventReactOption> Card::reactToEvent(Event& event) const
+std::shared_ptr<EventReactOption> Card::reactToEvent(Event&, Deck*) const
 {
     return {};
 }

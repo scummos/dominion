@@ -49,9 +49,7 @@
 %%
 
 buylist:
-  buylist_section {
-      cout << "done" << endl;
-    }
+  buylist_section { }
   ;
 buylist_section:
   BUYLIST lists END {
@@ -103,7 +101,7 @@ condition:
       $$ = $2;
     }
   | IF NOT condition_expr {
-      $$ = createCondition("Negate", {$3});
+      $$ = createCondition("Not", {$3});
     }
   ;
 condition_expr:
@@ -149,19 +147,15 @@ card_name:
 %%
 
 int parse_buylist(char const* fn, BuylistCollection& ret) {
-  // open a file handle to a particular file:
   FILE *myfile = fopen(fn, "r");
-  // make sure it's valid:
   if (!myfile) {
     cout << "error opening file" << endl;
     return -1;
   }
-  // Set flex to read from it instead of defaulting to STDIN:
   yyin = myfile;
 
-  // Parse through the input:
   yy::parser p(ret);
-  p.set_debug_level(1);
+//   p.set_debug_level(1);
   int ok = p.parse();
   fclose(myfile);
   return ok;

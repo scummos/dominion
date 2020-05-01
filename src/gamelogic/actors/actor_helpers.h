@@ -38,6 +38,30 @@ Cards garbageCards(Cards const& hand) {
     return ret;
 }
 
+int usefulness(Card* card) {
+    switch (card->basicInfo().id) {
+        case CardId::Curse:
+            return -2;
+
+        case CardId::Province:
+        case CardId::Duchy:
+        case CardId::Estate:
+            return -1;
+
+        default: return card->cost().gold();
+    }
+}
+
+Card* leastUsefulCardInHand(Hand const& hand, Card* exclude) {
+    if (hand.cards.empty()) {
+        return nullptr;
+    }
+    auto worst = std::min_element(hand.cards.begin(), hand.cards.end(), [exclude](ActiveCard const& c1, ActiveCard const& c2) {
+        return c1.card == exclude ? false : c2.card == exclude ? true : usefulness(c1.card) < usefulness(c2.card);
+    })->card;
+    return worst == exclude ? nullptr : worst;
+}
+
 int plainTreasureInHand(Hand const& hand) {
     int ret = 0;
     for (auto const& hcard: hand.cards) {

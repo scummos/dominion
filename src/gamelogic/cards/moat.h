@@ -12,15 +12,17 @@ public:
         turn->draw(2);
     }
 
-    EventReactOption::Ptr reactToEvent(Event& event) const override {
+    EventReactOption::Ptr reactToEvent(Event& event, Deck*) const override {
         if (event.kind != EventKind::Attack) {
             return {};
         }
         return std::make_shared<IgnoreAttackReactOption>(event);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Moat() {
+        m_info = {
             CardId::Moat,
             Card::Action,
             TerminalDraw,

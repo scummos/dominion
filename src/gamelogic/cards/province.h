@@ -5,17 +5,19 @@
 template<int COST, int VP, CardId ID>
 class PlainVictory : public Card {
 public:
-    virtual BasicInfo basicInfo() const override {
-        return {
+    int victoryPoints() const override {
+        return VP;
+    }
+
+protected:
+    friend class Supply;
+    PlainVictory() {
+        m_info = {
             ID,
             Card::Victory,
             NoHints,
             Cost{COST}
         };
-    }
-
-    int victoryPoints() const override {
-        return VP;
     }
 };
 

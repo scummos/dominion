@@ -25,8 +25,10 @@ public:
         turn->addActions(1);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+friend class Supply;
+    Shepherd() {
+        m_info = {
             CardId::Shepherd,
             Card::Action,
             Choice,

@@ -121,8 +121,6 @@ struct ActiveCard {
     Turn* turn;
     Card* card;
 
-    bool inHand;
-
     void playAction(CardOption* option = nullptr) {
         turn->playAction(card, option);
     }

@@ -17,8 +17,10 @@ public:
         turn->deck->gainFromSupply(turn->supply, option->gain);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Workshop() {
+        m_info = {
             CardId::Workshop,
             Card::Action,
             Choice,

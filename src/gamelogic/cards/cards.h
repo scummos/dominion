@@ -14,5 +14,9 @@
 #include "witch.h"
 #include "mine.h"
 #include "moat.h"
+#include "moneylender.h"
+#include "mandarin.h"
+#include "foolsgold.h"
+#include "rebuild.h"
 
 #include "cardid.h"

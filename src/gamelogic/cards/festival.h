@@ -10,11 +10,13 @@ public:
         turn->addBuys(1);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Festival() {
+        m_info = {
             CardId::Festival,
             Card::Action,
-            VirtualMoney,
+            Chain | VirtualMoney,
             Cost{5}
         };
     }

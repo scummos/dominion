@@ -6,10 +6,10 @@ buylist
         Province, Duchy
     end
     list
-        Province if Has(Gold, 1),
-        Witch if HasExact(Witch, 0),
-        Gold,
-        Witch if HasExact(Witch, 1),
-        Silver
+        Province,
+        Rebuild if not Has(Rebuild, 2),
+        Silver if not Has(Rebuild, 2),
+        Duchy,
+        Estate
     end
 end

@@ -5,14 +5,6 @@
 template<int COST, int VALUE, CardId ID>
 class PlainTreasure : public Card {
 public:
-    virtual BasicInfo basicInfo() const override {
-        return {
-            ID,
-            Card::Treasure,
-            NoHints,
-            Cost{COST}
-        };
-    }
 
     virtual CardTraits traits() const override {
         return CardTraits{
@@ -22,6 +14,17 @@ public:
 
     void playTreasure(TurnInternal* turn, CardOption* /*option*/) override {
         turn->addMoney(VALUE);
+    }
+
+protected:
+    friend class Supply;
+    PlainTreasure() {
+        m_info = {
+            ID,
+            Card::Treasure,
+            NoHints,
+            Cost{COST}
+        };
     }
 };
 
