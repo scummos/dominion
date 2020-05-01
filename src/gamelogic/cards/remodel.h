@@ -22,8 +22,10 @@ public:
         turn->deck->gainFromSupply(option->gain);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Remodel() {
+        m_info = {
             CardId::Remodel,
             Card::Action,
             Choice,

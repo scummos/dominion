@@ -36,9 +36,19 @@ void BuylistActor::executeTurn(Turn* turn)
     defaultVillageDraw(turn, 0);
 
     auto hand = turn->currentHand();
-    for (auto& card: hand.cards) {
-        info(std::cerr << "  Card " << card.card->name() << std::endl);
-        defaultPlay(turn, card);
+    auto didPlaySometing = true;
+    while (didPlaySometing) {
+        didPlaySometing = false;
+        info(std::cerr << " --- " << std::endl);
+        for (auto& card: hand.cards) {
+            info(std::cerr << "  Card " << card.card->name() << std::endl);
+            didPlaySometing = defaultPlay(turn, card);
+            if (didPlaySometing) {
+                // Might be that our hand changed
+                break;
+            }
+        }
+        hand = turn->currentHand();
     }
 
     hand = turn->currentHand();

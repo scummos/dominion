@@ -18,8 +18,10 @@ public:
         turn->draw(option->discard.size());
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Cellar() {
+        m_info = {
             CardId::Cellar,
             Card::Action,
             Choice | Chain | Draw,

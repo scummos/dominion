@@ -12,8 +12,10 @@ public:
         turn->draw(mayDraw);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Library() {
+        m_info = {
             CardId::Library,
             Card::Action,
             TerminalDraw,

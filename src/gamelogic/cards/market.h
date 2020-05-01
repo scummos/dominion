@@ -11,8 +11,10 @@ public:
         turn->draw(1);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Market() {
+        m_info = {
             CardId::Market,
             Card::Action,
             VirtualMoney | Draw | Chain | Cantrip | PlusBuy,

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 enum class CardId {
     Invalid,
     Copper,
@@ -30,6 +32,10 @@ enum class CardId {
     Moat,
     Torturer,
     Tunnel,
+    Mandarin,
+    FoolsGold,
+    Rebuild,
+    NumCards
 };
 
 static char const* cardName(CardId const id) {
@@ -49,7 +55,21 @@ static char const* cardName(CardId const id) {
         case CardId::Mine:      return "Mine";
         case CardId::Torturer:  return "Torturer";
         case CardId::Moat:      return "Moat";
+        case CardId::Moneylender: return "Moneylender";
+        case CardId::Mandarin:  return "Mandarin";
+        case CardId::FoolsGold: return "FoolsGold";
+        case CardId::Rebuild:   return "Rebuild";
         default:                return "Unnamed card";
     }
+}
+
+static CardId cardId(std::string name) {
+    for (int i = 0; i < static_cast<int>(CardId::NumCards); i++) {
+        auto const cid = static_cast<CardId>(i);
+        if (name == cardName(cid)) {
+            return cid;
+        }
+    }
+    return CardId::Invalid;
 }
 

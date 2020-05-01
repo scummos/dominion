@@ -34,8 +34,10 @@ public:
         turn->deck->moveCard(option->card, Areas::Hand, Areas::InPlay);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    ThroneRoom() {
+        m_info = {
             CardId::ThroneRoom,
             Card::Action,
             Choice,

@@ -1,0 +1,15 @@
+buylist
+    list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
+        Province, Duchy, Estate
+    end
+    list if SupplyHasLess(Province, 4)
+        Province, Duchy
+    end
+    list
+        Province,
+        Rebuild if not Has(Rebuild, 2),
+        Silver if not Has(Rebuild, 2),
+        Duchy,
+        Estate
+    end
+end

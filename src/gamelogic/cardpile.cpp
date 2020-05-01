@@ -48,6 +48,11 @@ int CardPile::count() const
     return m_cards.size();
 }
 
+int CardPile::count(CardId id) const
+{
+    return std::count_if(m_cards.begin(), m_cards.end(), [id](Card* c) { return c->basicInfo().id == id; });
+}
+
 Cards& CardPile::cards()
 {
     return m_cards;

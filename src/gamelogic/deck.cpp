@@ -107,6 +107,12 @@ bool Deck::gainFromSupply(const CardId id, Areas targetArea)
 
     auto event = YouGainACardEvent(pile.topCard());
     auto opts = queryCardsForReactions(event);
+
+    // the gained card can also react
+    auto gainedReact = event.card->reactToEvent(event, this);
+    if (gainedReact) {
+        opts.push_back(gainedReact);
+    }
     if (m_react && !opts.empty()) {
         m_react(opts);
     }
@@ -117,15 +123,10 @@ bool Deck::gainFromSupply(const CardId id, Areas targetArea)
 
     EnemyGainsACardEvent notify(event.card);
     for (auto* other: enemies()) {
-        other->event(notify);
+        other->eventOccured(notify);
     }
 
     return true;
-}
-
-void Deck::event(const Event& event)
-{
-    // TODO
 }
 
 int Deck::totalCards() const
@@ -204,9 +205,9 @@ EventReactOptions Deck::queryCardsForReactions(Event& event)
     EventReactOptions opts;
 
     for (auto* card: hand().cards()) {
-        auto opt = card->reactToEvent(event);
+        auto opt = card->reactToEvent(event, this);
         if (!opt) {
-            // Card doesn't react to (this type of?) attacks
+            // Card doesn't react to (this type of?) event, or at least doesn't offer options
             continue;
         }
         opts.push_back(opt);

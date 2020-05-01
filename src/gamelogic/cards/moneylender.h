@@ -13,8 +13,10 @@ public:
         turn->addMoney(3);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Moneylender() {
+        m_info = {
             CardId::Moneylender,
             Card::Action,
             VirtualMoney,

@@ -98,6 +98,7 @@ public:
     int currentBuys() const;
 
     int leftInSupply(CardId id) const;
+    int emptySupplyPiles() const;
     int totalCards(CardId id) const;
     Cost cardCost(CardId id) const;
 
@@ -119,8 +120,6 @@ private:
 struct ActiveCard {
     Turn* turn;
     Card* card;
-
-    bool inHand;
 
     void playAction(CardOption* option = nullptr) {
         turn->playAction(card, option);

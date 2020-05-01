@@ -12,6 +12,7 @@
 struct TurnInternal;
 struct Event;
 struct EventReactOption;
+class Deck;
 
 struct CardOption { };
 
@@ -47,16 +48,16 @@ public:
     };
 
     struct BasicInfo {
-        CardId id;
-        Type types;
-        Hints hints;
-        Cost cost;
+        CardId id = CardId::Invalid;
+        Type types = NoType;
+        Hints hints = NoHints;
+        Cost cost = {};
     };
 
     virtual ~Card() = default;
 
     // This must be implemented in each derived card.
-    virtual BasicInfo basicInfo() const = 0;
+    BasicInfo const& basicInfo() const;
 
     // This can be overriden by cards to ease their generic use.
     virtual CardTraits traits() const;
@@ -66,7 +67,7 @@ public:
     virtual int victoryPoints() const;
 
     /// Return a structure describing possible reactions if this card reacts to the given event.
-    virtual std::shared_ptr<EventReactOption> reactToEvent(Event& event) const;
+    virtual std::shared_ptr<EventReactOption> reactToEvent(Event& event, Deck* playerDeck) const;
 
     virtual void playAction(TurnInternal* turn, CardOption* option = nullptr);
     virtual void playTreasure(TurnInternal* turn, CardOption* option = nullptr);
@@ -83,6 +84,8 @@ protected:
     /// Only the supply can create cards. Cards are always moved from the supply
     /// elsewhere.
     Card() = default;
+
+    BasicInfo m_info;
 };
 
 // using Cards = QVarLengthArray<Card*, 16>;

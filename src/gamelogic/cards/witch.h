@@ -14,8 +14,10 @@ public:
         turn->attackEachEnemy(attack);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Witch() {
+        m_info = {
             CardId::Witch,
             Card::Action,
             TerminalDraw | Attack,

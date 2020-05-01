@@ -8,8 +8,10 @@ public:
         turn->draw(3);
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Smithy() {
+        m_info = {
             CardId::Smithy,
             Card::Action,
             TerminalDraw,

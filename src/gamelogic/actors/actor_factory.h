@@ -4,6 +4,7 @@
 #include "engineactor.h"
 #include "shepherdactor.h"
 #include "buylistactor.h"
+#include "buylist/parser.h"
 
 #include "defaultbuylist.h"
 #include "defaultcondition.h"
@@ -12,6 +13,8 @@
 #include <memory>
 
 inline std::unique_ptr<Actor> createActor(std::string const& which, Supply const* supply, Deck const* deck) {
+    static auto disk_buylist = parseBuylist("../src/gamelogic/buylist/test2.buylist");
+
     if (which == "bigmoney")
         return std::make_unique<BigMoneyActor>(supply, deck);
 
@@ -52,21 +55,7 @@ inline std::unique_ptr<Actor> createActor(std::string const& which, Supply const
 
     if (which == "buylist") {
         auto actor = std::make_unique<BuylistActor>(supply, deck);
-        actor->buylists = BuylistCollection{{
-            Buylist {
-                If<VeryLateGame>(), anyVictory()
-            },
-            Buylist {
-                If<LateGame>(), goodVictory()
-            },
-            Buylist {{
-                { If<CardCountGreaterThan>(CardId::Gold, 0), CardId::Province },
-                { If<Buy2ndDelayedAfter>(CardId::Witch, CardId::Gold), CardId::Witch },
-            }},
-            Buylist {
-                bestMoney()
-            },
-        }};
+        actor->buylists = disk_buylist;
         return actor;
     }
 

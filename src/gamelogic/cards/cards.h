@@ -16,5 +16,8 @@
 #include "moat.h"
 #include "moneylender.h"
 #include "councilroom.h"
+#include "mandarin.h"
+#include "foolsgold.h"
+#include "rebuild.h"
 
 #include "cardid.h"

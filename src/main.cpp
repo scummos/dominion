@@ -1,11 +1,13 @@
 #include "game.h"
 #include "logger.h"
 
+#include "buylist/parser.h"
+
 #include <iostream>
 #include <fstream>
 
 int main() {
-    int const games = 10000;
+    int const games = 5000;
     Logger::instance(games);
 
     std::vector<int> winners(2);
@@ -22,6 +24,7 @@ int main() {
     }
 
     std::cout << "Player 1 wins " << winners.at(0) << " out of " << games << " games, " << draws << " draws" << std::endl;
+    std::cout << "(winrate " << (float) winners.at(0)*100/games << "% vs " << (float) winners.at(1)*100/games << "%)" << std::endl;
 
     auto writeData = [](auto const& d, std::string fn) {
         std::ofstream fd;

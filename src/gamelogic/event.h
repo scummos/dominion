@@ -14,7 +14,7 @@ enum class EventKind {
 
 /**
  * An Event describes something happening in the game. These objects are never
- * visible to the Game, Deck or Actor; they are exclusively used to query Card instances
+ * visible to the Game or Actor; they are exclusively used to query Card instances
  * for possible Reactions (usually done by the Turn). Everything should, if possible, operate
  * on the Reaction instances, since they can check the game's rules (i.e. the Card sets them
  * up such that nothing wrong can be done with them).

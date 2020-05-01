@@ -41,8 +41,10 @@ public:
         return 2;
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    Tunnel() {
+        m_info = {
             CardId::Tunnel,
             Card::Victory,
             NoHints,

@@ -21,6 +21,7 @@ public:
     void moveAllTo(CardPile& target);
 
     int count() const;
+    int count(CardId id) const;
     Cards& cards();
     Cards const& cards() const;
     Card* topCard();

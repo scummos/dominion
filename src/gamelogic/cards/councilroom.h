@@ -13,8 +13,10 @@ public:
         }
     }
 
-    virtual BasicInfo basicInfo() const override {
-        return {
+protected:
+    friend class Supply;
+    CouncilRoom() {
+        m_info = {
             CardId::CouncilRoom,
             Card::Action,
             TerminalDraw,

@@ -3,13 +3,16 @@
 #include "condition.h"
 #include "cardid.h"
 
+#define info(x)
+
 struct BuyAction {
     // This condition must be fulfilled in addition to
     //  - can actually pay for the card and
     //  - pile of card is not empty.
     Condition::Ptr condition;
-    CardId card;
+    CardId card = CardId::Invalid;
 
+    BuyAction() = default;
     BuyAction(CardId card) : card(card) { }
     BuyAction(Condition::Ptr condition, CardId card) : condition(condition), card(card) { }
 };
@@ -18,6 +21,7 @@ struct Buylist {
     Condition::Ptr precondition;
     std::vector<BuyAction> actions;
 
+    Buylist() = default;
     Buylist(std::vector<BuyAction> actions) : actions(actions) {};
     Buylist(Condition::Ptr precondition, std::vector<BuyAction> actions) : precondition(precondition), actions(actions) {};
 
@@ -49,7 +53,7 @@ struct BuylistCollection {
 
             CardId choice = list.select(turn);
             while (turn->currentBuys() > 0 && choice != CardId::Invalid) {
-//                 std::cerr << "buy: " << cardName(choice) << std::endl;
+                info(std::cerr << "buy: " << cardName(choice) << std::endl);
                 turn->buy(choice);
                 choice = list.select(turn);
             }

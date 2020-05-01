@@ -77,7 +77,6 @@ public:
     void forEachCard(std::function<void(Card const*)> func) const;
 
     void setReactCallback(ReactCallback cb);
-    void event(Event const& event);
 
     EventReactOptions queryCardsForReactions(Event& event);
 
@@ -91,6 +90,7 @@ public:
     auto const& uncoveredDrawPile() const { return area(Areas::UncoveredDrawPile); }
     auto const& discardPile() const       { return area(Areas::DiscardPile); }
     auto const& hand() const              { return area(Areas::Hand); }
+    auto const& inPlay() const            { return area(Areas::InPlay); }
 
     int countScore() const;
     int totalCards() const;
@@ -103,6 +103,7 @@ private:
     auto& uncoveredDrawPile()       { return area(Areas::UncoveredDrawPile); }
     auto& discardPile()             { return area(Areas::DiscardPile); }
     auto& hand()                    { return area(Areas::Hand); }
+    auto& inPlay()                  { return area(Areas::InPlay); }
     CardPile& area(Areas area);
 
 private:
