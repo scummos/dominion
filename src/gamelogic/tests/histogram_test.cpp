@@ -6,44 +6,44 @@ int main() {
     auto l = Logger::instance();
 
     // Sample game 1
-    l->nextGame();
-    l->addData(0, PerTurnLogData::CardsSeen, 5);
-    l->addData(0, PerTurnLogData::CardsSeen, 5);
-    l->addData(0, PerTurnLogData::CardsSeen, 5);
-    l->addData(0, PerTurnLogData::CardsSeen, 5);
-    l->addData(0, PerTurnLogData::CardsSeen, 5);
+    Logger::GameData g1(1);
+    g1[0].addData(PerTurnLogData::CardsSeen, 5);
+    g1[0].addData(PerTurnLogData::CardsSeen, 5);
+    g1[0].addData(PerTurnLogData::CardsSeen, 5);
+    g1[0].addData(PerTurnLogData::CardsSeen, 5);
+    g1[0].addData(PerTurnLogData::CardsSeen, 5);
 
-    l->addData(0, PerTurnLogData::TotalMoney, 3);
-    l->addData(0, PerTurnLogData::TotalMoney, 4);
-    l->addData(0, PerTurnLogData::TotalMoney, 5);
-    l->addData(0, PerTurnLogData::TotalMoney, 5);
-    l->addData(0, PerTurnLogData::TotalMoney, 5);
+    g1[0].addData(PerTurnLogData::TotalMoney, 3);
+    g1[0].addData(PerTurnLogData::TotalMoney, 4);
+    g1[0].addData(PerTurnLogData::TotalMoney, 5);
+    g1[0].addData(PerTurnLogData::TotalMoney, 5);
+    g1[0].addData(PerTurnLogData::TotalMoney, 5);
 
-    l->addData(0, PerTurnLogData::TurnNumber, 0);
-    l->addData(0, PerTurnLogData::TurnNumber, 1);
-    l->addData(0, PerTurnLogData::TurnNumber, 2);
-    l->addData(0, PerTurnLogData::TurnNumber, 3);
-    l->addData(0, PerTurnLogData::TurnNumber, 4);
+    g1[0].addData(PerTurnLogData::TurnNumber, 0);
+    g1[0].addData(PerTurnLogData::TurnNumber, 1);
+    g1[0].addData(PerTurnLogData::TurnNumber, 2);
+    g1[0].addData(PerTurnLogData::TurnNumber, 3);
+    g1[0].addData(PerTurnLogData::TurnNumber, 4);
 
     // Sample game 2
-    l->nextGame();
-    l->addData(0, PerTurnLogData::CardsSeen, 5);
-    l->addData(0, PerTurnLogData::CardsSeen, 5);
-    l->addData(0, PerTurnLogData::CardsSeen, 5);
-    l->addData(0, PerTurnLogData::CardsSeen, 7);
-    l->addData(0, PerTurnLogData::CardsSeen, 7);
+    Logger::GameData g2(1);
+    g2[0].addData(PerTurnLogData::CardsSeen, 5);
+    g2[0].addData(PerTurnLogData::CardsSeen, 5);
+    g2[0].addData(PerTurnLogData::CardsSeen, 5);
+    g2[0].addData(PerTurnLogData::CardsSeen, 7);
+    g2[0].addData(PerTurnLogData::CardsSeen, 7);
 
-    l->addData(0, PerTurnLogData::TotalMoney, 3);
-    l->addData(0, PerTurnLogData::TotalMoney, 4);
-    l->addData(0, PerTurnLogData::TotalMoney, 5);
-    l->addData(0, PerTurnLogData::TotalMoney, 5);
-    l->addData(0, PerTurnLogData::TotalMoney, 5);
+    g2[0].addData(PerTurnLogData::TotalMoney, 3);
+    g2[0].addData(PerTurnLogData::TotalMoney, 4);
+    g2[0].addData(PerTurnLogData::TotalMoney, 5);
+    g2[0].addData(PerTurnLogData::TotalMoney, 5);
+    g2[0].addData(PerTurnLogData::TotalMoney, 5);
 
-    l->addData(0, PerTurnLogData::TurnNumber, 0);
-    l->addData(0, PerTurnLogData::TurnNumber, 1);
-    l->addData(0, PerTurnLogData::TurnNumber, 2);
-    l->addData(0, PerTurnLogData::TurnNumber, 3);
-    l->addData(0, PerTurnLogData::TurnNumber, 4);
+    g2[0].addData(PerTurnLogData::TurnNumber, 0);
+    g2[0].addData(PerTurnLogData::TurnNumber, 1);
+    g2[0].addData(PerTurnLogData::TurnNumber, 2);
+    g2[0].addData(PerTurnLogData::TurnNumber, 3);
+    g2[0].addData(PerTurnLogData::TurnNumber, 4);
 
     auto hist = l->computeHistogramNd(0, {
         HistogramDimension{

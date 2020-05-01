@@ -28,6 +28,10 @@ Supply::Supply(int nplayers)
     createPile<Mandarin>(10);
     createPile<FoolsGold>(10);
     createPile<Rebuild>(10);
+    createPile<Oasis>(10);
+    createPile<Highway>(10);
+    createPile<Laboratory>(10);
+    createPile<IllGottenGains>(10);
 }
 
 Supply::~Supply()

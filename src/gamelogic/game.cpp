@@ -26,6 +26,8 @@ Game::Game(std::vector<std::string> const& actors)
         }
         m_players[i].setEnemies(enemies);
     }
+
+    m_logData.resize(m_players.size());
 }
 
 int Game::playerIndex(Deck* deck) const
@@ -63,12 +65,11 @@ bool Game::gameEnded()
 
 int Game::run()
 {
-    Logger::instance()->nextGame();
-
     int currentPlayer = 0;
     for (auto& player: m_players) {
-        Turn turn(&m_supply, &player);
+        Turn turn(&m_supply, &player, m_logData[currentPlayer]);
         turn.doFinalDraw();
+        currentPlayer++;
     }
 
     for (int i = 0; i < m_players.size(); i++) {
@@ -78,11 +79,12 @@ int Game::run()
     }
 
     int turncount = 0;
+    currentPlayer = 0;
     while (!gameEnded()) {
         auto* player = &m_players.at(currentPlayer);
         auto& actor = m_actors.at(currentPlayer);
 
-        Turn turn(&m_supply, player);
+        Turn turn(&m_supply, player, m_logData[currentPlayer]);
         actor->executeTurn(&turn);
         turn.endTurn();
 
@@ -103,14 +105,17 @@ int Game::run()
             winner = -1;
         }
 
-        Logger::instance()->addData(i, PerGameLogData::TotalScore, score);
+        m_logData[i].addData(PerGameLogData::TotalScore, score);
     }
 
     for (int i = 0; i < m_players.size(); i++) {
-        Logger::instance()->addData(i, PerGameLogData::WonGame, i == winner);
+        m_logData[i].addData(PerGameLogData::WonGame, i == winner);
     }
 
     return winner;
 }
 
-
+Logger::GameData Game::logData() const
+{
+    return m_logData;
+}

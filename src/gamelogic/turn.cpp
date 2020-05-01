@@ -6,7 +6,8 @@
 #include <algorithm>
 #include <utility>
 
-Turn::Turn(Supply* supply, Deck* deck)
+Turn::Turn(Supply* supply, Deck* deck, Logger::PlayerData& logData)
+    : m_logData(logData)
 {
     m_internal.turn = this;
     m_internal.supply = supply;
@@ -65,6 +66,13 @@ bool Hand::hasCard(CardId id) const
     });
 }
 
+bool Hand::hasCard(Card::Type type) const
+{
+    return std::any_of(cards.begin(), cards.end(), [type](ActiveCard const& c) {
+        return c.card->types() & type;
+    });
+}
+
 void Turn::buy(CardId id)
 {
     if (currentPhase() > TurnPhase::Buy) {
@@ -97,6 +105,11 @@ Hand Turn::currentHand()
         ret.cards.push_back(ActiveCard{this, card});
     }
     return ret;
+}
+
+Cards Turn::currentHandCards()
+{
+    return static_cast<const Deck*>(m_internal.deck)->hand().cards();
 }
 
 int Turn::currentMoney() const
@@ -156,6 +169,7 @@ void Turn::playAction(Card* card, CardOption* option)
     }
     m_internal.addActions(-1);
     deck()->moveCard(card, Areas::Hand, Areas::InPlay);
+    m_internal.m_numPlayed[card->id()]++;
 
     card->playAction(&m_internal, option);
 }
@@ -168,6 +182,8 @@ void Turn::playTreasure(Card* card, CardOption* option)
     m_internal.phase = TurnPhase::PlayTreasures;
 
     deck()->moveCard(card, Areas::Hand, Areas::InPlay);
+    m_internal.m_numPlayed[card->id()]++;
+
     card->playTreasure(&m_internal, option);
 }
 
@@ -181,12 +197,13 @@ void Turn::endTurn()
     deck()->moveAllCards(Areas::InPlay, Areas::DiscardPile);
     deck()->moveAllCards(Areas::Hand, Areas::DiscardPile);
 
-    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TotalCards, deck()->totalCards());
-    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TotalMoney, deck()->totalMoney());
-    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TotalScore, deck()->countScore());
-    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TurnPeakMoney, m_internal.m_maxMoney);
-    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::CardsSeen, m_internal.m_totalCardsSeen);
-    Logger::instance()->addData(deck()->playerIndex(), PerTurnLogData::TurnNumber, deck()->turnCount());
+    m_logData.addData(PerTurnLogData::TotalCards, deck()->totalCards());
+    m_logData.addData(PerTurnLogData::TotalMoney, deck()->totalMoney());
+    m_logData.addData(PerTurnLogData::TotalScore, deck()->countScore());
+    m_logData.addData(PerTurnLogData::TurnPeakMoney, m_internal.m_maxMoney);
+    m_logData.addData(PerTurnLogData::CardsSeen, m_internal.m_totalCardsSeen);
+    m_logData.addData(PerTurnLogData::TurnNumber, deck()->turnCount());
+    m_logData.addData(PerTurnLogData::Curses, deck()->totalCards(CardId::Curse));
 
     doFinalDraw();
 
@@ -212,6 +229,11 @@ int Turn::turnCount()
 Cost Turn::cardCost(CardId id) const
 {
     return m_internal.cardCost(id);
+}
+
+int TurnInternal::numPlayed(CardId card) const
+{
+    return m_numPlayed.find(card)->second;
 }
 
 int TurnInternal::draw(int n)

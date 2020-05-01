@@ -18,6 +18,11 @@
 #include "councilroom.h"
 #include "mandarin.h"
 #include "foolsgold.h"
+#include "crossroads.h"
+#include "oasis.h"
+#include "highway.h"
+#include "laboratory.h"
+#include "illgottengains.h"
 #include "rebuild.h"
 
 #include "cardid.h"

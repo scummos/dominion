@@ -52,7 +52,10 @@ void BuylistActor::executeTurn(Turn* turn)
     }
 
     hand = turn->currentHand();
-    playAllTreasures(hand);
+    while (hand.hasCard(Card::Treasure)) {
+        playAllTreasures(turn, hand);
+        hand = turn->currentHand();
+    }
 
     buylists.buy(turn);
 }

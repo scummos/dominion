@@ -3,6 +3,7 @@
 #include "supply.h"
 #include "deck.h"
 #include "actor.h"
+#include "logger.h"
 
 #include <vector>
 #include <memory>
@@ -19,8 +20,11 @@ public:
     int numPlayers() const;
     int playerIndex(Deck* deck) const;
 
+    Logger::GameData logData() const;
+
 private:
     Supply m_supply;
     std::vector<Deck> m_players;
     std::vector<std::unique_ptr<Actor>> m_actors;
+    Logger::GameData m_logData;
 };

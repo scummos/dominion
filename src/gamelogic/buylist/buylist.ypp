@@ -24,6 +24,8 @@
 
 %parse-param { BuylistCollection& ret }
 %define parse.trace
+%define parse.lac full
+%define parse.error verbose
 
 %language "c++"
 %define api.value.type variant
@@ -142,6 +144,9 @@ constant:
 card_name:
   STRING {
       $$ = cardId($1);
+      if ($$ == CardId::Invalid) {
+        throw parser::syntax_error(yylhs.location, "Invalid card name");
+      }
     }
   ;
 %%

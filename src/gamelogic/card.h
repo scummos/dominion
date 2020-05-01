@@ -78,6 +78,7 @@ public:
     char const* name() const;
     Hints hints() const;
     Cost cost() const;
+    CardId id() const;
 
 protected:
     friend class Supply;

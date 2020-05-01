@@ -35,31 +35,41 @@ enum class CardId {
     Mandarin,
     FoolsGold,
     Rebuild,
+    Crossroads,
+    Oasis,
+    Highway,
+    IllGottenGains,
     NumCards
 };
 
 static char const* cardName(CardId const id) {
     switch (id) {
-        case CardId::Copper:    return "Copper";
-        case CardId::Silver:    return "Silver";
-        case CardId::Gold:      return "Gold";
-        case CardId::Estate:    return "Estate";
-        case CardId::Duchy:     return "Duchy";
-        case CardId::Province:  return "Province";
-        case CardId::Smithy:    return "Smithy";
-        case CardId::Festival:  return "Festival";
-        case CardId::Chapel:    return "Chapel";
-        case CardId::Shepherd:  return "Shepherd";
-        case CardId::Witch:     return "Witch";
-        case CardId::Curse:     return "Curse";
-        case CardId::Mine:      return "Mine";
-        case CardId::Torturer:  return "Torturer";
-        case CardId::Moat:      return "Moat";
+        case CardId::Copper:     return "Copper";
+        case CardId::Silver:     return "Silver";
+        case CardId::Gold:       return "Gold";
+        case CardId::Estate:     return "Estate";
+        case CardId::Duchy:      return "Duchy";
+        case CardId::Province:   return "Province";
+        case CardId::Smithy:     return "Smithy";
+        case CardId::Festival:   return "Festival";
+        case CardId::Chapel:     return "Chapel";
+        case CardId::Shepherd:   return "Shepherd";
+        case CardId::Witch:      return "Witch";
+        case CardId::Curse:      return "Curse";
+        case CardId::Mine:       return "Mine";
+        case CardId::Torturer:   return "Torturer";
+        case CardId::Moat:       return "Moat";
         case CardId::Moneylender: return "Moneylender";
-        case CardId::Mandarin:  return "Mandarin";
-        case CardId::FoolsGold: return "FoolsGold";
-        case CardId::Rebuild:   return "Rebuild";
-        default:                return "Unnamed card";
+        case CardId::Mandarin:   return "Mandarin";
+        case CardId::FoolsGold:  return "FoolsGold";
+        case CardId::Rebuild:    return "Rebuild";
+        case CardId::Crossroads: return "Crossroads";
+        case CardId::Oasis:      return "Oasis";
+        case CardId::Highway:    return "Highway";
+        case CardId::Laboratory: return "Laboratory";
+        case CardId::CouncilRoom: return "CouncilRoom";
+        case CardId::IllGottenGains: return "IllGottenGains";
+        default:                 return "Unnamed card";
     }
 }
 

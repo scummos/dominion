@@ -27,7 +27,11 @@ int Card::victoryPoints() const
 
 char const* Card::name() const
 {
-    return cardName(basicInfo().id);
+    return cardName(id());
+}
+
+CardId Card::id() const {
+    return basicInfo().id;
 }
 
 Card::Hints Card::hints() const

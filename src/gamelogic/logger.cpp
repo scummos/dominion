@@ -93,34 +93,20 @@ Logger* Logger::instance(int preallocGames)
     return &logger;
 }
 
-void Logger::nextGame()
+void Logger::addGame(const Logger::GameData& data)
 {
-    m_games.emplace_back();
+    std::lock_guard lock(m_dataMutex);
+    m_games.push_back(data);
 }
 
-Logger::GamePlayerData& Logger::currentGame()
+void Logger::PlayerData::addData(PerTurnLogData which, int value)
 {
-    return m_games.back();
+    m_vectorData[static_cast<int>(which)].push_back(value);
 }
 
-Logger::PlayerData& Logger::currentPlayerData(int index)
+void Logger::PlayerData::addData(PerGameLogData which, int value)
 {
-    if (currentGame().size() <= index) {
-        currentGame().resize(index+1);
-    }
-    return currentGame().at(index);
-}
-
-void Logger::addData(int playerIndex, PerTurnLogData which, int value)
-{
-    auto& playerData = currentPlayerData(playerIndex);
-    playerData.m_vectorData[static_cast<int>(which)].push_back(value);
-}
-
-void Logger::addData(int playerIndex, PerGameLogData which, int value)
-{
-    auto& playerData = currentPlayerData(playerIndex);
-    playerData.m_scalarData[static_cast<int>(which)] = value;
+    m_scalarData[static_cast<int>(which)] = value;
 }
 
 std::vector<DataPoint> Logger::computeTurnGraph(int playerIndex, PerTurnLogData which)
@@ -186,38 +172,3 @@ std::vector<DataPoint> Logger::computeTurnGraph(int playerIndex, PerTurnLogData 
 
     return ret;
 }
-
-#if 0
-
-    PlayerData const* playerData = nullptr;
-
-    std::function<void(int)> recurseDims = [&](int dimIndex) {
-        auto const dim = dims[dimIndex].dim;
-        auto const& vdata = playerData->m_vectorData[static_cast<int>(dim)];
-
-        if (dimIndex == dims.size()) {
-            // Innermost loop, this is where the histogram is actually computed.
-            std::cerr << "visit: ";
-            for (auto const i: multiIndex) {
-                std::cerr << i << " ";
-            }
-            std::cerr << std::endl;
-            ret.value(multiIndex)++;
-        }
-
-        // Otherwise, recurse further.
-        for (int i = dimIndex; i < dims.size(); i++) {
-            for (int j = 0; j < vdata.size(); j++) {
-                std::cerr << "  recurse: dim " << i << " index " << j << std::endl;
-                multiIndex[i] = ret.valueToRowIndex(dims[i].dim, vdata[j]);
-                recurseDims(i + 1);
-            }
-        }
-    };
-
-    for (auto const& game: m_games) {
-        playerData = &game.at(playerIndex);
-        recurseDims(0);
-    }
-
-#endif

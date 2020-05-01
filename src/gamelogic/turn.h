@@ -5,8 +5,10 @@
 #include "supply.h"
 #include "event.h"
 #include "reaction.h"
+#include "logger.h"
 
 #include <iostream>
+#include <map>
 
 struct Hand;
 struct ActiveCard;
@@ -46,6 +48,9 @@ struct TurnInternal {
         m_money += money;
         m_maxMoney = std::max(m_money, m_maxMoney);
     }
+    void addDiscount(int discount) {
+        m_discount += discount;
+    }
 
     int actions() const {
         return m_actions;
@@ -65,6 +70,7 @@ struct TurnInternal {
     void discardFromHand(Card* card);
     int countCardsInHand() const;
     void attackEachEnemy(AttackReactOption::Factory attack);
+    int numPlayed(CardId card) const;
 
 private:
     int m_actions = 1;
@@ -77,6 +83,8 @@ private:
     int m_maxMoney = 0;
     int m_totalCardsSeen = 0;
 
+    std::map<CardId, int> m_numPlayed;
+
     friend class Turn;
 };
 
@@ -84,9 +92,10 @@ private:
 /// with your current hand.
 class Turn {
 public:
-    Turn(Supply* supply, Deck* deck);
+    Turn(Supply* supply, Deck* deck, Logger::PlayerData& logData);
 
     Hand currentHand();
+    Cards currentHandCards();
     ActiveCards cardsInPlay() const;
     TurnPhase currentPhase();
     int turnCount();
@@ -114,6 +123,7 @@ private:
     Deck* deck();
 
     TurnInternal m_internal;
+    Logger::PlayerData& m_logData;
 };
 
 /// Convenience wrapper which puts together a card and a turn.
@@ -139,5 +149,6 @@ struct Hand {
     ActiveCards findCards(Card::Type type) const;
     ActiveCards findCards(Card::Hints hints) const;
     bool hasCard(CardId id) const;
+    bool hasCard(Card::Type type) const;
 };
 

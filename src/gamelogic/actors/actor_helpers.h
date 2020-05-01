@@ -16,10 +16,18 @@ void defaultVillageDraw(Turn* turn, int wantActionsRemain = 0) {
         // Play all draw cards.
         hand = turn->currentHand();
         auto draw = hand.findCards(Card::Draw);
+
+        // remove choice cards
+        draw.erase(std::remove_if(draw.begin(), draw.end(), [](ActiveCard const& c) {
+            return c.card->hints() & Card::Choice;
+        }), draw.end());
+
         if (draw.empty()) {
-            // Nothing else to do, stop.
+            // nothing else to do, stop.
             break;
         }
+
+        // select highest-value card
         std::sort(draw.begin(), draw.end(), [](ActiveCard const& c1, ActiveCard const& c2) {
             return c1.card->cost().gold() < c2.card->cost().gold();
         });
@@ -52,7 +60,7 @@ int usefulness(Card* card) {
     }
 }
 
-Card* leastUsefulCardInHand(Hand const& hand, Card* exclude) {
+Card* leastUsefulCardInHand(Hand const& hand, Card* exclude = nullptr) {
     if (hand.cards.empty()) {
         return nullptr;
     }
@@ -74,14 +82,6 @@ int plainTreasureInHand(Hand const& hand) {
         };
     }
     return ret;
-}
-
-void playAllTreasures(Hand& hand) {
-    for (auto& hcard: hand.cards) {
-        if (hcard.card->hasType(Card::Treasure)) {
-            hcard.playTreasure();
-        }
-    }
 }
 
 enum class CardSortOrder {
