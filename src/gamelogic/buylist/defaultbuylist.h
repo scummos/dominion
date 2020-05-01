@@ -15,3 +15,4 @@ std::vector<BuyAction> goodVictory() {
 std::vector<BuyAction> bestMoney() {
     return {CardId::Gold, CardId::Silver};
 };
+

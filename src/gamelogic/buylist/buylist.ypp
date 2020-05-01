@@ -2,6 +2,8 @@
   #include <vector>
   #include "buylist.h"
   #include "conditionfactory.h"
+  #include "genericcardoption.h"
+  #include "strategy.h"
 }
 
 %{
@@ -17,7 +19,7 @@
         extern FILE *yyin;
     }
 
-    extern int parse_buylist(char const* fn, BuylistCollection& ret);
+    extern int parse_buylist(char const* fn, BuylistCollection& ret, StrategyColletion& strats);
 %}
 
 %locations
@@ -31,7 +33,7 @@
 %define api.value.type variant
 
 // define the constant-string tokens:
-%token BUYLIST LIST END COMMENT LPAREN RPAREN NOT IF NEWLINE
+%token BUYLISTS LIST END COMMENT LPAREN RPAREN NOT IF NEWLINE ARROW STRATEGIES STRATEGY PLAYORDER OPTIONS OPTION FOR CHOOSE IGNORE OPTIONAL
 
 %token <int> INT
 %token <std::string> STRING
@@ -40,6 +42,17 @@
 %nterm <Buylist> list
 %nterm <std::vector<BuyAction>> list_entries
 %nterm <BuyAction> list_entry
+
+%nterm <std::vector<Strategy>> strats
+%nterm <Strategy> strat
+%nterm <Strategy> strat_body
+%nterm <std::vector<Playorder>> playorders
+%nterm <Playorder> playorder
+%nterm <GenericCardOption> cardoption
+%nterm <std::vector<GenericCardOption>> cardoptions
+%nterm <std::any> cardoption_expr
+%nterm <std::any> cardoption_expr_value
+%nterm <std::vector<std::any>> cardoption_expr_list
 
 %nterm <Condition::Ptr> condition
 %nterm <std::vector<std::any>> func_arglist
@@ -54,8 +67,9 @@ buylist:
   buylist_section { }
   ;
 buylist_section:
-  BUYLIST lists END {
+  BUYLISTS lists END STRATEGIES strats END {
       ret = BuylistCollection({$2});
+      strats = StrategyCollection({$5});
     }
   ;
 lists:
@@ -149,9 +163,104 @@ card_name:
       }
     }
   ;
+strats:
+  strats strat {
+      $1.push_back($2);
+      $$ = $1;
+    }
+  | strat {
+      $$ = std::vector<Strategy>{$1};
+    }
+  ;
+strat:
+  STRATEGY strat_body END {
+      $$ = $2;
+    }
+  | STRATEGY condition strat_body END {
+      $3.setCondition($2);
+      $$ = $3;
+    }
+  ;
+strat_body:
+  PLAYORDER playorders END cardoptions {
+      $$ = Strategy($2, $4);
+    }
+  | cardoptions {
+      $$ = Strategy({}, $1);
+    }
+  | %empty {
+      $$ = Strategy();
+    }
+  ;
+playorders:
+  playorders ',' playorder {
+      $1.push_back($3);
+      $$ = $1;
+    }
+  | playorder {
+      $$ = std::vector<Playorder>({$1});
+    }
+  ;
+playorder:
+    STRING {
+      $$ = Playorder($1);
+    }
+  ;
+cardoptions:
+  cardoptions cardoption {
+      $1.push_back($2)
+      $$ = $1
+    }
+  | cardoption {
+      $$ = $1;
+    }
+  ;
+cardoption:
+  OPTIONS FOR card_name cardoption_expr END {
+      $$ = GenericCardOption{$3, {}, $4};
+    }
+  | OPTIONS FOR card_name condition cardoption_expr END {
+      $$ = GenericCardOption{$3, $4, $5};
+    }
+  ;
+cardoption_expr:
+  cardoption_expr_value {
+      $$ = $1;
+    }
+  | cardoption_expr_list ',' cardoption_expr_value {
+      // only parse as list if it has at least 1 comma
+      $$ = $1;
+      $$.push_back($3);
+    }
+  ;
+cardoption_expr_value:
+  CHOOSE OPTION INT {
+      $$ = std::any($3);
+    }
+  | CHOOSE OPTIONAL {
+      $$ = std::any(true);
+    }
+  | IGNORE OPTIONAL {
+      $$ = std::any(false);
+    }
+  | card_name ARROW card_name {
+      $$ = std::make_pair(std::any($1), std::any($3));
+    }
+  | card_name {
+      $$ = std::any($1);
+    }
+  ;
+cardoption_expr_list:
+  cardoption_expr_list ',' cardoption_expr_value {
+      $1.push_back($3);
+      $$ = $1;
+    }
+  | cardoption_expr_value {
+      $$ = std::vector<std::any>($1);
+    }
 %%
 
-int parse_buylist(char const* fn, BuylistCollection& ret) {
+int parse_buylist(char const* fn, BuylistCollection& ret, StrategyCollection& strats) {
   FILE *myfile = fopen(fn, "r");
   if (!myfile) {
     cout << "error opening file" << endl;
@@ -159,7 +268,7 @@ int parse_buylist(char const* fn, BuylistCollection& ret) {
   }
   yyin = myfile;
 
-  yy::parser p(ret);
+  yy::parser p(ret, strats);
 //   p.set_debug_level(1);
   int ok = p.parse();
   fclose(myfile);

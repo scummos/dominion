@@ -1,0 +1,45 @@
+buylists
+    list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
+        Province, Duchy, Estate
+    end
+    list if SupplyHasLess(Province, 4)
+        Province, Duchy
+    end
+    list
+        Province if Has(IllGottenGains, 4),
+        IllGottenGains,
+        Silver
+    end
+end
+
+strategies
+    strategy
+        playorder
+            :ChainDraw
+        end
+        options for IllGottenGains
+            choose optional
+        end
+    end
+    strategy if HasInHand(Remodel, 1)
+        playorder
+            Remodel
+        end
+        options for Remodel
+            Gold -> Province,
+            Remodel -> Gold,
+            Estate -> Silver
+        end
+    end
+    strategy if AllOf(HasInHand(Chapel, 1), Not(HasMoney(5)))
+        playorder
+            Chapel
+        end
+        options for Chapel
+            Estate, Copper
+        end
+    end
+    strategy
+        playorder :Default end
+    end
+end

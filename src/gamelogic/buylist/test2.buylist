@@ -6,10 +6,8 @@ buylist
         Province, Duchy
     end
     list
-        Province,
-        Rebuild if not Has(Rebuild, 2),
-        Silver if not Has(Rebuild, 2),
-        Duchy,
-        Estate
+        Province if Has(IllGottenGains, 4),
+        IllGottenGains,
+        Silver
     end
 end

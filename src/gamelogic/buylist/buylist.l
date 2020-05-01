@@ -22,16 +22,26 @@ using token = yy::parser::token;
 
 [ \t] ;
 [\n]           { yycolumn = 1; }
-buylist        { return token::BUYLIST; }
+buylists       { return token::BUYLISTs; }
 list           { return token::LIST; }
+strategies     { return token::STRATEGIES; }
+strategy       { return token::STRATEGY; }
+playorder      { return token::PLAYORDER; }
 end            { return token::END; }
 not            { return token::NOT; }
 if             { return token::IF; }
+options        { return token::OPTIONS; }
+for            { return token::FOR; }
+choose         { return token::CHOOSE; }
+option         { return token::OPTION; }
+ignore         { return token::IGNORE; }
+optional       { return token::OPTIONAL; }
+->             { return token::ARROW; }
 [0-9]+         {
   yylval->emplace<int>(atoi(yytext));
   return token::INT;
 }
-[a-zA-Z0-9]+   {
+:?[a-zA-Z0-9]+   {
   yylval->emplace<std::string>(yytext);
   return token::STRING;
 }
