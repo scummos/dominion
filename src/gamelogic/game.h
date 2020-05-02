@@ -7,10 +7,11 @@
 
 #include <vector>
 #include <memory>
+#include <any>
 
 class Game {
 public:
-    Game(std::vector<std::string> const& actors);
+    Game(std::vector<std::string> const& actors, std::vector<std::any> const& args);
 
     Cards createStartingDeck();
 

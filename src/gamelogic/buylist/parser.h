@@ -1,5 +1,8 @@
 #pragma once
 
 #include "buylist.h"
+#include "strategy.h"
 
-BuylistCollection parseBuylist(char const* filename);
+#include <utility>
+
+std::pair<BuylistCollection, StrategyCollection> parseBuylist(char const* filename);

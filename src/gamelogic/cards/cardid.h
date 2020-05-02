@@ -66,6 +66,7 @@ static char const* cardName(CardId const id) {
         case CardId::Crossroads: return "Crossroads";
         case CardId::Oasis:      return "Oasis";
         case CardId::Highway:    return "Highway";
+        case CardId::Remodel:    return "Remodel";
         case CardId::Laboratory: return "Laboratory";
         case CardId::CouncilRoom: return "CouncilRoom";
         case CardId::IllGottenGains: return "IllGottenGains";

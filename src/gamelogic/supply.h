@@ -21,6 +21,7 @@ public:
     ~Supply();
 
     CardPile& pile(CardId const id);
+    Card::BasicInfo pileInfo(CardId const id);
     CardPile& trashPile();
 
     int countEmptyPiles() const;
@@ -31,6 +32,7 @@ protected:
 
 private:
     std::vector<SupplyCardPile> m_piles;
+    std::vector<Card::BasicInfo> m_pileInfos;
     CardPile m_trashPile;
 };
 
@@ -44,5 +46,6 @@ template<typename T> void Supply::createPile(int count)
     for (int i = 0; i < count; i++) {
         pile.put(new T);
     }
+    m_pileInfos.emplace_back(pile.topCard()->basicInfo());
     m_piles.emplace_back(std::move(pile));
 }

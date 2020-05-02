@@ -23,6 +23,7 @@
 #include "highway.h"
 #include "laboratory.h"
 #include "illgottengains.h"
+#include "remodel.h"
 #include "rebuild.h"
 
 #include "cardid.h"

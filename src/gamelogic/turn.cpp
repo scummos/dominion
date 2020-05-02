@@ -26,6 +26,11 @@ ActiveCards Hand::treasureCards() const
     return ret;
 }
 
+void Hand::ignore(Card* card)
+{
+    cards.erase(std::remove_if(cards.begin(), cards.end(), [card](ActiveCard const& c) { return c.card == card; }), cards.end());
+}
+
 ActiveCards Hand::findCards(CardId id) const
 {
     ActiveCards ret;
@@ -260,12 +265,8 @@ int TurnInternal::countCardsInHand() const
 
 Cost TurnInternal::cardCost(CardId id) const
 {
-    auto& pile = supply->pile(id);
-    if (pile.empty()) {
-        return {-1}; // cannot gain this anyways
-    }
-    auto cost = pile.topCard()->basicInfo().cost;
-    auto adjCost = Cost(cost.gold() - m_discount);
+    auto cost = supply->pileInfo(id).cost;
+    auto adjCost = Cost(std::max(0, cost.gold() - m_discount));
     return adjCost;
 }
 

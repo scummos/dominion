@@ -1,6 +1,7 @@
 #pragma once
 
 #include "condition.h"
+#include "actor_helpers.h"
 
 // Some convenience conditions.
 
@@ -15,6 +16,33 @@ public:
 
 private:
     int m_money;
+};
+
+class HasMoneyInHand : public Condition {
+public:
+    HasMoneyInHand(int money) : m_money(money) {}
+    static auto create(int money) { return std::make_shared<HasMoneyInHand>(money); }
+
+    bool fulfilled(Turn* turn) override {
+        return plainTreasureInHand(turn->currentHand()) >= m_money;
+    }
+
+private:
+    int m_money;
+};
+
+class HasInHand : public Condition {
+public:
+    HasInHand(CardId id, int count) : m_id(id), m_count(count) {}
+    static auto create(CardId id, int count) { return std::make_shared<HasInHand>(id, count); }
+
+    bool fulfilled(Turn* turn) override {
+        return turn->currentHand().findCards(m_id).size() >= m_count;
+    }
+
+private:
+    CardId m_id;
+    int m_count;
 };
 
 class Has : public Condition {

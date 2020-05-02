@@ -8,32 +8,29 @@ buylists
     list
         Province if Has(Gold, 1),
         Gold,
+        Remodel if not Has(Remodel, 1),
+        Smithy if not Has(Smithy, 1),
         Silver
     end
 end
 
 strategies
-    strategy
-        playorder
-            :ChainDraw
-        end
-    end
-    strategy if HasInHand(Remodel, 1)
-        playorder
-            Remodel
-        end
+    strategy if SupplyHasLess(Province, 3)
+        playorder Remodel end
         options for Remodel
-            Gold -> Province,
-            Remodel -> Gold,
-            Estate -> Silver
+            Gold -> Province
         end
     end
-    strategy if AllOf(HasInHand(Chapel, 1), Not(HasMoney(5)))
-        playorder
-            Chapel
+    strategy if AllOf(SupplyHasLess(Province, 3), Not(HasMoneyInHand(8)))
+        playorder Remodel end
+        options for Remodel
+            Silver -> Duchy
         end
-        options for Chapel
-            Estate, Copper
+    end
+    strategy
+        playorder Remodel Smithy end
+        options for Remodel
+            Estate -> Silver
         end
     end
     strategy

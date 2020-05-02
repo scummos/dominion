@@ -89,10 +89,16 @@ Condition::Ptr construct_condition_nargs(const VariantList& argValues)
 
 Condition::Ptr createCondition(std::string const& condition, const VariantList& args)
 {
+    if (condition == "AllOf")
+        return construct_condition_nargs<AllOf, Condition::Ptr>(args);
+    if (condition == "AnyOf")
+        return construct_condition_nargs<AnyOf, Condition::Ptr>(args);
     if (condition == "Not")
         return construct_condition<Negate>(args);
     if (condition == "HasMoney")
         return construct_condition<HasMoney>(args);
+    if (condition == "HasMoneyInHand")
+        return construct_condition<HasMoneyInHand>(args);
     if (condition == "Has")
         return construct_condition<Has>(args);
     if (condition == "HasExact")
@@ -101,10 +107,8 @@ Condition::Ptr createCondition(std::string const& condition, const VariantList& 
         return construct_condition<SupplyHasLess>(args);
     if (condition == "SupplyEmptyPilesGreater")
         return construct_condition<SupplyEmptyPilesGreater>(args);
-    if (condition == "AllOf")
-        return construct_condition_nargs<AllOf, Condition::Ptr>(args);
-    if (condition == "AnyOf")
-        return construct_condition_nargs<AnyOf, Condition::Ptr>(args);
+    if (condition == "HasInHand")
+        return construct_condition<HasInHand>(args);
 
     throw InvalidConditionError{"No such condition: " + condition};
 }

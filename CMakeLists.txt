@@ -1,6 +1,6 @@
 project(dominion)
 cmake_minimum_required(VERSION 3.14)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 enable_testing()
 
@@ -17,7 +17,12 @@ add_library(dominion STATIC
     src/gamelogic/event.cpp
     src/gamelogic/event_helpers.cpp
     src/gamelogic/reaction.cpp
+    src/gamelogic/actors/genericplay.cpp
+    src/gamelogic/actors/defaultplay.cpp
+    src/gamelogic/actors/actor_helpers.cpp
+    src/gamelogic/actors/buylistactor.cpp
     src/gamelogic/buylist/parser.cpp
+    src/gamelogic/buylist/strategy.cpp
     src/gamelogic/buylist/buylist.tab.cpp
     src/gamelogic/buylist/lex.yy.cpp
     src/gamelogic/buylist/conditionfactory.cpp

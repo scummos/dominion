@@ -150,5 +150,6 @@ struct Hand {
     ActiveCards findCards(Card::Hints hints) const;
     bool hasCard(CardId id) const;
     bool hasCard(Card::Type type) const;
+    void ignore(Card* card);
 };
 

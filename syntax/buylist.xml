@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="Buylist" version="4" kateversion="5.0" section="Scientific" extensions="*.buylist" casesensitive="1" >
+  <highlighting>
+    <list name="cardname">
+      <item>Province</item>
+      <item>Duchy</item>
+      <item>Estate</item>
+      <item>Copper</item>
+      <item>Silver</item>
+      <item>Gold</item>
+      <item>Remodel</item>
+      <item>Smithy</item>
+      <item>IllGottenGains</item>
+    </list>
+
+    <list name="conditionfunc">
+      <item>AnyOf</item>
+      <item>AllOf</item>
+      <item>Not</item>
+      <item>Has</item>
+      <item>SupplyHasLess</item>
+      <item>SupplyEmptyPilesGreater</item>
+      <item>HasMoneyInHand</item>
+    </list>
+
+    <list name="strategy">
+      <item>:Default</item>
+      <item>:ChainDraw</item>
+    </list>
+
+    <contexts>
+      <context attribute="Normal Text" name="default" lineEndContext="#stay">
+        <StringDetect attribute="Keyword" context="buylists" beginRegion="buylistsRegion" String="buylists" />
+        <StringDetect attribute="Keyword" context="strategies" beginRegion="strategiesRegion" String="strategies" />
+      </context>
+
+      <context attribute="Normal Text" name="buylists" lineEndContext="#stay">
+        <StringDetect attribute="Keyword" context="list" beginRegion="buylistRegion" String="list"/>
+        <StringDetect attribute="Keyword" context="#pop" endRegion="buylistsRegion" String="end"/>
+      </context>
+
+      <context attribute="Normal Text" name="list" lineEndContext="#stay">
+        <StringDetect attribute="Keyword" context="#stay" String="if"/>
+        <StringDetect attribute="Keyword" context="#stay" String="not"/>
+        <StringDetect attribute="Keyword" context="#pop" endRegion="buylistRegion" String="end"/>
+        <keyword attribute="String" context="#stay" String="cardname" />
+        <keyword attribute="Function" context="#stay" String="conditionfunc" />
+        <RegExpr attribute="Decimal" context="#stay" String="\d+" />
+      </context>
+
+      <context attribute="Normal Text" name="strategies" lineEndContext="#stay">
+        <StringDetect attribute="Keyword" context="strategy" beginRegion="strategyRegion" String="strategy"/>
+        <StringDetect attribute="Keyword" context="#pop" endRegion="strategiesRegion" String="end"/>
+      </context>
+
+      <context attribute="Normal Text" name="strategy" lineEndContext="#stay">
+        <StringDetect attribute="Keyword" context="#stay" String="if"/>
+        <StringDetect attribute="Keyword" context="#stay" String="not"/>
+        <StringDetect attribute="Keyword" context="#pop" endRegion="strategyRegion" String="end"/>
+        <StringDetect attribute="Keyword" context="playorder" beginRegion="playorderRegion" String="playorder"/>
+        <StringDetect attribute="Keyword" context="options" beginRegion="optionsfor" String="options"/>
+        <keyword attribute="String" context="#stay" String="cardname" />
+        <keyword attribute="Function" context="#stay" String="conditionfunc" />
+        <RegExpr attribute="Decimal" context="#stay" String="\d+" />
+      </context>
+
+      <context attribute="Normal Text" name="playorder" lineEndContext="#stay">
+        <keyword attribute="String" context="#stay" String="cardname" />
+        <RegExpr attribute="BuiltIn" context="#stay" String="\:\w+" />
+        <StringDetect attribute="Keyword" context="#pop" endRegion="playorderRegion" String="end"/>
+      </context>
+
+      <context attribute="Normal Text" name="options" lineEndContext="#stay">
+        <StringDetect attribute="Keyword" context="#stay" String="for"/>
+        <StringDetect attribute="Function" context="#stay" String="choose"/>
+        <StringDetect attribute="Function" context="#stay" String="ignore"/>
+        <StringDetect attribute="Function" context="#stay" String="optional"/>
+        <StringDetect attribute="Function" context="#stay" String="option"/>
+        <keyword attribute="String" context="#stay" String="cardname" />
+        <StringDetect attribute="Keyword" context="#pop" endRegion="optionsfor" String="end"/>
+        <RegExpr attribute="Decimal" context="#stay" String="\d+" />
+      </context>
+    </contexts>
+
+    <itemDatas>
+      <itemData name="Normal Text"               defStyleNum="dsNormal" />
+      <itemData name="Keyword"                   defStyleNum="dsKeyword" />
+      <itemData name="BuiltIn"                   defStyleNum="dsBuiltIn" />
+      <itemData name="Function"                  defStyleNum="dsPreprocessor" />
+      <itemData name="Data Type"                 defStyleNum="dsDataType" />
+      <itemData name="String"                    defStyleNum="dsDataType" />
+      <itemData name="Decimal"                   defStyleNum="dsDecVal" />
+      <itemData name="FloatFunc"                 defStyleNum="dsFloat" />
+      <itemData name="Comment"                   defStyleNum="dsComment" />
+    </itemDatas>
+
+  </highlighting>
+
+  <general>
+    <comments>
+      <comment name="singleLine" start="#" />
+    </comments>
+    <keywords casesensitive="1" />
+  </general>
+
+</language>
+
+<!-- kate: replace-tabs: on; tab-width: 4; indent-width: 2; -->
+

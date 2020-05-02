@@ -28,6 +28,7 @@ Supply::Supply(int nplayers)
     createPile<Mandarin>(10);
     createPile<FoolsGold>(10);
     createPile<Rebuild>(10);
+    createPile<Remodel>(10);
     createPile<Oasis>(10);
     createPile<Highway>(10);
     createPile<Laboratory>(10);
@@ -62,5 +63,14 @@ CardPile& Supply::pile(const CardId id)
         throw NoSuchPileError{"The requested pile does not exist."};
     }
     return *pile;
-
 }
+
+Card::BasicInfo Supply::pileInfo(const CardId id)
+{
+    auto info = std::find_if(m_pileInfos.begin(), m_pileInfos.end(), [id](auto const& info) { return info.id == id; });
+    if (info == m_pileInfos.end()) {
+        throw NoSuchPileError{"The requested pile does not exist."};
+    }
+    return *info;
+}
+

@@ -6,13 +6,13 @@
 
 #include <iostream>
 
-Game::Game(std::vector<std::string> const& actors)
+Game::Game(std::vector<std::string> const& actors, std::vector<std::any> const& args)
     : m_supply(actors.size())
 {
     int i = 0;
     for (auto const& actorName: actors) {
         auto& player = m_players.emplace_back(createStartingDeck(), &m_supply, i);
-        m_actors.emplace_back(createActor(actorName, &m_supply, &player));
+        m_actors.emplace_back(createActor(actorName, &m_supply, &player, args[i]));
         i++;
     }
 

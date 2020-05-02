@@ -9,7 +9,7 @@
 #include <execution>
 
 int main() {
-    int const games = 10000;
+    int const games = 25000;
     auto logger = Logger::instance(games);
 
     std::vector<int> winners(2);
@@ -19,8 +19,10 @@ int main() {
     std::iota(gameNumber.begin(), gameNumber.end(), 0);
     std::mutex winners_mutex;
 
+    auto args1 = parseBuylist("../strategies/test.buylist");
+    auto args2 = parseBuylist("../strategies/smithy_bm.buylist");
     std::for_each(std::execution::par_unseq, gameNumber.begin(), gameNumber.end(), [&](int) {
-        Game game({"buylist", "buylistBM"});
+        Game game({"buylist", "buylist"}, {std::any(args1), std::any(args2)});
         auto winner = game.run();
 
         logger->addGame(game.logData());

@@ -12,9 +12,7 @@
 #include <string>
 #include <memory>
 
-inline std::unique_ptr<Actor> createActor(std::string const& which, Supply const* supply, Deck const* deck) {
-    static auto disk_buylist = parseBuylist("../src/gamelogic/buylist/test2.buylist");
-
+inline std::unique_ptr<Actor> createActor(std::string const& which, Supply const* supply, Deck const* deck, std::any args) {
     if (which == "bigmoney")
         return std::make_unique<BigMoneyActor>(supply, deck);
 
@@ -24,38 +22,11 @@ inline std::unique_ptr<Actor> createActor(std::string const& which, Supply const
     if (which == "shepherd")
         return std::make_unique<ShepherdActor>(supply, deck);
 
-    if (which == "buylistBM") {
-        auto actor = std::make_unique<BuylistActor>(supply, deck);
-        actor->buylists = BuylistCollection{{
-            Buylist {
-                If<VeryLateGame>(), anyVictory()
-            },
-            Buylist {
-                If<LateGame>(), goodVictory()
-            },
-            Buylist {
-                If<CardCountGreaterThan>(CardId::Gold, 0), {CardId::Province}
-            },
-            Buylist {{
-                { If<Buy2ndDelayedAfter>(CardId::Smithy, CardId::Gold), CardId::Smithy },
-                {
-                    If<AllOf>(
-                        If<CardCountLessThan>(CardId::Moat, 1),
-                        IfNot<HasMoney>(3)
-                    ),
-                    CardId::Moat
-                }
-            }},
-            Buylist {
-                bestMoney()
-            },
-        }};
-        return actor;
-    }
-
     if (which == "buylist") {
         auto actor = std::make_unique<BuylistActor>(supply, deck);
-        actor->buylists = disk_buylist;
+        auto argsPair = std::any_cast<std::pair<BuylistCollection, StrategyCollection>>(args);
+        actor->buylists = argsPair.first;
+        actor->strats = argsPair.second;
         return actor;
     }
 
