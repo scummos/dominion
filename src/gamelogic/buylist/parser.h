@@ -5,4 +5,4 @@
 
 #include <utility>
 
-std::pair<BuylistCollection, StrategyCollection> parseBuylist(char const* filename);
+std::pair<BuylistCollection, StrategyCollection> parseBuylist(char* text);

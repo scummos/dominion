@@ -18,6 +18,12 @@ public:
         }
     }
 
+    virtual CardTraits traits() const override {
+        return CardTraits{
+            1
+        };
+    };
+
     std::shared_ptr<EventReactOption> reactToEvent(Event& event, Deck* playerDeck) const override {
         if (!eventGainsThisCard(event, this)) {
             return {};

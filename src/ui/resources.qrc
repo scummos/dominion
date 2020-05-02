@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file alias="syntax/buylist.xml">../../syntax/buylist.xml</file>
+    <file alias="strategy/smithy_bm.buylist">../../strategies/smithy_bm.buylist</file>
+    <file alias="strategy/bm.buylist">../../strategies/bm.buylist</file>
+    <file alias="strategy/rebuild.buylist">../../strategies/rebuild.buylist</file>
+</qresource>
+</RCC>

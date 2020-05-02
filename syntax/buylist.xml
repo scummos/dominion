@@ -12,6 +12,8 @@
       <item>Remodel</item>
       <item>Smithy</item>
       <item>IllGottenGains</item>
+      <item>Rebuild</item>
+      <item>Witch</item>
     </list>
 
     <list name="conditionfunc">
@@ -19,6 +21,7 @@
       <item>AllOf</item>
       <item>Not</item>
       <item>Has</item>
+      <item>HasExact</item>
       <item>SupplyHasLess</item>
       <item>SupplyEmptyPilesGreater</item>
       <item>HasMoneyInHand</item>

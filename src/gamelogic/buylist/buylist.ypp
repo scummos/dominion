@@ -4,6 +4,7 @@
   #include "conditionfactory.h"
   #include "genericcardoption.h"
   #include "strategy.h"
+  #include <string.h>
 }
 
 %{
@@ -14,12 +15,16 @@
     #include "buylist.tab.hpp"
     using namespace std;
 
+    typedef struct yy_buffer_state *YY_BUFFER_STATE;
+    extern YY_BUFFER_STATE yy_scan_string(char const* base);
+    extern void yyrestart(FILE *input_file);
+    extern int yycolumn, yylineno;
     extern int yylex(yy::parser::semantic_type*, yy::parser::location_type*);
     extern "C" {
         extern FILE *yyin;
     }
 
-    extern int parse_buylist(char const* fn, BuylistCollection& ret, StrategyCollection& strats);
+    extern int parse_buylist(char* fn, BuylistCollection& ret, StrategyCollection& strats);
 %}
 
 %locations
@@ -267,23 +272,19 @@ cardoption_expr_list:
     }
 %%
 
-int parse_buylist(char const* fn, BuylistCollection& ret, StrategyCollection& strats) {
-  FILE *myfile = fopen(fn, "r");
-  if (!myfile) {
-    cout << "error opening file" << endl;
-    return -1;
-  }
-  yyin = myfile;
+int parse_buylist(char const* text, BuylistCollection& ret, StrategyCollection& strats) {
+  yy_scan_string(text);
+  yycolumn = 1;
+  yylineno = 1;
 
   yy::parser p(ret, strats);
 //   p.set_debug_level(1);
   int ok = p.parse();
-  fclose(myfile);
   return ok;
 }
 
 void yy::parser::error (const location_type& l, const std::string& m) {
-  cout << "Parse error in line " << l << ": " << m << endl;
-  exit(-1);
+  cerr << "Parse error in line " << l << ": " << m << endl;
+  throw BuylistParseError{l.begin.line, l.end.line, l.begin.column, l.end.column, m};
 }
 

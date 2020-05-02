@@ -5,6 +5,11 @@
 
 #define info(x)
 
+struct BuylistParseError {
+    int beginLine, endLine, beingColumn, endColumn;
+    std::string error;
+};
+
 struct BuyAction {
     // This condition must be fulfilled in addition to
     //  - can actually pay for the card and

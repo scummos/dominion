@@ -1,6 +1,12 @@
 project(dominion)
 cmake_minimum_required(VERSION 3.14)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
+
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 enable_testing()
 
@@ -33,6 +39,16 @@ target_link_libraries(dominion tbb)
 
 add_executable(main src/main.cpp)
 target_link_libraries(main dominion)
+
+find_package(Qt5 COMPONENTS Core Gui Widgets Concurrent REQUIRED)
+find_package(Qwt REQUIRED)
+find_package(KF5SyntaxHighlighting REQUIRED)
+add_executable(uimain
+    src/ui/main.cpp
+    src/ui/mainwindow.cpp
+    src/ui/resources.qrc
+)
+target_link_libraries(uimain dominion Qt5::Core Qt5::Gui Qt5::Widgets QwtLib KF5::SyntaxHighlighting Qt5::Concurrent)
 
 add_executable(histogram_test src/gamelogic/tests/histogram_test.cpp)
 target_link_libraries(histogram_test dominion)

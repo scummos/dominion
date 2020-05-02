@@ -22,6 +22,11 @@ std::vector<int> HistogramNd::data() const
     return m_data;
 }
 
+void Logger::clear()
+{
+    m_games.clear();
+}
+
 int& HistogramNd::value(MultiIndex const& index)
 {
     int mul = 1;

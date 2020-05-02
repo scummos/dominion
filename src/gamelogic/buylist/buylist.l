@@ -22,7 +22,7 @@ using token = yy::parser::token;
 
 [ \t] ;
 [\n]           { yycolumn = 1; }
-buylists       { return token::BUYLISTs; }
+buylists       { return token::BUYLISTS; }
 list           { return token::LIST; }
 strategies     { return token::STRATEGIES; }
 strategy       { return token::STRATEGY; }
@@ -41,7 +41,7 @@ optional       { return token::OPTIONAL; }
   yylval->emplace<int>(atoi(yytext));
   return token::INT;
 }
-:?[a-zA-Z0-9]+   {
+[a-zA-Z0-9]+   {
   yylval->emplace<std::string>(yytext);
   return token::STRING;
 }

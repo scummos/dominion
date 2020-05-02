@@ -6,17 +6,17 @@ buylists
 		Province, Duchy
 	end
 	list
-			Province,
-			IllGottenGains,
-			Silver if not Has(IllGottenGains, 2)
+		Province if Has(Gold, 1),
+		Rebuild,
+		Silver
 	end
 end
 
 strategies
 	strategy
-		playorder :Default end
-		options for IllGottenGains
-			choose optional
+		playorder
+			Rebuild,
+			:Default
 		end
 	end
 end

@@ -64,6 +64,7 @@ class Logger {
 public:
     Logger(int preallocGames);
     static Logger* instance(int preallocGames=1000);
+    void clear();
 
     /// Computes the average per-turn value of @p which for player @p playerIndex.
     std::vector<DataPoint> computeTurnGraph(int playerIndex, PerTurnLogData which);
