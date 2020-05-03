@@ -116,6 +116,9 @@ void Logger::PlayerData::addData(PerGameLogData which, int value)
 
 std::vector<DataPoint> Logger::computeTurnGraph(int playerIndex, PerTurnLogData which)
 {
+    // might still be computing
+    std::lock_guard lock(m_dataMutex);
+
     // number of data points used per turn
     std::vector<int> n;
     // sum of values per turn

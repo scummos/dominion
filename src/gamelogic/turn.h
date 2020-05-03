@@ -69,6 +69,7 @@ struct TurnInternal {
     void trashFromHand(Card* card);
     void discardFromHand(Card* card);
     int countCardsInHand() const;
+    int countCardsInHand(Card::Type type) const;
     void attackEachEnemy(AttackReactOption::Factory attack);
     int numPlayed(CardId card) const;
 
@@ -83,6 +84,7 @@ private:
     int m_maxMoney = 0;
     int m_totalCardsSeen = 0;
 
+    // TODO this map causes a lot of memory allocations, maybe better have a vector or a stack array?
     std::map<CardId, int> m_numPlayed;
 
     friend class Turn;

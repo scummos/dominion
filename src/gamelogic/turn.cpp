@@ -199,9 +199,6 @@ void Turn::endTurn()
     }
     m_internal.phase = TurnPhase::Cleanup;
 
-    deck()->moveAllCards(Areas::InPlay, Areas::DiscardPile);
-    deck()->moveAllCards(Areas::Hand, Areas::DiscardPile);
-
     m_logData.addData(PerTurnLogData::TotalCards, deck()->totalCards());
     m_logData.addData(PerTurnLogData::TotalMoney, deck()->totalMoney());
     m_logData.addData(PerTurnLogData::TotalScore, deck()->countScore());
@@ -209,6 +206,13 @@ void Turn::endTurn()
     m_logData.addData(PerTurnLogData::CardsSeen, m_internal.m_totalCardsSeen);
     m_logData.addData(PerTurnLogData::TurnNumber, deck()->turnCount());
     m_logData.addData(PerTurnLogData::Curses, deck()->totalCards(CardId::Curse));
+    m_logData.addData(PerTurnLogData::UnplayedActions, m_internal.countCardsInHand(Card::Action));
+    m_logData.addData(PerTurnLogData::UnusedBuys, m_internal.buys());
+    m_logData.addData(PerTurnLogData::UnusedMoney, m_internal.money());
+    m_logData.addData(PerTurnLogData::UnusedActions, m_internal.actions());
+
+    deck()->moveAllCards(Areas::InPlay, Areas::DiscardPile);
+    deck()->moveAllCards(Areas::Hand, Areas::DiscardPile);
 
     doFinalDraw();
 
@@ -261,6 +265,11 @@ void TurnInternal::discardFromHand(Card* card)
 int TurnInternal::countCardsInHand() const
 {
     return static_cast<const Deck*>(deck)->hand().cards().size();
+}
+
+int TurnInternal::countCardsInHand(Card::Type type) const
+{
+    return static_cast<const Deck*>(deck)->hand().count(type);
 }
 
 Cost TurnInternal::cardCost(CardId id) const

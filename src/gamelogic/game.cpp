@@ -79,8 +79,8 @@ int Game::run()
     }
 
     int turncount = 0;
-    currentPlayer = 0;
-    while (!gameEnded()) {
+    currentPlayer = m_firstPlayer;
+    while (!gameEnded() && turncount < 63) {
         auto* player = &m_players.at(currentPlayer);
         auto& actor = m_actors.at(currentPlayer);
 
@@ -92,20 +92,30 @@ int Game::run()
         turncount++;
     }
 
-    auto maxScore = -10000, winner = -1, minTurns = 0;
-    for (int i = 0; i < m_players.size(); i++) {
-        auto score = m_players.at(i).countScore();
-        auto turns = m_players.at(i).turnCount();
-        if (score > maxScore || (score == maxScore && minTurns > turns)) {
-            winner = i;
-            maxScore = score;
-            minTurns = turns;
-        }
-        else if (score == maxScore) {
-            winner = -1;
-        }
+    struct Score {
+        int player;
+        int vp;
+        int turns;
+    };
+    std::vector<Score> scores;
+    int i = 0;
+    for (auto const& player: m_players) {
+        scores.emplace_back(Score{
+            i, player.countScore(), player.turnCount()
+        });
+        m_logData[i].addData(PerGameLogData::TotalScore, scores.back().vp);
+        i++;
+    }
 
-        m_logData[i].addData(PerGameLogData::TotalScore, score);
+    std::sort(scores.begin(), scores.end(), [](Score const& s1, Score const& s2) {
+        return s1.vp == s2.vp ? s1.turns > s2.turns : s1.vp < s2.vp;
+    });
+
+    auto first = scores.at(scores.size() - 1);
+    auto second = scores.at(scores.size() - 2);
+    auto winner = first.player;
+    if (first.vp == second.vp && first.turns == second.turns) {
+        winner = -1;
     }
 
     for (int i = 0; i < m_players.size(); i++) {
@@ -113,6 +123,10 @@ int Game::run()
     }
 
     return winner;
+}
+
+void Game::setFirstPlayer(int index) {
+    m_firstPlayer = index;
 }
 
 Logger::GameData Game::logData() const

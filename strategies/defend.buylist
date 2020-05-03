@@ -1,0 +1,31 @@
+buylists
+	list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
+		Province, Duchy, Estate
+	end
+	list if SupplyHasLess(Province, 4)
+		Province, Duchy
+	end
+	list
+		Province if Has(Gold, 1),
+		Gold,
+		Smithy if AllOf(Has(Gold, 1), HasExact(Smithy, 1)),
+		Smithy if HasExact(Smithy, 0),
+		Chapel if not Has(Chapel, 1),
+		Silver
+	end
+end
+
+strategies
+	strategy if HasInHand(Curse, 1)
+		playorder Chapel end
+		options for Chapel
+			Curse, Estate, Copper
+		end
+	end
+	strategy
+		playorder Smithy, Chapel, :Default end
+		options for Chapel
+			Curse, Estate
+		end
+	end
+end

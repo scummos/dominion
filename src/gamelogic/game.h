@@ -23,9 +23,12 @@ public:
 
     Logger::GameData logData() const;
 
+    void setFirstPlayer(int index);
+
 private:
     Supply m_supply;
     std::vector<Deck> m_players;
     std::vector<std::unique_ptr<Actor>> m_actors;
     Logger::GameData m_logData;
+    int m_firstPlayer = 0;
 };

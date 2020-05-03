@@ -11,6 +11,7 @@
 #include <theme.h>
 
 #include <qwt_plot_curve.h>
+#include <qwt_plot_grid.h>
 
 #include <QDebug>
 #include <QKeyEvent>
@@ -40,25 +41,67 @@ MainWindow::MainWindow()
     ui->strategyEdit->setTabStopDistance(20); // pixels
 
     connect(ui->strategyEdit, &QTextEdit::textChanged, this, &MainWindow::recompute, Qt::QueuedConnection);
+    connect(ui->enemyFirst, &QCheckBox::toggled, this, &MainWindow::recompute);
     connect(&m_watcher, &decltype(m_watcher)::progressRangeChanged, this, [this](int min, int max) {
         m_progress.min = min;
         m_progress.max = max;
     });
     connect(&m_watcher, &decltype(m_watcher)::progressValueChanged, this, [this](int value) {
         m_progress.value = value;
-        ui->statusbar->showMessage(QString("done: %1/%2").arg(m_progress.value).arg(m_progress.max));
+        ui->statusbar->showMessage(QString("Running: %1/%2%3")
+            .arg(m_progress.value)
+            .arg(m_progress.max)
+            .arg(m_progress.max == m_progress.value ? ", done." : ""));
         showAvailableResults();
     });
+
+    m_graphTimer.setInterval(100);
+    m_graphTimer.setSingleShot(true);
+    connect(&m_graphTimer, &QTimer::timeout, this, &MainWindow::showGraph);
 
     connect(ui->graphCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::showGraph);
 
     connect(ui->actionLoad, &QAction::triggered, this, &MainWindow::loadFile);
     connect(ui->actionSave, &QAction::triggered, this, &MainWindow::saveFile);
     connect(ui->actionSaveAs, &QAction::triggered, this, &MainWindow::saveFileAs);
-    connect(ui->enemyCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::selectDefaultEnemy);
     connect(ui->selectEnemy, &QPushButton::clicked, this, QOverload<>::of(&MainWindow::loadEnemy));
 
+    connect(ui->buttonRefine, &QPushButton::clicked, this, [this]() {
+        recomputeRefined(100000);
+    });
+
+    connect(ui->jumpToError, &QPushButton::clicked, this, [this]() {
+        // TODO this doesn't work, dunno why
+        auto block = ui->strategyEdit->document()->findBlockByLineNumber(ui->jumpToError->property("goto").toInt());
+        auto cursor = QTextCursor(block);
+        ui->strategyEdit->setTextCursor(cursor);
+    });
+    ui->jumpToError->setVisible(false);
+
+    auto enemyPresetMenu = new QMenu(this);
+    ui->selectEnemy->setMenu(enemyPresetMenu);
+    for (auto preset: {":strategy/bm.buylist", ":strategy/smithy_bm.buylist"}) {
+        enemyPresetMenu->addAction(preset, [this, preset]() {
+            loadEnemy(preset);
+        });
+    }
+
+    auto grid = new QwtPlotGrid();
+    grid->setMajorPen("#CCCCCC");
+    grid->setMinorPen("#DDDDDD", 1.0, Qt::DashLine);
+    grid->enableXMin(true);
+    grid->enableYMin(true);
+    grid->attach(ui->qwtPlot);
+
+    loadEnemy(m_enemyFilename);
     recompute();
+}
+
+void MainWindow::showGraphDelayed()
+{
+    if (!m_graphTimer.isActive()) {
+        m_graphTimer.start();
+    }
 }
 
 QString MainWindow::readFile(const QString& fn)
@@ -84,6 +127,7 @@ void MainWindow::loadFile()
     s.setValue(KEY_DIR, fn);
 
     ui->strategyEdit->setText(readFile(fn));
+    m_filename = fn;
 }
 
 void MainWindow::saveFile()
@@ -100,6 +144,7 @@ void MainWindow::saveFile()
     }
 
     f.write(ui->strategyEdit->toPlainText().toUtf8());
+    ui->statusbar->showMessage(QString("Saved to %1.").arg(m_filename));
 }
 
 void MainWindow::saveFileAs()
@@ -136,18 +181,8 @@ void MainWindow::loadEnemy()
 void MainWindow::loadEnemy(const QString& filename)
 {
     m_enemyFilename = filename;
+    ui->selectedEnemy->setText(filename.section("/", -1, -1));
     recompute();
-}
-
-void MainWindow::selectDefaultEnemy(int index)
-{
-    QString fn;
-    switch (index) {
-        case 0: fn = ":/strategy/smithy_bm.buylist"; break;
-        case 1: fn = ":/strategy/bm.buylist"; break;
-        default: return;
-    }
-    loadEnemy(fn);
 }
 
 void MainWindow::showAvailableResults()
@@ -171,7 +206,7 @@ void MainWindow::showAvailableResults()
     ui->draws->setMaximum(available);
     ui->draws->setValue(draws);
 
-    showGraph();
+    showGraphDelayed();
 }
 
 PerTurnLogData MainWindow::graphDataType() const
@@ -187,7 +222,7 @@ PerTurnLogData MainWindow::graphDataType() const
 void MainWindow::showGraph()
 {
     ui->qwtPlot->detachItems(QwtPlotItem::Rtti_PlotCurve);
-    QPen pens[] = {QPen(Qt::darkGreen), QPen(Qt::red)};
+    QPen pens[] = {QPen(Qt::blue), QPen(Qt::lightGray)};
 
     for (int player = 0; player < 2; player++) {
         QwtPlotCurve* curve = new QwtPlotCurve();
@@ -195,23 +230,29 @@ void MainWindow::showGraph()
 
         int turn = 0;
         // setSamples takes a constref, this is still a bit of a wtf for me ...
-        m_xdata.clear();
-        m_ydata.clear();
+        m_xdata[player].clear();
+        m_ydata[player].clear();
         for (auto entry: graph) {
-            m_xdata.append(turn++);
-            m_ydata.append(entry.value);
+            m_xdata[player].append(turn++);
+            m_ydata[player].append(entry.value);
         }
-        curve->setSamples(m_xdata, m_ydata);
+        curve->setSamples(m_xdata[player], m_ydata[player]);
         QPen pen(pens[player]);
         pen.setWidth(1);
         curve->setPen(pen);
         curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
         curve->attach(ui->qwtPlot);
     }
+
     ui->qwtPlot->replot();
 }
 
 void MainWindow::recompute()
+{
+    recomputeRefined(10000);
+}
+
+void MainWindow::recomputeRefined(int games)
 {
     if (m_watcher.isRunning()) {
         m_watcher.cancel();
@@ -219,27 +260,32 @@ void MainWindow::recompute()
     }
 
     std::pair<BuylistCollection, StrategyCollection> args1;
+    ui->errorStack->setCurrentIndex(0);
+    ui->syntaxError->setText({});
     try {
         args1 = parseBuylist(ui->strategyEdit->toPlainText().toUtf8().data());
     }
     catch (BuylistParseError e) {
-        ui->statusbar->showMessage(QString("Parse error in line %1.%2: %3")
+        ui->errorStack->setCurrentIndex(1);
+        ui->syntaxError->setText(QString("Parse error in line %1.%2: %3")
             .arg(e.beginLine)
             .arg(e.beingColumn)
             .arg(QString::fromStdString(e.error))
         );
+        ui->jumpToError->setProperty("goto", e.beginLine);
         return;
     }
     auto args2 = parseBuylist(readFile(m_enemyFilename).toUtf8().data());
 
-    auto games = 10000;
     QVector<int> gameNumber(games);
     std::iota(gameNumber.begin(), gameNumber.end(), 0);
     auto logger = Logger::instance(games);
     logger->clear();
 
-    std::function<int(int)> func = [args1, args2, logger](int) {
+    auto enemyFirst = ui->enemyFirst->isChecked();
+    std::function<int(int)> func = [enemyFirst, args1, args2, logger](int) {
         Game game({"buylist", "buylist"}, {std::any(args1), std::any(args2)});
+        game.setFirstPlayer(enemyFirst ? 1 : 0);
         auto winner = game.run();
 
         logger->addGame(game.logData());

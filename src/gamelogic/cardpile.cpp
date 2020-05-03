@@ -53,6 +53,11 @@ int CardPile::count(CardId id) const
     return std::count_if(m_cards.begin(), m_cards.end(), [id](Card* c) { return c->basicInfo().id == id; });
 }
 
+int CardPile::count(Card::Type type) const
+{
+    return std::count_if(m_cards.begin(), m_cards.end(), [type](Card* c) { return c->hasType(type); });
+}
+
 Cards& CardPile::cards()
 {
     return m_cards;

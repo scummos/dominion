@@ -1,0 +1,14 @@
+buylists
+	list
+	  Copper
+	end
+end
+
+strategies
+	strategy
+		playorder
+			:ChainDraw,
+			:Default
+		end
+	end
+end

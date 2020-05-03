@@ -111,7 +111,7 @@ private:
     std::vector<Deck*> m_enemies;
     Supply* m_supply;
     int m_turnCount = 0;
-    int m_playerIndex = 0; // used for logging
+    int m_playerIndex = -1; // used for logging
     ReactCallback m_react;
     Deck(Deck const& other) = delete;
 };

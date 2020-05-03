@@ -28,6 +28,10 @@ enum class PerTurnLogData {
     TotalCards,
     TotalMoney,
     Curses,
+    UnplayedActions,
+    UnusedBuys,
+    UnusedMoney,
+    UnusedActions,
     Num
 };
 

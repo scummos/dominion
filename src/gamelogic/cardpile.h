@@ -22,6 +22,7 @@ public:
 
     int count() const;
     int count(CardId id) const;
+    int count(Card::Type type) const;
     Cards& cards();
     Cards const& cards() const;
     Card* topCard();

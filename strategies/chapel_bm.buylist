@@ -1,0 +1,35 @@
+buylists
+	list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
+		Province, Duchy, Estate
+	end
+	list if SupplyHasLess(Province, 4)
+		Province, Duchy
+	end
+	list
+		Province if Has(Gold, 2),
+		Gold,
+		Silver if not Has(Silver, 1),
+		Chapel if not Has(Chapel, 1),
+		Silver if not AnyOf(Has(Silver, 2), Has(Gold, 1)),
+		Smithy if HasExact(Smithy, 0),
+		Smithy if AllOf(Has(Province, 1), HasExact(Smithy, 1)),
+		Silver
+	end
+end
+
+strategies
+	strategy if AnyOf(
+			Has(Gold, 1),
+			Has(Copper, 3),
+			Has(Silver, 2),
+			AllOf(Has(Silver, 1), Has(Copper, 2))
+		)
+		playorder :ChainDraw, Smithy, Chapel, :Default end
+		options for Chapel
+			Estate, Copper
+		end
+	end
+	strategy
+		playorder :Default end
+	end
+end

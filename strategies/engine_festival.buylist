@@ -1,0 +1,30 @@
+buylists
+	list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
+		Province, Duchy, Estate
+	end
+	list if SupplyHasLess(Province, 4)
+		Province, Duchy
+	end
+	list
+		Province if Has(Gold, 1),
+		Gold,
+		CouncilRoom if HasExact(CouncilRoom, 0),
+		Festival if not Has(Festival, 4),
+		CouncilRoom if HasExact(CouncilRoom, 1),
+		Moneylender if not Has(Moneylender, 1),
+		Silver,
+		Chapel if not Has(Chapel, 1)
+	end
+end
+
+strategies
+	strategy if HasInHand(Estate, 2)
+		playorder Chapel end
+		options for Chapel
+			Estate
+		end
+	end
+	strategy
+		playorder :ChainDraw, :Default end
+	end
+end

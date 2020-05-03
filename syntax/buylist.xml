@@ -14,6 +14,12 @@
       <item>IllGottenGains</item>
       <item>Rebuild</item>
       <item>Witch</item>
+      <item>Curse</item>
+      <item>Chapel</item>
+      <item>Moneylender</item>
+      <item>CouncilRoom</item>
+      <item>Festival</item>
+      <item>FoolsGold</item>
     </list>
 
     <list name="conditionfunc">
@@ -25,6 +31,7 @@
       <item>SupplyHasLess</item>
       <item>SupplyEmptyPilesGreater</item>
       <item>HasMoneyInHand</item>
+      <item>HasInHand</item>
     </list>
 
     <list name="strategy">

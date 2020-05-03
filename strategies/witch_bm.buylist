@@ -7,7 +7,9 @@ buylists
 	end
 	list
 		Province if Has(Gold, 1),
-		IllGottenGains,
+		Gold,
+		Witch if not Has(Witch, 1),
+		Smithy if not Has(Smithy, 1),
 		Silver
 	end
 end
@@ -15,10 +17,8 @@ end
 strategies
 	strategy
 		playorder
+			:ChainDraw,
 			:Default
-		end
-		options for IllGottenGains
-			choose optional
 		end
 	end
 end

@@ -7,18 +7,21 @@ buylists
 	end
 	list
 		Province if Has(Gold, 1),
-		IllGottenGains,
+		Gold,
+		Witch if not Has(Witch, 2),
+		Chapel if not Has(Chapel, 1),
 		Silver
 	end
 end
 
 strategies
+	strategy if AllOf(SupplyHasLess(Curse, 1), HasInHand(Curse, 1))
+		playorder Chapel, :Default end
+		options for Chapel
+			Curse
+		end
+	end
 	strategy
-		playorder
-			:Default
-		end
-		options for IllGottenGains
-			choose optional
-		end
+		playorder Witch, :Default end
 	end
 end

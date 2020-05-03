@@ -30,10 +30,10 @@ bool genericPlay(Turn* turn, ActiveCard card, std::optional<GenericCardOption> o
         return defaultPlay(turn, card);
     }
 
+    auto hand = turn->currentHand();
+    hand.ignore(card.card);
     switch (card.card->id()) {
         case CardId::Remodel: {
-            auto hand = turn->currentHand();
-            hand.ignore(card.card);
             auto const& choices = anyToList<CardPair>(opt->option);
             for (auto const& choice: choices) {
                 if (hand.hasCard(choice.first)) {
@@ -46,6 +46,25 @@ bool genericPlay(Turn* turn, ActiveCard card, std::optional<GenericCardOption> o
                 }
             }
             // Otherwise, we do not play Remodel, as we have nothing to use it on. That's fine.
+            return false;
+        }
+        case CardId::Chapel: {
+            auto const& choices = anyToList<CardId>(opt->option);
+            Cards trash;
+            for (auto const& choice: choices) {
+                for (auto const& card: hand.findCards(choice)) {
+                    trash.push_back(card.card);
+                }
+            }
+            if (trash.size() > 4) {
+                trash.erase(trash.begin()+4, trash.end());
+            }
+            if (trash.size() > 0) {
+                CardOptionChapel opt;
+                opt.trash = trash;
+                card.playAction(&opt);
+                return true;
+            }
             return false;
         }
         default: break;

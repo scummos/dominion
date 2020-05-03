@@ -4,6 +4,7 @@
 
 #include <QMainWindow>
 #include <QFutureWatcher>
+#include <QTimer>
 
 #include <memory>
 
@@ -19,14 +20,15 @@ public:
     bool eventFilter(QObject* watched, QEvent* event) override;
 
     void recompute();
+    void recomputeRefined(int count);
     void showAvailableResults();
+    void showGraphDelayed();
     void showGraph();
     PerTurnLogData graphDataType() const;
 
     void loadFile();
     void saveFile();
     void saveFileAs();
-    void selectDefaultEnemy(int index);
     void loadEnemy();
     QString readFile(QString const& fn);
 
@@ -45,7 +47,9 @@ private:
         int value;
     } m_progress;
 
-    QVector<double> m_xdata, m_ydata;
+    QVector<double> m_xdata[5], m_ydata[5];
     QString m_filename = ":/strategy/rebuild.buylist";
     QString m_enemyFilename = ":/strategy/smithy_bm.buylist";
+
+    QTimer m_graphTimer;
 };
