@@ -33,6 +33,8 @@ Supply::Supply(int nplayers)
     createPile<Highway>(10);
     createPile<Laboratory>(10);
     createPile<IllGottenGains>(10);
+    createPile<Embassy>(10);
+    createPile<Trader>(10);
 }
 
 Supply::~Supply()

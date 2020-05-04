@@ -1,4 +1,5 @@
 #include "defaultplay.h"
+#include "genericplay.h"
 
 #define info(x)
 
@@ -67,6 +68,13 @@ bool defaultPlay(Turn* turn, ActiveCard& card)
             card.playAction(&opt);
             return true;
         }
+
+        case CardId::Embassy:
+            return genericPlay(turn, card, std::vector<std::any>{CardId::Curse, CardId::Estate, CardId::Duchy, CardId::Province, CardId::Copper});
+
+        case CardId::Trader:
+            return genericPlay(turn, card, std::vector<std::any>{CardId::Estate});
+
         default: break;
     }
     info(std::cerr << "Info: cannot default-play card " << card.card->name() << std::endl);

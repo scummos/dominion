@@ -12,7 +12,7 @@ class Deck;
 
 enum class ReactKind {
     IgnoreAttackReaction, //< Option to ignore an attack (e.g. Moat)
-    GainDifferentCardReaction, //< Option to gain a different card instead
+    TraderReaction,
     Attack = 0x1000,
     DiscardAttack = 2 | Attack, //< You are forced to discard some cards
     TorturerAttack = 3 | Attack, //< Special attack by torturer card

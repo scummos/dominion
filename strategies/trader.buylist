@@ -8,20 +8,24 @@ buylists
 	list
 		Province if Has(Gold, 1),
 		Gold,
-		Witch if not Has(Witch, 2),
-		Chapel if AllOf(HasExact(Chapel, 0), Has(Curse, 2)),
+		Smithy [1],
+		Silver [1] if not Has(Gold, 1),
+		Trader [1],
 		Silver
 	end
 end
 
 strategies
-	strategy if AllOf(SupplyHasLess(Curse, 1), HasInHand(Curse, 1))
-		playorder Chapel, :Default end
-		options for Chapel
-			Curse
+	strategy if HasInHand(Estate, 1)
+		playorder Trader, Smithy, :Default end
+		options for Trader
+			Curse, Estate
 		end
 	end
 	strategy
-		playorder Witch end
+		playorder Smithy, Trader, :Default end
+		options for Trader
+			Curse, Estate
+		end
 	end
 end

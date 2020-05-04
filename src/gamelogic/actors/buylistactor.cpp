@@ -1,5 +1,14 @@
 #include "buylistactor.h"
 
+namespace {
+    std::any option(std::optional<GenericCardOption> const& cardOpt) {
+        if (!cardOpt.has_value()) {
+            return std::any();
+        }
+        return cardOpt->option;
+    }
+}
+
 void BuylistActor::react(EventReactOptions& options)
 {
     for (auto& option: options) {
@@ -26,7 +35,7 @@ void BuylistActor::executeTurn(Turn* turn)
                     playedSomething = false;
                     auto cards = turn->currentHand().findCards(*cardType);
                     if (!cards.empty()) {
-                        playedSomething = genericPlay(turn, cards.back(), strat.optionForCard(*cardType));
+                        playedSomething = genericPlay(turn, cards.back(), option(strat.optionForCard(*cardType)));
                     }
                 }
             }
@@ -68,7 +77,7 @@ void BuylistActor::executeTurn(Turn* turn)
     while (hand.hasCard(Card::Treasure)) {
         for (auto& hcard: hand.cards) {
             if (hcard.card->hasType(Card::Treasure)) {
-                genericPlayTreasure(turn, hcard, treasureOption(hcard.card->id()));
+                genericPlayTreasure(turn, hcard, option(treasureOption(hcard.card->id())));
             }
         }
         hand = turn->currentHand();

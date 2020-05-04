@@ -10,6 +10,8 @@ struct CardOptionRebuild : public CardOption {
 class Rebuild: public Card {
 public:
     void playAction(TurnInternal* turn, CardOption* option_) override {
+        turn->addActions(1);
+
         auto* option = static_cast<CardOptionRebuild*>(option_);
         auto const* deck = turn->deck;
 

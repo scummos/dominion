@@ -24,6 +24,8 @@
 #include "laboratory.h"
 #include "illgottengains.h"
 #include "remodel.h"
+#include "embassy.h"
 #include "rebuild.h"
+#include "trader.h"
 
 #include "cardid.h"

@@ -250,7 +250,17 @@ p, li { white-space: pre-wrap; }
          <number>0</number>
         </property>
         <property name="format">
-         <string>Wins: %p% (%v/%m)</string>
+         <string>You win: %p% (%v/%m)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="enemyWinrate">
+        <property name="value">
+         <number>24</number>
+        </property>
+        <property name="format">
+         <string>Enemy wins: %p% (%v/%m)</string>
         </property>
        </widget>
       </item>
@@ -258,6 +268,15 @@ p, li { white-space: pre-wrap; }
        <widget class="QProgressBar" name="draws">
         <property name="value">
          <number>24</number>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="textDirection">
+         <enum>QProgressBar::TopToBottom</enum>
         </property>
         <property name="format">
          <string>Draws: %p% (%v/%m)</string>

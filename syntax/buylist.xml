@@ -20,6 +20,8 @@
       <item>CouncilRoom</item>
       <item>Festival</item>
       <item>FoolsGold</item>
+      <item>Embassy</item>
+      <item>Trader</item>
     </list>
 
     <list name="conditionfunc">

@@ -10,7 +10,8 @@ buylists
 		Rebuild if not Has(Rebuild, 2),
 		Duchy,
 		Silver,
-		Estate
+		Estate,
+		Gold
 	end
 end
 

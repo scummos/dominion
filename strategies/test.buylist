@@ -6,17 +6,16 @@ buylists
 		Province, Duchy
 	end
 	list
-			Province,
-			IllGottenGains,
-			Silver if not Has(IllGottenGains, 2)
+			Province if Has(Gold, 1),
+			Gold,
+			Embassy if HasExact(Embassy, 0),
+			Smithy if HasExact(Smithy, 0),
+			Silver
 	end
 end
 
 strategies
 	strategy
 		playorder :Default end
-		options for IllGottenGains
-			choose optional
-		end
 	end
 end

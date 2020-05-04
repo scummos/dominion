@@ -95,6 +95,7 @@ public:
     int countScore() const;
     int totalCards() const;
     int totalCards(CardId id) const;
+    bool hasCardInHand(Card const* card) const;
     int totalMoney() const;
     int playerIndex() const;
 

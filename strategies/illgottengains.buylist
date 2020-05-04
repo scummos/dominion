@@ -6,7 +6,7 @@ buylists
 		Province, Duchy
 	end
 	list
-		Province if Has(Gold, 1),
+		Province if Has(IllGottenGains, 5),
 		IllGottenGains,
 		Silver
 	end

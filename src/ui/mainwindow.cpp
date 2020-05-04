@@ -47,11 +47,18 @@ MainWindow::MainWindow()
         m_progress.max = max;
     });
     connect(&m_watcher, &decltype(m_watcher)::progressValueChanged, this, [this](int value) {
+        if (value < 1000) {
+            // too flickery
+            return;
+        }
         m_progress.value = value;
-        ui->statusbar->showMessage(QString("Running: %1/%2%3")
+        auto duration = m_perfTimer.elapsed();
+        auto persecond = value / (double) std::max<int>(1, duration) * 1000;
+        ui->statusbar->showMessage(QString("Running: %1 of %2%3")
             .arg(m_progress.value)
             .arg(m_progress.max)
-            .arg(m_progress.max == m_progress.value ? ", done." : ""));
+            .arg(m_progress.max == m_progress.value
+                ? QString(" done in %1 msecs (%2 per second)").arg(duration).arg(persecond) : QString()));
         showAvailableResults();
     });
 
@@ -95,6 +102,11 @@ MainWindow::MainWindow()
 
     loadEnemy(m_enemyFilename);
     recompute();
+}
+
+void MainWindow::closeEvent(QCloseEvent* /*event*/)
+{
+    m_watcher.future().cancel();
 }
 
 void MainWindow::showGraphDelayed()
@@ -202,6 +214,9 @@ void MainWindow::showAvailableResults()
     ui->winrate->setMinimum(0);
     ui->winrate->setMaximum(available);
     ui->winrate->setValue(winner1);
+    ui->enemyWinrate->setMinimum(0);
+    ui->enemyWinrate->setMaximum(available);
+    ui->enemyWinrate->setValue(winner2);
     ui->draws->setMinimum(0);
     ui->draws->setMaximum(available);
     ui->draws->setValue(draws);
@@ -259,6 +274,7 @@ void MainWindow::recomputeRefined(int games)
         m_watcher.waitForFinished();
     }
 
+    m_perfTimer.start();
     std::pair<BuylistCollection, StrategyCollection> args1;
     ui->errorStack->setCurrentIndex(0);
     ui->syntaxError->setText({});
@@ -286,7 +302,25 @@ void MainWindow::recomputeRefined(int games)
     std::function<int(int)> func = [enemyFirst, args1, args2, logger](int) {
         Game game({"buylist", "buylist"}, {std::any(args1), std::any(args2)});
         game.setFirstPlayer(enemyFirst ? 1 : 0);
-        auto winner = game.run();
+        int winner = -1;
+        try {
+            winner = game.run();
+        }
+        catch (InvalidPlayError e) {
+            qWarning() << "invalid play:" << QString::fromStdString(e.error);
+        }
+        catch (CardMoveError e) {
+            qWarning() << "card move failed:" << QString::fromStdString(e.reason);
+        }
+        catch (InvalidCardUsage e) {
+            qWarning() << "invalid card usage:" << QString::fromStdString(e.err);
+        }
+        catch (NoSuchPileError e) {
+            qWarning() << "no such pile:" << QString::fromStdString(e.error);
+        }
+        catch (...) {
+            qWarning() << "Unhandled exception while running game";
+        }
 
         logger->addGame(game.logData());
         return winner;

@@ -31,6 +31,7 @@ public:
         Victory = 0x1,
         Treasure = 0x2,
         Action = 0x4,
+        Reaction = 0x8,
     };
 
     enum Hints {
@@ -94,4 +95,8 @@ using Cards = std::vector<Card*>;
 
 inline Card::Hints operator|(Card::Hints const a, Card::Hints const b) {
     return static_cast<Card::Hints>(int(a) | int(b));
+}
+
+inline Card::Type operator|(Card::Type const a, Card::Type const b) {
+    return static_cast<Card::Type>(int(a) | int(b));
 }

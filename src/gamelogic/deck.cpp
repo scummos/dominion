@@ -117,6 +117,10 @@ bool Deck::gainFromSupply(const CardId id, Areas targetArea)
         m_react(opts);
     }
 
+    for (auto& opt: opts) {
+        opt->defaultAction();
+    }
+
     if (!event.ignored) {
         pile.moveCardTo(0, area(targetArea));
     }
@@ -248,3 +252,8 @@ void Deck::attacked(AttackEvent& event)
     event.attack->defaultAction();
 }
 
+bool Deck::hasCardInHand(Card const* card) const
+{
+    auto const& h = hand().cards();
+    return std::find(h.begin(), h.end(), card) != h.end();
+}

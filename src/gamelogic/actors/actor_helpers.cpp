@@ -1,4 +1,5 @@
 #include "actor_helpers.h"
+#include "trader.h"
 
 void defaultVillageDraw(Turn* turn, int wantActionsRemain)
 {
@@ -140,6 +141,14 @@ void defaultReact(EventReactOption& option) {
     case ReactKind::NoChoiceAttack:
         // nothing we can do about this
         break;
+
+    case ReactKind::TraderReaction: {
+        auto& opt = static_cast<ReactOptionTrader&>(option);
+        if (opt.card() == CardId::Curse || opt.card() == CardId::Copper) {
+            opt.accept();
+        }
+        break;
+    }
 
     case ReactKind::DiscardAttack: {
         // TODO

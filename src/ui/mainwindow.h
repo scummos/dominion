@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QFutureWatcher>
 #include <QTimer>
+#include <QElapsedTimer>
 
 #include <memory>
 
@@ -32,6 +33,8 @@ public:
     void loadEnemy();
     QString readFile(QString const& fn);
 
+    void closeEvent(QCloseEvent* event) override;
+
 private:
     void loadEnemy(const QString& filename);
 
@@ -52,4 +55,5 @@ private:
     QString m_enemyFilename = ":/strategy/smithy_bm.buylist";
 
     QTimer m_graphTimer;
+    QElapsedTimer m_perfTimer;
 };
