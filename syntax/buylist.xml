@@ -22,6 +22,8 @@
       <item>FoolsGold</item>
       <item>Embassy</item>
       <item>Trader</item>
+      <item>Cartographer</item>
+      <item>Crossroads</item>
     </list>
 
     <list name="conditionfunc">
@@ -89,6 +91,12 @@
         <StringDetect attribute="Function" context="#stay" String="ignore"/>
         <StringDetect attribute="Function" context="#stay" String="optional"/>
         <StringDetect attribute="Function" context="#stay" String="option"/>
+        <StringDetect attribute="Function" context="#stay" String="trash"/>
+        <StringDetect attribute="Function" context="#stay" String="discard"/>
+        <StringDetect attribute="Function" context="#stay" String="keep"/>
+        <StringDetect attribute="Keyword" context="#stay" String="if"/>
+        <StringDetect attribute="Keyword" context="#stay" String="not"/>
+        <keyword attribute="Function" context="#stay" String="conditionfunc" />
         <keyword attribute="String" context="#stay" String="cardname" />
         <StringDetect attribute="Keyword" context="#pop" endRegion="optionsfor" String="end"/>
         <RegExpr attribute="Decimal" context="#stay" String="\d+" />

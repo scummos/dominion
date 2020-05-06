@@ -73,14 +73,12 @@ private:
     int m_count;
 };
 
-#include <iostream>
 class SupplyHasLess : public Condition {
 public:
     SupplyHasLess(CardId id, int count) : m_id(id), m_count(count) { }
     static auto create(CardId id, int count) { return std::make_shared<SupplyHasLess>(id, count); }
 
     bool fulfilled(Turn* turn) override {
-//         std::cout << "check supply has less: " << turn->leftInSupply(m_id) << " < " << m_count << std::endl;
         return turn->leftInSupply(m_id) < m_count;
     }
 

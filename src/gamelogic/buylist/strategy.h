@@ -18,7 +18,7 @@ public:
     void setCondition(Condition::Ptr condition);
 
     bool conditionFulfilled(Turn* turn) const;
-    std::optional<GenericCardOption> optionForCard(CardId id) const;
+    std::optional<GenericCardOption> optionForCard(CardId id, Turn* turn) const;
     Playorders playorder() const;
 
 private:

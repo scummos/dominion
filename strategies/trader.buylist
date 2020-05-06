@@ -8,7 +8,7 @@ buylists
 	list
 		Province if Has(Gold, 1),
 		Gold,
-		Smithy [1],
+		Witch [1],
 		Silver [1] if not Has(Gold, 1),
 		Trader [1],
 		Silver
@@ -16,10 +16,10 @@ buylists
 end
 
 strategies
-	strategy if HasInHand(Estate, 1)
+	strategy if AnyOf(HasInHand(Estate, 1), HasInHand(Curse, 1))
 		playorder Trader, Smithy, :Default end
 		options for Trader
-			Curse, Estate
+			Estate, Curse
 		end
 	end
 	strategy

@@ -39,7 +39,8 @@
 %define api.value.type variant
 
 // define the constant-string tokens:
-%token BUYLISTS LIST END COMMENT LPAREN RPAREN NOT IF NEWLINE ARROW STRATEGIES STRATEGY PLAYORDER OPTIONS OPTION FOR CHOOSE IGNORE OPTIONAL
+%token BUYLISTS LIST END COMMENT LPAREN RPAREN NOT IF NEWLINE ARROW STRATEGIES STRATEGY
+%token PLAYORDER OPTIONS OPTION FOR CHOOSE IGNORE OPTIONAL TAG_DISCARD TAG_TRASH TAG_KEEP REACTIONS
 
 %token <int> INT
 %token <std::string> STRING
@@ -58,6 +59,8 @@
 %nterm <std::vector<GenericCardOption>> cardoptions
 %nterm <std::any> cardoption_expr
 %nterm <std::any> cardoption_expr_value
+%nterm <TaggedExpr> cardoption_tagged_expr
+%nterm <std::vector<std::any>> cardoption_tagged_expr_list
 %nterm <std::vector<std::any>> cardoption_expr_list
 
 %nterm <Condition::Ptr> condition
@@ -243,12 +246,24 @@ cardoption:
       $$ = GenericCardOption{$3, $4, $5};
     }
   ;
+reactoption:
+  REACTIONS FOR card_name cardoption_expr END {
+      $$ = GenericCardReaction{$3, $4};
+    }
+  ;
 cardoption_expr:
   cardoption_expr_value {
       $$ = $1;
     }
   | cardoption_expr_list ',' cardoption_expr_value {
       // only parse as list if it has at least 1 comma
+      $1.push_back($3);
+      $$ = $1;
+    }
+  | cardoption_tagged_expr {
+      $$ = $1;
+    }
+  | cardoption_tagged_expr_list ',' cardoption_tagged_expr {
       $1.push_back($3);
       $$ = $1;
     }
@@ -278,6 +293,27 @@ cardoption_expr_list:
   | cardoption_expr_value {
       $$ = std::vector<std::any>{$1};
     }
+  ;
+cardoption_tagged_expr:
+  TAG_DISCARD '(' cardoption_expr ')' {
+      $$ = TaggedExpr{OptionTag::Discard, $3};
+    }
+  | TAG_KEEP '(' cardoption_expr ')' {
+      $$ = TaggedExpr{OptionTag::Keep, $3};
+    }
+  | TAG_TRASH '(' cardoption_expr ')' {
+      $$ = TaggedExpr{OptionTag::Trash, $3};
+    }
+  ;
+cardoption_tagged_expr_list:
+  cardoption_tagged_expr_list ',' cardoption_tagged_expr {
+      $1.push_back($3);
+      $$ = $1;
+    }
+  | cardoption_tagged_expr {
+      $$ = std::vector<std::any>{$1};
+    }
+  ;
 %%
 
 int parse_buylist(char const* text, BuylistCollection& ret, StrategyCollection& strats) {

@@ -35,6 +35,8 @@ Supply::Supply(int nplayers)
     createPile<IllGottenGains>(10);
     createPile<Embassy>(10);
     createPile<Trader>(10);
+    createPile<Cartographer>(10);
+    createPile<Crossroads>(10);
 }
 
 Supply::~Supply()

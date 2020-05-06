@@ -3,6 +3,7 @@
 #include "remodel.h"
 #include "embassy.h"
 #include "trader.h"
+#include "cartographer.h"
 
 #define info(x)
 
@@ -18,6 +19,39 @@ namespace {
             return ret;
         }
         return V{std::any_cast<T>(any)};
+    }
+
+    std::any getTagged(std::any any, OptionTag tag) {
+        using VE = std::vector<TaggedExpr>;
+        if (any.type() == typeid(TaggedExpr)) {
+            auto expr = std::any_cast<TaggedExpr>(any);
+            if (expr.tag == tag) {
+                return expr.option;
+            }
+        }
+        if (any.type() == typeid(VE)) {
+            auto v = std::any_cast<VE>(any);
+            auto it = std::find_if(v.begin(), v.end(), [tag](TaggedExpr const& e) {
+                return e.tag == tag;
+            });
+            if (it != v.end()) {
+                return it->option;
+            }
+        }
+        // Otherwise, just assume the whole option refers to this tag.
+        return any;
+    }
+
+    auto makeDiscardFunc(std::vector<CardId> const& discard) {
+        return std::function([discard](const Cards& in) {
+            Cards out;
+            for (auto const& card: in) {
+                if (std::find(discard.begin(), discard.end(), card->id()) == discard.end()) {
+                    out.push_back(card);
+                }
+            }
+            return out;
+        });
     }
 
     Cards cardsByValue(Hand const& hand) {
@@ -133,6 +167,15 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
             }
             CardOptionTrader opt;
             opt.trash = choice;
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::Cartographer: {
+            auto part = getTagged(opt, OptionTag::Discard);
+            auto const& choices = anyToList<CardId>(part);
+            CardOptionCartographer opt;
+            opt.discard = makeDiscardFunc(choices);
             card.playAction(&opt);
             return true;
         }

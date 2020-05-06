@@ -16,10 +16,10 @@ bool Strategy::conditionFulfilled(Turn* turn) const
     return !m_condition || m_condition->fulfilled(turn);
 }
 
-std::optional<GenericCardOption> Strategy::optionForCard(CardId id) const
+std::optional<GenericCardOption> Strategy::optionForCard(CardId id, Turn* turn) const
 {
-    auto it = std::find_if(m_options.begin(), m_options.end(), [id](GenericCardOption const& opt) {
-        return opt.forCard == id;
+    auto it = std::find_if(m_options.begin(), m_options.end(), [id, turn](GenericCardOption const& opt) {
+        return opt.forCard == id && (!opt.precondition || opt.precondition->fulfilled(turn));
     });
     return it == m_options.end() ? std::nullopt : std::make_optional(*it);
 }

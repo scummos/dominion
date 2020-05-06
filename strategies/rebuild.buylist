@@ -7,11 +7,10 @@ buylists
 	end
 	list
 		Province if Has(Rebuild, 2),
-		Rebuild if not Has(Rebuild, 2),
+		Rebuild [2],
 		Duchy,
 		Silver,
-		Estate,
-		Gold
+		Estate
 	end
 end
 

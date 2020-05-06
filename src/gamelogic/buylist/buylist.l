@@ -31,11 +31,15 @@ end            { return token::END; }
 not            { return token::NOT; }
 if             { return token::IF; }
 options        { return token::OPTIONS; }
+reactions      { return token::REACTIONS; }
 for            { return token::FOR; }
 choose         { return token::CHOOSE; }
 option         { return token::OPTION; }
 ignore         { return token::IGNORE; }
 optional       { return token::OPTIONAL; }
+discard        { return token::TAG_DISCARD; }
+trash          { return token::TAG_TRASH; }
+keep           { return token::TAG_KEEP; }
 ->             { return token::ARROW; }
 [0-9]+         {
   yylval->emplace<int>(atoi(yytext));

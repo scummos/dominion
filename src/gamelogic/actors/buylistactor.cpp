@@ -35,7 +35,7 @@ void BuylistActor::executeTurn(Turn* turn)
                     playedSomething = false;
                     auto cards = turn->currentHand().findCards(*cardType);
                     if (!cards.empty()) {
-                        playedSomething = genericPlay(turn, cards.back(), option(strat.optionForCard(*cardType)));
+                        playedSomething = genericPlay(turn, cards.back(), option(strat.optionForCard(*cardType, turn)));
                     }
                 }
             }
@@ -64,9 +64,9 @@ void BuylistActor::executeTurn(Turn* turn)
         }
     }
 
-    auto treasureOption = [&usedStrategies](CardId id) -> std::optional<GenericCardOption> {
+    auto treasureOption = [&usedStrategies, turn](CardId id) -> std::optional<GenericCardOption> {
         for (auto used: usedStrategies) {
-            if (auto opt = used->optionForCard(id)) {
+            if (auto opt = used->optionForCard(id, turn)) {
                 return opt;
             }
         }

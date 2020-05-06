@@ -25,6 +25,7 @@
 #include "illgottengains.h"
 #include "remodel.h"
 #include "embassy.h"
+#include "cartographer.h"
 #include "rebuild.h"
 #include "trader.h"
 
