@@ -25,6 +25,7 @@
       <item>Cartographer</item>
       <item>Crossroads</item>
       <item>Torturer</item>
+      <item>Margrave</item>
     </list>
 
     <list name="reactname">
@@ -32,6 +33,7 @@
       <item>Trader</item>
       <item>DiscardAttack</item>
       <item>TorturerAttack</item>
+      <item>MargraveAttack</item>
     </list>
 
     <list name="conditionfunc">

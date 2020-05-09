@@ -4,6 +4,7 @@
 #include "embassy.h"
 #include "trader.h"
 #include "cartographer.h"
+#include "margrave.h"
 
 #define info(x)
 
@@ -68,7 +69,7 @@ namespace {
         return std::function([discard](const Cards& in) {
             Cards out;
             for (auto const& card: in) {
-                if (std::find(discard.begin(), discard.end(), card->id()) == discard.end()) {
+                if (std::find(discard.begin(), discard.end(), card->id()) != discard.end()) {
                     out.push_back(card);
                 }
             }
@@ -165,6 +166,13 @@ bool genericReact(Deck const* deck, EventReactOption::Ptr reactOption, std::any 
             }
             return true;
         }
+
+        case ReactKind::MargraveAttack: {
+            auto reactOpt = std::static_pointer_cast<MargraveAttackReactOption>(reactOption);
+            reactOpt->chooseDiscard(makeDiscardFunc(getTaggedCardList(opt, OptionTag::Discard)));
+            return true;
+        }
+
         default: break;
     }
     return false;
@@ -199,7 +207,7 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
         }
 
         case CardId::Chapel: {
-            auto const& choices = anyToList<CardId>(opt);
+            auto const& choices = getTaggedCardList(opt, OptionTag::Trash);
             auto trash = findInHand(hand.cards, choices, 4);
 
             if (trash.size() > 0) {
@@ -213,7 +221,7 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
 
         case CardId::Embassy: {
             auto chooseDiscard = [opt](Hand const& hand) {
-                auto const& choices = anyToList<CardId>(opt);
+                auto const& choices = getTaggedCardList(opt, OptionTag::Discard);
                 return findInHandExact(hand.cards, choices, 3);
             };
             CardOptionEmbassy opt;

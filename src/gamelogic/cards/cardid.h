@@ -42,6 +42,7 @@ enum class CardId {
     Embassy,
     Trader,
     Cartographer,
+    Margrave,
     NumCards
 };
 
@@ -76,6 +77,7 @@ static char const* cardName(CardId const id) {
         case CardId::IllGottenGains: return "IllGottenGains";
         case CardId::Trader:     return "Trader";
         case CardId::Cartographer: return "Cartographer";
+        case CardId::Margrave:   return "Margrave";
         default:                 return "Unnamed card";
     }
 }

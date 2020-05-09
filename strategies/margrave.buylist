@@ -1,0 +1,22 @@
+buylists
+	list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
+		Province, Duchy, Estate
+	end
+	list if SupplyHasLess(Province, 4)
+		Province, Duchy
+	end
+	list
+		Province if Has(Gold, 1),
+		Gold [2],
+		Margrave [1],
+		Margrave [2] if Has(Gold, 1),
+		Gold,
+		Silver
+	end
+end
+
+strategies
+	strategy
+		playorder Margrave, :Default end
+	end
+end

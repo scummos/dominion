@@ -10,6 +10,8 @@
 
 class Deck;
 
+using DiscardFunc = std::function<Cards(Cards const&)>;
+
 enum class ReactKind {
     Invalid,
     IgnoreAttackReaction, //< Option to ignore an attack (e.g. Moat)
@@ -18,6 +20,7 @@ enum class ReactKind {
     DiscardAttack = 2 | Attack, //< You are forced to discard some cards
     TorturerAttack = 3 | Attack, //< Special attack by torturer card
     NoChoiceAttack = 4 | Attack, //< Generic attack type which does something but gives you no choice
+    MargraveAttack = 5 | Attack
 };
 
 ReactKind reactKind(std::string const& name);

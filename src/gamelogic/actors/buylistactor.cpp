@@ -27,7 +27,7 @@ void BuylistActor::react(EventReactOptions& options)
             }
         }
         if (!handled) {
-            defaultReact(reactOption);
+            defaultReact(m_deck, reactOption);
         }
     }
 }

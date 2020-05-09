@@ -21,4 +21,4 @@ Card* worstTreasure(Hand& hand, CardSortOrder order = CardSortOrder::LeastExpens
 
 CardId upgradeTreasure(CardId id);
 
-void defaultReact(EventReactOption::Ptr option);
+void defaultReact(Deck const* deck, EventReactOption::Ptr option);
