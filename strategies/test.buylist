@@ -17,5 +17,9 @@ end
 strategies
 	strategy
 		playorder :Default end
+		reactions for TorturerAttack if HasInHand(Estate, 1)
+			choose (option 1),
+			discard (Estate, Curse, Copper)
+		end
 	end
 end

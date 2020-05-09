@@ -7,7 +7,7 @@ struct TorturerAttackReactOption : public AttackReactOption {
     TorturerAttackReactOption(Deck* deck) : AttackReactOption(ReactKind::TorturerAttack, deck) { }
 
     Cards cards() {
-        return static_cast<const Deck*>(m_deck)->hand().cards();
+        return m_deck->constHand().cards();
     }
 
     void chooseCurse() {
@@ -22,7 +22,7 @@ struct TorturerAttackReactOption : public AttackReactOption {
         if (m_choiceMade) {
             return;
         }
-        if (cards.size() != std::min<int>(2, static_cast<const Deck*>(m_deck)->hand().cards().size())) {
+        if (cards.size() != std::min<int>(2, m_deck->constHand().cards().size())) {
             throw InvalidPlayError{"Must select exactly 2 cards to discard"};
         }
         for (auto* card: cards) {

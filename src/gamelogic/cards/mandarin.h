@@ -34,7 +34,7 @@ public:
         }
 
         std::vector<Card*> putBack;
-        for (auto* card: static_cast<const Deck*>(playerDeck)->inPlay().cards()) {
+        for (auto* card: playerDeck->constInPlay().cards()) {
             if (!card->hasType(Card::Treasure)) {
                 continue;
             }

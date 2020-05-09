@@ -23,8 +23,8 @@ public:
     HasMoneyInHand(int money) : m_money(money) {}
     static auto create(int money) { return std::make_shared<HasMoneyInHand>(money); }
 
-    bool fulfilled(Turn* turn) override {
-        return plainTreasureInHand(turn->currentHand()) >= m_money;
+    bool fulfilled(Deck const* deck) override {
+        return plainTreasureInHand(deck->constHand().cards()) >= m_money;
     }
 
 private:
@@ -36,8 +36,8 @@ public:
     HasInHand(CardId id, int count) : m_id(id), m_count(count) {}
     static auto create(CardId id, int count) { return std::make_shared<HasInHand>(id, count); }
 
-    bool fulfilled(Turn* turn) override {
-        return turn->currentHand().findCards(m_id).size() >= m_count;
+    bool fulfilled(Deck const* deck) override {
+        return deck->constHand().count(m_id) >= m_count;
     }
 
 private:
@@ -45,13 +45,35 @@ private:
     int m_count;
 };
 
+template<int N>
+class HasNInHand : public Condition {
+public:
+    template<typename... Types>
+    HasNInHand(Types... types) : m_ids({types...}) { }
+
+    template<typename... Types>
+    static auto create(Types... types) { return std::make_shared<HasNInHand<N>>(types...); }
+
+    bool fulfilled(Deck const* deck) override {
+        auto h = deck->constHand();
+        int count = 0;
+        for (auto const id: m_ids) {
+            count += h.count(id);
+        }
+        return count >= N;
+    }
+
+private:
+    std::vector<CardId> m_ids;
+};
+
 class Has : public Condition {
 public:
     Has(CardId id, int count) : m_id(id), m_count(count) {}
     static auto create(CardId id, int count) { return std::make_shared<Has>(id, count); }
 
-    bool fulfilled(Turn* turn) override {
-        return turn->totalCards(m_id) >= m_count;
+    bool fulfilled(Deck const* deck) override {
+        return deck->totalCards(m_id) >= m_count;
     }
 
 private:
@@ -64,8 +86,8 @@ public:
     HasExact(CardId id, int count) : m_id(id), m_count(count) {}
     static auto create(CardId id, int count) { return std::make_shared<HasExact>(id, count); }
 
-    bool fulfilled(Turn* turn) override {
-        return turn->totalCards(m_id) == m_count;
+    bool fulfilled(Deck const* deck) override {
+        return deck->totalCards(m_id) == m_count;
     }
 
 private:
@@ -78,8 +100,8 @@ public:
     SupplyHasLess(CardId id, int count) : m_id(id), m_count(count) { }
     static auto create(CardId id, int count) { return std::make_shared<SupplyHasLess>(id, count); }
 
-    bool fulfilled(Turn* turn) override {
-        return turn->leftInSupply(m_id) < m_count;
+    bool fulfilled(Deck const* deck) override {
+        return deck->leftInSupply(m_id) < m_count;
     }
 
 private:
@@ -92,8 +114,8 @@ public:
     SupplyEmptyPilesGreater(int count) : m_count(count) {}
     static auto create(int count) { return std::make_shared<SupplyEmptyPilesGreater>(count); }
 
-    bool fulfilled(Turn* turn) override {
-        return turn->emptySupplyPiles() > m_count;
+    bool fulfilled(Deck const* deck) override {
+        return deck->emptySupplyPiles() > m_count;
     }
 
 private:
@@ -105,8 +127,8 @@ public:
     TurnCountLessThan(int count) : m_count(count) {}
     static auto create(int count) { return std::make_shared<TurnCountLessThan>(count); }
 
-    bool fulfilled(Turn* turn) override {
-        return turn->turnCount() < m_count;
+    bool fulfilled(Deck const* deck) override {
+        return deck->turnCount() < m_count;
     }
 
 private:
@@ -118,8 +140,8 @@ public:
     CardCountLessThan(CardId id, int count) : m_id(id), m_count(count) {}
     static auto create(CardId id, int count) { return std::make_shared<CardCountLessThan>(id, count); }
 
-    bool fulfilled(Turn* turn) override {
-        return turn->totalCards(m_id) < m_count;
+    bool fulfilled(Deck const* deck) override {
+        return deck->totalCards(m_id) < m_count;
     }
 
 private:
@@ -132,8 +154,8 @@ public:
     CardCountGreaterThan(CardId id, int count) : m_id(id), m_count(count) {}
     static auto create(CardId id, int count) { return std::make_shared<CardCountGreaterThan>(id, count); }
 
-    bool fulfilled(Turn* turn) override {
-        return turn->totalCards(m_id) > m_count;
+    bool fulfilled(Deck const* deck) override {
+        return deck->totalCards(m_id) > m_count;
     }
 
 private:
@@ -141,22 +163,3 @@ private:
     int m_count;
 };
 
-class LateGame : public Condition {
-public:
-    LateGame() = default;
-    static auto create() { return new LateGame; }
-
-    bool fulfilled(Turn* turn) override {
-        return turn->leftInSupply(CardId::Province) <= 3;
-    };
-};
-
-class VeryLateGame : public Condition {
-public:
-    VeryLateGame() = default;
-    static auto create() { return std::make_shared<VeryLateGame>; }
-
-    bool fulfilled(Turn* turn) override {
-        return turn->leftInSupply(CardId::Province) <= 2;
-    };
-};

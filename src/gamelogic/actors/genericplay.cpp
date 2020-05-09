@@ -12,6 +12,7 @@ namespace {
     std::vector<T> anyToList(std::any any) {
         using V = std::vector<T>;
         using VA = std::vector<std::any>;
+        info(std::cerr << "anyToList " << typeid(T).name() << " from " << any.type().name() << std::endl);
         if (any.type() == typeid(VA)) {
             auto temp = std::any_cast<VA>(any);
             V ret(temp.size());
@@ -21,8 +22,14 @@ namespace {
         return V{std::any_cast<T>(any)};
     }
 
-    std::any getTagged(std::any any, OptionTag tag) {
+    enum class TagRequirement {
+        Implicit, //< "options for Chapel Curse end" returns "Curse" when asked for Trash tag
+        Explicit //< the above returns null instead, need "options for Chapel trash Curse end" for it to work
+    };
+
+    std::any getTagged(std::any any, OptionTag tag, TagRequirement mode = TagRequirement::Implicit) {
         using VE = std::vector<TaggedExpr>;
+        info(std::cerr << "getTagged from " << any.type().name() << std::endl);
         if (any.type() == typeid(TaggedExpr)) {
             auto expr = std::any_cast<TaggedExpr>(any);
             if (expr.tag == tag) {
@@ -38,8 +45,23 @@ namespace {
                 return it->option;
             }
         }
-        // Otherwise, just assume the whole option refers to this tag.
-        return any;
+        if (mode == TagRequirement::Implicit) {
+            // Just assume the whole option refers to this tag, if requested
+            return any;
+        }
+        return std::any();
+    }
+
+    std::vector<CardId> getTaggedCardList(std::any any, OptionTag tag, TagRequirement mode = TagRequirement::Implicit) {
+        return anyToList<CardId>(getTagged(any, tag, mode));
+    }
+
+    int getSelectedOption(std::any any, int defaultIfNotSpecified = 1) {
+        auto tag = getTagged(any, OptionTag::ChooseOption, TagRequirement::Explicit);
+        if (!tag.has_value()) {
+            return defaultIfNotSpecified;
+        }
+        return std::any_cast<int>(tag);
     }
 
     auto makeDiscardFunc(std::vector<CardId> const& discard) {
@@ -54,20 +76,20 @@ namespace {
         });
     }
 
-    Cards cardsByValue(Hand const& hand) {
+    Cards cardsByValue(CardPile const& hand) {
         Cards ret;
-        for (auto& c: hand.cards) {
-            ret.push_back(c.card);
+        for (auto& c: hand.cards()) {
+            ret.push_back(c);
         }
         std::sort(ret.begin(), ret.end(), [](Card* c1, Card* c2) { return c1->cost().gold() < c2->cost().gold(); });
         return ret;
     }
 
-    Cards findInHand(Hand const& hand, std::vector<CardId> cards, int max = -1) {
+    Cards findInHand(CardPile const& hand, std::vector<CardId> cards, int max = -1) {
         Cards ret;
         for (auto const& choice: cards) {
             for (auto const& card: hand.findCards(choice)) {
-                ret.push_back(card.card);
+                ret.push_back(card);
             }
         }
         if (max != -1 && ret.size() > max) {
@@ -76,7 +98,7 @@ namespace {
         return ret;
     }
 
-    Cards findInHandExact(Hand const& hand, std::vector<CardId> cards, int count) {
+    Cards findInHandExact(CardPile const& hand, std::vector<CardId> cards, int count) {
         auto base = findInHand(hand, cards, count);
         auto missing = count - base.size();
         if (missing == 0) {
@@ -95,16 +117,57 @@ namespace {
         return base;
     }
 
-    Card* firstChoice(Hand const& hand, std::vector<CardId> choices) {
+    Card* firstChoice(CardPile const& hand, std::vector<CardId> choices) {
         for (auto const& choice: choices) {
             if (hand.hasCard(choice)) {
-                return hand.findCards(choice).back().card;
+                return hand.findCards(choice).back();
             }
         }
         return nullptr;
     }
 
     using CardPair = std::pair<CardId, CardId>;
+}
+
+bool genericReact(Deck const* deck, EventReactOption::Ptr reactOption, std::any opt)
+{
+    if (!opt.has_value()) {
+        return false;
+    }
+
+    switch (reactOption->kind()) {
+        case ReactKind::TraderReaction: {
+            auto reactOpt = std::static_pointer_cast<ReactOptionTrader>(reactOption);
+            auto trade = anyToList<CardId>(opt);
+            info(std::cerr << "query trade " << cardName(reactOpt->card()) << std::endl);
+            if (std::find(trade.begin(), trade.end(), reactOpt->card()) != trade.end()) {
+                info(std::cerr << "trade accepted" << std::endl);
+                reactOpt->accept();
+            }
+            return true;
+        }
+
+        case ReactKind::TorturerAttack: {
+            auto reactOpt = std::static_pointer_cast<TorturerAttackReactOption>(reactOption);
+            auto selected = getSelectedOption(opt, 1);
+            switch (selected) {
+                case 1: {
+                    auto discardTypes = getTaggedCardList(opt, OptionTag::Discard, TagRequirement::Explicit);
+                    auto discard = findInHandExact(deck->constHand(), discardTypes, 2);
+                    reactOpt->chooseDiscard(discard);
+                    break;
+                }
+                case 2: {
+                    reactOpt->chooseCurse();
+                    break;
+                }
+                default: throw InvalidPlayError{"Requested option for TorturerAttack not available"};
+            }
+            return true;
+        }
+        default: break;
+    }
+    return false;
 }
 
 bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
@@ -137,7 +200,7 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
 
         case CardId::Chapel: {
             auto const& choices = anyToList<CardId>(opt);
-            auto trash = findInHand(hand, choices, 4);
+            auto trash = findInHand(hand.cards, choices, 4);
 
             if (trash.size() > 0) {
                 CardOptionChapel opt;
@@ -151,7 +214,7 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
         case CardId::Embassy: {
             auto chooseDiscard = [opt](Hand const& hand) {
                 auto const& choices = anyToList<CardId>(opt);
-                return findInHandExact(hand, choices, 3);
+                return findInHandExact(hand.cards, choices, 3);
             };
             CardOptionEmbassy opt;
             opt.discard = chooseDiscard;
@@ -160,8 +223,9 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
         }
 
         case CardId::Trader: {
-            auto const& choices = anyToList<CardId>(opt);
-            auto* choice = firstChoice(turn->currentHand(), choices);
+            auto part = getTagged(opt, OptionTag::Trash);
+            auto const& choices = anyToList<CardId>(part);
+            auto* choice = firstChoice(hand.cards, choices);
             if (!choice) {
                 return false;
             }
@@ -195,7 +259,7 @@ void genericPlayTreasure(Turn* turn, ActiveCard card, std::any opt)
 
     switch (card.card->id()) {
         case CardId::IllGottenGains: {
-            auto choice = std::any_cast<bool>(opt);
+            auto choice = std::any_cast<int>(getTagged(opt, OptionTag::ChooseOption)) == 1;
             CardOptionIllGottenGains opt;
             opt.wantCopper = choice;
             card.playTreasure(&opt);

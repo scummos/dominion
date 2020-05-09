@@ -8,12 +8,12 @@ Actor::Actor(Supply const* supply, Deck const* deck)
 
 CardPile const& Actor::discardPile() const
 {
-    return m_deck->discardPile();
+    return m_deck->constDiscardPile();
 }
 
 CardPile const& Actor::drawPile() const
 {
-    return m_deck->drawPile();
+    return m_deck->constDrawPile();
 }
 
 Deck const* Actor::deck() const

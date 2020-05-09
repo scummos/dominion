@@ -6,21 +6,27 @@
 #include <algorithm>
 #include <utility>
 
-Turn::Turn(Supply* supply, Deck* deck, Logger::PlayerData& logData)
+using std::operator""s;
+
+#define do_log(x) if(loggingEnabled()) log(x);
+#define do_log_internal(x) if(turn->loggingEnabled()) turn->log(x);
+
+Turn::Turn(Supply* supply, Deck* deck, Logger::PlayerData& logData, Game::LogFunction func)
     : m_logData(logData)
+    , m_logFunc(func)
 {
     m_internal.turn = this;
     m_internal.supply = supply;
     m_internal.deck = deck;
-    m_internal.m_totalCardsSeen = static_cast<const Deck*>(deck)->hand().cards().size();
+    m_internal.m_totalCardsSeen = deck->constHand().cards().size();
 }
 
 ActiveCards Hand::treasureCards() const
 {
     ActiveCards ret;
     for (auto const& c: cards) {
-        if (c.card->hasType(Card::Treasure)) {
-            ret.push_back(c);
+        if (c->hasType(Card::Treasure)) {
+            ret.emplace_back(ActiveCard{turn, c});
         }
     }
     return ret;
@@ -28,15 +34,15 @@ ActiveCards Hand::treasureCards() const
 
 void Hand::ignore(Card* card)
 {
-    cards.erase(std::remove_if(cards.begin(), cards.end(), [card](ActiveCard const& c) { return c.card == card; }), cards.end());
+    cards.erase(std::remove_if(cards.begin(), cards.end(), [card](Card* c) { return c == card; }), cards.end());
 }
 
 ActiveCards Hand::findCards(CardId id) const
 {
     ActiveCards ret;
     for (auto const& card: cards) {
-        if (card.card->basicInfo().id == id) {
-            ret.push_back(card);
+        if (card->basicInfo().id == id) {
+            ret.emplace_back(ActiveCard{turn, card});
         }
     }
     return ret;
@@ -46,8 +52,8 @@ ActiveCards Hand::findCards(Card::Type type) const
 {
     ActiveCards ret;
     for (auto const& card: cards) {
-        if (card.card->hasType(type)) {
-            ret.push_back(card);
+        if (card->hasType(type)) {
+            ret.emplace_back(ActiveCard{turn, card});
         }
     }
     return ret;
@@ -57,8 +63,8 @@ ActiveCards Hand::findCards(Card::Hints hints) const
 {
     ActiveCards ret;
     for (auto const& card: cards) {
-        if (card.card->hints() & hints) {
-            ret.push_back(card);
+        if (card->hints() & hints) {
+            ret.emplace_back(ActiveCard{turn, card});
         }
     }
     return ret;
@@ -66,15 +72,15 @@ ActiveCards Hand::findCards(Card::Hints hints) const
 
 bool Hand::hasCard(CardId id) const
 {
-    return std::any_of(cards.begin(), cards.end(), [id](ActiveCard const& c) {
-        return c.card->basicInfo().id == id;
+    return std::any_of(cards.begin(), cards.end(), [id](Card* c) {
+        return c->basicInfo().id == id;
     });
 }
 
 bool Hand::hasCard(Card::Type type) const
 {
-    return std::any_of(cards.begin(), cards.end(), [type](ActiveCard const& c) {
-        return c.card->types() & type;
+    return std::any_of(cards.begin(), cards.end(), [type](Card* c) {
+        return c->types() & type;
     });
 }
 
@@ -94,27 +100,38 @@ void Turn::buy(CardId id)
         throw InvalidPlayError{"You don't have enough money to pay for this card."};
     }
 
+    do_log("Buy card: "s + cardName(id) + " from " + std::to_string(m_internal.money()));
+
     m_internal.addBuys(-1);
     m_internal.addMoney(-cost.gold());
 
     deck()->gainFromSupply(id);
 }
 
+Hand::Hand(const Cards& cards, Turn* turn)
+    : cards(cards)
+    , turn(turn)
+{
+}
+
+ActiveCards Hand::activeCards() const
+{
+    ActiveCards ret;
+    std::transform(cards.begin(), cards.end(), std::back_inserter(ret), [this](Card* c) { return ActiveCard{turn, c}; });
+    return ret;
+}
+
 Hand Turn::currentHand()
 {
-    auto const& cards = static_cast<const Deck*>(m_internal.deck)->hand().cards();
-
-    Hand ret;
-    ret.cards.reserve(cards.size());
-    for (auto* card: cards) {
-        ret.cards.push_back(ActiveCard{this, card});
-    }
-    return ret;
+    return Hand(
+        m_internal.deck->constHand().cards(),
+        this
+    );
 }
 
 Cards Turn::currentHandCards()
 {
-    return static_cast<const Deck*>(m_internal.deck)->hand().cards();
+    return m_internal.deck->constHand().cards();
 }
 
 int Turn::currentMoney() const
@@ -162,6 +179,19 @@ int Turn::currentBuys() const
     return m_internal.buys();
 }
 
+void Turn::log(std::string message)
+{
+    if (!loggingEnabled()) {
+        return;
+    }
+    m_logFunc(m_internal.deck->playerIndex(), message);
+}
+
+bool Turn::loggingEnabled() const
+{
+    return m_logFunc != nullptr;
+}
+
 void Turn::playAction(Card* card, CardOption* option)
 {
     if (currentPhase() > TurnPhase::Action) {
@@ -175,6 +205,8 @@ void Turn::playAction(Card* card, CardOption* option)
     m_internal.addActions(-1);
     deck()->moveCard(card, Areas::Hand, Areas::InPlay);
     m_internal.m_numPlayed[card->id()]++;
+
+    do_log("Play action: "s + card->name());
 
     card->playAction(&m_internal, option);
 }
@@ -249,27 +281,32 @@ int TurnInternal::draw(int n)
 {
     int ret = deck->drawCards(n);
     m_totalCardsSeen += ret;
+    if (turn->currentPhase() != TurnPhase::DrawNext) {
+        do_log_internal("Draw cards: "s + std::to_string(n) + ", new hand: " + formatCardList(deck->constHand().cards()));
+    }
     return ret;
 }
 
 void TurnInternal::trashFromHand(Card* card)
 {
     deck->trash(card, Areas::Hand);
+    do_log_internal("Trash card: "s + card->name());
 }
 
 void TurnInternal::discardFromHand(Card* card)
 {
     deck->discardFromHand(card);
+    do_log_internal("Discard: "s + card->name());
 }
 
 int TurnInternal::countCardsInHand() const
 {
-    return static_cast<const Deck*>(deck)->hand().cards().size();
+    return deck->constHand().cards().size();
 }
 
 int TurnInternal::countCardsInHand(Card::Type type) const
 {
-    return static_cast<const Deck*>(deck)->hand().count(type);
+    return deck->constHand().count(type);
 }
 
 Cost TurnInternal::cardCost(CardId id) const

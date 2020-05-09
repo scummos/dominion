@@ -6,7 +6,7 @@ void defaultVillageDraw(Turn* turn, int wantActionsRemain)
     while (turn->currentActions() > wantActionsRemain) {
         auto hand = turn->currentHand();
         // Play all cards that give actions.
-        for (auto& card: hand.cards) {
+        for (auto& card: hand.activeCards()) {
             auto hints = card.card->hints();
             if ((hints & Card::Chain) && !(hints & Card::Choice)) {
                 card.playAction();
@@ -67,16 +67,16 @@ Card* leastUsefulCardInHand(Hand const& hand, Card* exclude) {
     if (hand.cards.empty()) {
         return nullptr;
     }
-    auto worst = std::min_element(hand.cards.begin(), hand.cards.end(), [exclude](ActiveCard const& c1, ActiveCard const& c2) {
-        return c1.card == exclude ? false : c2.card == exclude ? true : usefulness(c1.card) < usefulness(c2.card);
-    })->card;
+    auto worst = *std::min_element(hand.cards.begin(), hand.cards.end(), [exclude](Card* c1, Card* c2) {
+        return c1 == exclude ? false : c2 == exclude ? true : usefulness(c1) < usefulness(c2);
+    });
     return worst == exclude ? nullptr : worst;
 }
 
-int plainTreasureInHand(Hand const& hand) {
+int plainTreasureInHand(Cards const& hand) {
     int ret = 0;
-    for (auto const& hcard: hand.cards) {
-        ret += hcard.card->traits().treasureValue;
+    for (auto const& card: hand) {
+        ret += card->traits().treasureValue;
     }
     return ret;
 }
@@ -84,14 +84,14 @@ int plainTreasureInHand(Hand const& hand) {
 Card* worstTreasure(Hand& hand, CardSortOrder order) {
     Card* worst = nullptr;
     int cost = order == CardSortOrder::LeastExpensive ? 1000 : -1000;
-    for (auto& hcard: hand.cards) {
-        if (!hcard.card->hasType(Card::Treasure)) {
+    for (auto& card: hand.cards) {
+        if (!card->hasType(Card::Treasure)) {
             continue;
         }
 
-        auto const thisCost = hcard.card->basicInfo().cost.gold();
+        auto const thisCost = card->basicInfo().cost.gold();
         if (order == CardSortOrder::LeastExpensive ? thisCost <= cost : thisCost >= cost) {
-            worst = hcard.card;
+            worst = card;
             cost = thisCost;
         }
     }
@@ -107,34 +107,34 @@ CardId upgradeTreasure(CardId id) {
     return CardId::Invalid;
 }
 
-void defaultReact(EventReactOption& option) {
-    switch (option.kind()) {
+void defaultReact(EventReactOption::Ptr option) {
+    switch (option->kind()) {
     case ReactKind::TorturerAttack: {
-        auto& opt = static_cast<TorturerAttackReactOption&>(option);
-        auto cards = opt.cards();
+        auto opt = std::static_pointer_cast<TorturerAttackReactOption>(option);
+        auto cards = opt->cards();
 
         // Do we even have any cards? If no, chose discard, we can't discard anything anyways.
         if (cards.empty()) {
-            opt.chooseDiscard(cards);
+            opt->chooseDiscard(cards);
             break;
         }
 
         // Do we have at least 2 garbage cards anyways? Discard them.
         auto const& garbage = garbageCards(cards);
         if (garbage.size() >= 2) {
-            opt.chooseDiscard({garbage[0], garbage[1]});
+            opt->chooseDiscard({garbage[0], garbage[1]});
             break;
         }
 
         // Otherwise, maybe better take the curse.
-        opt.chooseCurse();
+        opt->chooseCurse();
         break;
     }
 
     case ReactKind::IgnoreAttackReaction: {
-        auto& opt = static_cast<IgnoreAttackReactOption&>(option);
+        auto opt = std::static_pointer_cast<IgnoreAttackReactOption>(option);
         // always want to do this
-        opt.accept();
+        opt->accept();
         break;
     }
 
@@ -143,9 +143,9 @@ void defaultReact(EventReactOption& option) {
         break;
 
     case ReactKind::TraderReaction: {
-        auto& opt = static_cast<ReactOptionTrader&>(option);
-        if (opt.card() == CardId::Curse || opt.card() == CardId::Copper) {
-            opt.accept();
+        auto opt = std::static_pointer_cast<ReactOptionTrader>(option);
+        if (opt->card() == CardId::Curse || opt->card() == CardId::Copper) {
+            opt->accept();
         }
         break;
     }

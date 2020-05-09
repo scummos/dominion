@@ -10,6 +10,7 @@ Game::Game(std::vector<std::string> const& actors, std::vector<std::any> const& 
     : m_supply(actors.size())
 {
     int i = 0;
+    m_players.reserve(actors.size());
     for (auto const& actorName: actors) {
         auto& player = m_players.emplace_back(createStartingDeck(), &m_supply, i);
         m_actors.emplace_back(createActor(actorName, &m_supply, &player, args[i]));
@@ -63,11 +64,25 @@ bool Game::gameEnded()
     return m_supply.pile(CardId::Province).empty() || m_supply.countEmptyPiles() >= 3;
 }
 
+void Game::setLogFunction(Game::LogFunction func)
+{
+    m_logFunc = func;
+}
+
+void Game::logStartingCards(int currentPlayer, int turncount, const Deck* player)
+{
+    using std::operator""s;
+    if (m_logFunc) {
+        auto const cardList = formatCardList(player->constHand().cards());
+        m_logFunc(currentPlayer, "Turn "s + std::to_string(turncount/m_players.size()+1) + ": " + cardList);
+    }
+}
+
 int Game::run()
 {
     int currentPlayer = 0;
     for (auto& player: m_players) {
-        Turn turn(&m_supply, &player, m_logData[currentPlayer]);
+        Turn turn(&m_supply, &player, m_logData[currentPlayer], m_logFunc);
         turn.doFinalDraw();
         currentPlayer++;
     }
@@ -80,11 +95,12 @@ int Game::run()
 
     int turncount = 0;
     currentPlayer = m_firstPlayer;
-    while (!gameEnded() && turncount < 63) {
+    while (!gameEnded() && turncount < 100) {
         auto* player = &m_players.at(currentPlayer);
         auto& actor = m_actors.at(currentPlayer);
 
-        Turn turn(&m_supply, player, m_logData[currentPlayer]);
+        Turn turn(&m_supply, player, m_logData[currentPlayer], m_logFunc);
+        logStartingCards(currentPlayer, turncount, player);
         actor->executeTurn(&turn);
         turn.endTurn();
 
@@ -116,6 +132,10 @@ int Game::run()
     auto winner = first.player;
     if (first.vp == second.vp && first.turns == second.turns) {
         winner = -1;
+    }
+
+    if (m_logFunc) {
+        m_logFunc(0, "Player " + std::to_string(winner+1) + " wins");
     }
 
     for (int i = 0; i < m_players.size(); i++) {

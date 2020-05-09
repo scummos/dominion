@@ -86,11 +86,11 @@ public:
     void setEnemies(std::vector<Deck*> enemies);
 
     /// Convenience getters for the piles.
-    auto const& drawPile() const          { return area(Areas::DrawPile); }
-    auto const& uncoveredDrawPile() const { return area(Areas::UncoveredDrawPile); }
-    auto const& discardPile() const       { return area(Areas::DiscardPile); }
-    auto const& hand() const              { return area(Areas::Hand); }
-    auto const& inPlay() const            { return area(Areas::InPlay); }
+    auto const& constDrawPile() const          { return area(Areas::DrawPile); }
+    auto const& constUncoveredDrawPile() const { return area(Areas::UncoveredDrawPile); }
+    auto const& constDiscardPile() const       { return area(Areas::DiscardPile); }
+    auto const& constHand() const              { return area(Areas::Hand); }
+    auto const& constInPlay() const            { return area(Areas::InPlay); }
 
     int countScore() const;
     int totalCards() const;
@@ -98,6 +98,8 @@ public:
     bool hasCardInHand(Card const* card) const;
     int totalMoney() const;
     int playerIndex() const;
+    int leftInSupply(CardId id) const;
+    int emptySupplyPiles() const;
 
 private:
     auto& drawPile()                { return area(Areas::DrawPile); }

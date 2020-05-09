@@ -11,6 +11,7 @@
 class Deck;
 
 enum class ReactKind {
+    Invalid,
     IgnoreAttackReaction, //< Option to ignore an attack (e.g. Moat)
     TraderReaction,
     Attack = 0x1000,
@@ -18,6 +19,8 @@ enum class ReactKind {
     TorturerAttack = 3 | Attack, //< Special attack by torturer card
     NoChoiceAttack = 4 | Attack, //< Generic attack type which does something but gives you no choice
 };
+
+ReactKind reactKind(std::string const& name);
 
 /**
  * Describes how an entity, usually a Card or an Actor, can react to some event. If a choice is possible, the structure
@@ -31,10 +34,11 @@ enum class ReactKind {
  *     can (or have to) do about it. Attacks are routed through the turn, which first checks
  *     if they trigger any other cards (see option a), and then passes them to the actor.
  *
- * In the a) case, the ReactOption is returned by the Card's reactToEvent method, which iscalled by the Deck's
- *   eventOccured method, then passed to the Actor to do something with.
+ * In the a) case, the ReactOption is returned by the Card's reactToEvent method, which is called by the Deck's
+ *   eventOccured method (which is, in turn, invoked from various places when something noteworthy happens),
+ *   then passed to the Actor to do something with.
  * In the b) case, the ReactOption is instantiated by the card when the card is played (e.g. playAction) and
- *   delivered to the affected deck(s) (e.g. via the Turn's attackEachEnemy method).
+ *   delivered to the affected deck(s) (e.g. via the Turn's attackEachEnemy method) by the Card's code itself.
  */
 struct EventReactOption {
     using Ptr = std::shared_ptr<EventReactOption>;

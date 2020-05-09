@@ -10,7 +10,7 @@ int usefulness(Card* card);
 
 Card* leastUsefulCardInHand(Hand const& hand, Card* exclude = nullptr);
 
-int plainTreasureInHand(Hand const& hand);
+int plainTreasureInHand(Cards const& hand);
 
 enum class CardSortOrder {
     LeastExpensive,
@@ -21,4 +21,4 @@ Card* worstTreasure(Hand& hand, CardSortOrder order = CardSortOrder::LeastExpens
 
 CardId upgradeTreasure(CardId id);
 
-void defaultReact(EventReactOption& option);
+void defaultReact(EventReactOption::Ptr option);

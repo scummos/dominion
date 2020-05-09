@@ -22,7 +22,7 @@ public:
                 // all cards uncovered, nothing found to Rebuild
                 return;
             }
-            auto* card = deck->uncoveredDrawPile().cards().back();
+            auto* card = deck->constUncoveredDrawPile().cards().back();
             if (card->basicInfo().id == option->namedCard) {
                 // "... until [...] a card you did not name."
                 continue;

@@ -6,6 +6,7 @@
 #include "event.h"
 #include "reaction.h"
 #include "logger.h"
+#include "game.h"
 
 #include <iostream>
 #include <map>
@@ -94,7 +95,7 @@ private:
 /// with your current hand.
 class Turn {
 public:
-    Turn(Supply* supply, Deck* deck, Logger::PlayerData& logData);
+    Turn(Supply* supply, Deck* deck, Logger::PlayerData& logData, Game::LogFunction func = Game::LogFunction());
 
     Hand currentHand();
     Cards currentHandCards();
@@ -117,8 +118,12 @@ public:
 
     void buy(CardId id);
 
+    bool loggingEnabled() const;
+    void log(std::string message);
+
 private:
     friend struct ActiveCard;
+    friend class Condition;
     void playAction(Card* card, CardOption* option);
     void playTreasure(Card* card, CardOption* option);
 
@@ -126,6 +131,7 @@ private:
 
     TurnInternal m_internal;
     Logger::PlayerData& m_logData;
+    Game::LogFunction m_logFunc;
 };
 
 /// Convenience wrapper which puts together a card and a turn.
@@ -144,7 +150,11 @@ struct ActiveCard {
 
 /// Convenience wrapper which represents cards in your hand.
 struct Hand {
-    ActiveCards cards;
+    Hand(Cards const& cards, Turn* turn);
+
+    Cards cards;
+
+    ActiveCards activeCards() const;
 
     ActiveCards treasureCards() const;
     ActiveCards findCards(CardId id) const;
@@ -153,5 +163,8 @@ struct Hand {
     bool hasCard(CardId id) const;
     bool hasCard(Card::Type type) const;
     void ignore(Card* card);
+
+private:
+    Turn* turn;
 };
 

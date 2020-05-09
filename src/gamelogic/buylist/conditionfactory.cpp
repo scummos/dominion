@@ -93,6 +93,12 @@ Condition::Ptr createCondition(std::string const& condition, const VariantList& 
         return construct_condition_nargs<AllOf, Condition::Ptr>(args);
     if (condition == "AnyOf")
         return construct_condition_nargs<AnyOf, Condition::Ptr>(args);
+    if (condition == "Has1InHand")
+        return construct_condition_nargs<HasNInHand<1>, CardId>(args);
+    if (condition == "Has2InHand")
+        return construct_condition_nargs<HasNInHand<2>, CardId>(args);
+    if (condition == "Has3InHand")
+        return construct_condition_nargs<HasNInHand<3>, CardId>(args);
     if (condition == "Not")
         return construct_condition<Negate>(args);
     if (condition == "HasMoney")

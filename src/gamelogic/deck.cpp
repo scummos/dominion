@@ -254,6 +254,16 @@ void Deck::attacked(AttackEvent& event)
 
 bool Deck::hasCardInHand(Card const* card) const
 {
-    auto const& h = hand().cards();
+    auto const& h = constHand().cards();
     return std::find(h.begin(), h.end(), card) != h.end();
+}
+
+int Deck::leftInSupply(CardId id) const
+{
+    return m_supply->pile(id).count();
+}
+
+int Deck::emptySupplyPiles() const
+{
+    return m_supply->countEmptyPiles();
 }

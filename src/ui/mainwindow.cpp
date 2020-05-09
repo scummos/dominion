@@ -40,8 +40,17 @@ MainWindow::MainWindow()
 
     ui->strategyEdit->setTabStopDistance(20); // pixels
 
+    connect(&m_logTimer, &QTimer::timeout, this, &MainWindow::displayLog);
+    m_logTimer.setInterval(10);
+    m_logTimer.setSingleShot(true);
+
     connect(ui->strategyEdit, &QTextEdit::textChanged, this, &MainWindow::recompute, Qt::QueuedConnection);
     connect(ui->enemyFirst, &QCheckBox::toggled, this, &MainWindow::recompute);
+    connect(ui->enableSingleGame, &QCheckBox::toggled, this, &MainWindow::recompute);
+    connect(ui->runAnotherButton, &QPushButton::clicked, this, &MainWindow::recompute);
+    connect(ui->enableSingleGame, &QCheckBox::toggled, this, [this](bool checked) {
+        ui->stackedWidget->setCurrentIndex(checked ? 1 : 0);
+    });
     connect(&m_watcher, &decltype(m_watcher)::progressRangeChanged, this, [this](int min, int max) {
         m_progress.min = min;
         m_progress.max = max;
@@ -101,6 +110,7 @@ MainWindow::MainWindow()
     grid->attach(ui->qwtPlot);
 
     loadEnemy(m_enemyFilename);
+    ui->strategyEdit->setText(readFile(m_filename));
     recompute();
 }
 
@@ -264,7 +274,19 @@ void MainWindow::showGraph()
 
 void MainWindow::recompute()
 {
-    recomputeRefined(10000);
+    recomputeRefined(ui->enableSingleGame->isChecked() ? 1 : 10000);
+}
+
+void MainWindow::appendLog(QString const& html)
+{
+    m_log += html;
+    m_logTimer.start();
+}
+
+void MainWindow::displayLog()
+{
+    ui->gameDetails->clear();
+    ui->gameDetails->setHtml(m_log);
 }
 
 void MainWindow::recomputeRefined(int games)
@@ -273,6 +295,8 @@ void MainWindow::recomputeRefined(int games)
         m_watcher.cancel();
         m_watcher.waitForFinished();
     }
+
+    m_log.clear();
 
     m_perfTimer.start();
     std::pair<BuylistCollection, StrategyCollection> args1;
@@ -299,8 +323,20 @@ void MainWindow::recomputeRefined(int games)
     logger->clear();
 
     auto enemyFirst = ui->enemyFirst->isChecked();
-    std::function<int(int)> func = [enemyFirst, args1, args2, logger](int) {
+    auto enableLogging = ui->enableSingleGame->isChecked();
+    auto logFunc = [this](int player, std::string msg) {
+        auto text = QString::fromLatin1("<p align=\"%1\" style=\"padding: 0px; margin: 0px; color: %2;\">%3</p>")
+            .arg(player == 0 ? "left" : "right")
+            .arg(player == 0 ? "blue" : "grey")
+            .arg(QString::fromStdString(msg));
+        QMetaObject::invokeMethod(this, "appendLog",
+                                  Qt::QueuedConnection, Q_ARG(QString const&, text));
+    };
+    std::function<int(int)> func = [enableLogging, enemyFirst, args1, args2, logger, logFunc](int) {
         Game game({"buylist", "buylist"}, {std::any(args1), std::any(args2)});
+        if (enableLogging) {
+            game.setLogFunction(logFunc);
+        }
         game.setFirstPlayer(enemyFirst ? 1 : 0);
         int winner = -1;
         try {

@@ -2,8 +2,10 @@
 
 #include "turn.h"
 #include "genericcardoption.h"
+#include "reaction.h"
 #include "defaultplay.h"
 
 bool genericPlay(Turn* turn, ActiveCard card, std::any opt);
+bool genericReact(Deck const* deck, EventReactOption::Ptr reactOption, std::any opt);
 
 void genericPlayTreasure(Turn* turn, ActiveCard card, std::any opt);

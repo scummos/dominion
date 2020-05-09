@@ -59,3 +59,14 @@ std::shared_ptr<EventReactOption> Card::reactToEvent(Event&, Deck*) const
     return {};
 }
 
+std::string formatCardList(const Cards& cards)
+{
+    std::string cardList;
+    for (auto const* c: cards) {
+        cardList += std::string(c->name()) + " ";
+    }
+    if (cardList.size() > 0)
+        cardList.erase(cardList.size()-1);
+    return cardList;
+}
+

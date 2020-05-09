@@ -9,7 +9,7 @@ struct CardMoveError {
 class CardPile {
 public:
     CardPile() = default;
-    CardPile(Cards cards);
+    CardPile(Cards const& cards);
 
     bool empty() const;
 
@@ -26,6 +26,9 @@ public:
     Cards& cards();
     Cards const& cards() const;
     Card* topCard();
+
+    Cards findCards(CardId id) const;
+    bool hasCard(CardId id) const;
 
     Card* draw();
     Cards drawWithShuffle(int n, CardPile& reserve);

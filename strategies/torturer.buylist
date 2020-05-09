@@ -6,19 +6,16 @@ buylists
 		Province, Duchy
 	end
 	list
-		Province if Has(IllGottenGains, 5),
-		IllGottenGains,
-		Silver
+		Province if Has(Gold, 1),
+		Gold,
+		Torturer [2],
+		Silver,
+		Estate
 	end
 end
 
 strategies
 	strategy
-		playorder
-			:Default
-		end
-		options for IllGottenGains
-			choose option
-		end
+		playorder Torturer, :Default end
 	end
 end

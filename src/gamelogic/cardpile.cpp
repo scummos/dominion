@@ -6,7 +6,7 @@
 std::random_device rd;
 std::mt19937 gen(rd());
 
-CardPile::CardPile(Cards cards)
+CardPile::CardPile(Cards const& cards)
     : m_cards(cards)
 {
 }
@@ -66,6 +66,18 @@ Cards& CardPile::cards()
 const Cards& CardPile::cards() const
 {
     return m_cards;
+}
+
+bool CardPile::hasCard(CardId id) const
+{
+    return std::any_of(m_cards.begin(), m_cards.end(), [id](Card* c) { return c->id() == id; });
+}
+
+Cards CardPile::findCards(CardId id) const
+{
+    Cards ret;
+    std::copy_if(m_cards.begin(), m_cards.end(), std::back_inserter(ret), [id](Card* c) { return c->id() == id; });
+    return ret;
 }
 
 bool CardPile::empty() const

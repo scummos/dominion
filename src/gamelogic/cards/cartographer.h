@@ -21,7 +21,7 @@ public:
         }
 
         turn->deck->uncoverCards(4);
-        auto remain = option->discard(static_cast<const Deck*>(turn->deck)->uncoveredDrawPile().cards());
+        auto remain = option->discard(turn->deck->constUncoveredDrawPile().cards());
 
         for (auto* card: remain) {
             turn->deck->moveCard(card, Areas::UncoveredDrawPile, Areas::DrawPile);

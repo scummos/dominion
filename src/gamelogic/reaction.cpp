@@ -4,6 +4,23 @@
 
 #include <iostream>
 
+ReactKind reactKind(std::string const& name)
+{
+    using std::operator""s;
+
+    if (name == "IgnoreAttack"s)
+        return ReactKind::IgnoreAttackReaction;
+    if (name == "Trader"s)
+        return ReactKind::TraderReaction;
+
+    if (name == "DiscardAttack"s)
+        return ReactKind::DiscardAttack;
+    if (name == "TorturerAttack"s)
+        return ReactKind::TorturerAttack;
+
+    return ReactKind::Invalid;
+}
+
 GainAttackReactOption::GainAttackReactOption(Deck* deck, CardId gain, int count)
     : AttackReactOption(ReactKind::NoChoiceAttack, deck)
     , m_gain(gain)

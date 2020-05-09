@@ -5,6 +5,10 @@
 
 #include <iostream>
 
+struct InvalidConditionError {
+    std::string error;
+};
+
 class Condition {
 public:
     using Ptr = std::shared_ptr<Condition>;
@@ -12,7 +16,16 @@ public:
 
     virtual ~Condition() = default;
 
-    virtual bool fulfilled(Turn* turn) { return true; };
+    // If possible, this function should be overriden instead of the Turn overload.
+    // It is more general (has less information available).
+    // If the condition cannot be evaluated in the given context, it evaluates to False.
+    virtual bool fulfilled(Deck const*) {
+        return false;
+    };
+
+    virtual bool fulfilled(Turn* turn) {
+        return fulfilled(turn->deck());
+    };
 };
 
 class Negate : public Condition {
@@ -22,6 +35,10 @@ public:
 
     bool fulfilled(Turn* turn) override {
         return m_cond && !m_cond->fulfilled(turn);
+    }
+
+    bool fulfilled(Deck const* deck) override {
+        return m_cond && !m_cond->fulfilled(deck);
     }
 
 private:
@@ -44,6 +61,12 @@ public:
         });
     }
 
+    bool fulfilled(Deck const* deck) override {
+        return std::all_of(m_conds.begin(), m_conds.end(), [deck](Condition::Ptr p) {
+            return p->fulfilled(deck);
+        });
+    }
+
 private:
     std::vector<Condition::Ptr> m_conds;
 };
@@ -60,6 +83,12 @@ public:
     bool fulfilled(Turn* turn) override {
         return std::any_of(m_conds.begin(), m_conds.end(), [turn](Condition::Ptr p) {
             return p->fulfilled(turn);
+        });
+    }
+
+    bool fulfilled(Deck const* deck) override {
+        return std::any_of(m_conds.begin(), m_conds.end(), [deck](Condition::Ptr p) {
+            return p->fulfilled(deck);
         });
     }
 

@@ -14,6 +14,7 @@ namespace KSyntaxHighlighting {
 }
 
 class MainWindow : public QMainWindow {
+Q_OBJECT
 public:
     MainWindow();
     ~MainWindow();
@@ -38,6 +39,10 @@ public:
 private:
     void loadEnemy(const QString& filename);
 
+private Q_SLOTS:
+    void appendLog(QString const& html);
+    void displayLog();
+
 private:
     class Ui_MainWindow* ui;
     std::shared_ptr<KSyntaxHighlighting::Repository> m_repo;
@@ -56,4 +61,7 @@ private:
 
     QTimer m_graphTimer;
     QElapsedTimer m_perfTimer;
+
+    QString m_log;
+    QTimer m_logTimer;
 };

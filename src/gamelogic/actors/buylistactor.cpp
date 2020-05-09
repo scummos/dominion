@@ -11,8 +11,24 @@ namespace {
 
 void BuylistActor::react(EventReactOptions& options)
 {
-    for (auto& option: options) {
-        defaultReact(*option);
+    for (auto& reactOption: options) {
+        bool handled = false;
+        for (auto const& strat: strats) {
+            if (!strat.conditionFulfilled(m_deck)) {
+                continue;
+            }
+            auto opt = strat.optionForReaction(reactOption->kind(), m_deck);
+            if (!opt.has_value()) {
+                continue;
+            }
+            handled = genericReact(m_deck, reactOption, opt->option);
+            if (handled) {
+                break;
+            }
+        }
+        if (!handled) {
+            defaultReact(reactOption);
+        }
     }
 }
 
@@ -75,7 +91,7 @@ void BuylistActor::executeTurn(Turn* turn)
 
     auto hand = turn->currentHand();
     while (hand.hasCard(Card::Treasure)) {
-        for (auto& hcard: hand.cards) {
+        for (auto& hcard: hand.activeCards()) {
             if (hcard.card->hasType(Card::Treasure)) {
                 genericPlayTreasure(turn, hcard, option(treasureOption(hcard.card->id())));
             }

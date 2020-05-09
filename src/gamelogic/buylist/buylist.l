@@ -33,10 +33,10 @@ if             { return token::IF; }
 options        { return token::OPTIONS; }
 reactions      { return token::REACTIONS; }
 for            { return token::FOR; }
-choose         { return token::CHOOSE; }
 option         { return token::OPTION; }
-ignore         { return token::IGNORE; }
 optional       { return token::OPTIONAL; }
+choose         { return token::TAG_CHOOSE; }
+ignore         { return token::TAG_IGNORE; }
 discard        { return token::TAG_DISCARD; }
 trash          { return token::TAG_TRASH; }
 keep           { return token::TAG_KEEP; }

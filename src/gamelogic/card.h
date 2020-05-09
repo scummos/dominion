@@ -93,6 +93,8 @@ protected:
 // using Cards = QVarLengthArray<Card*, 16>;
 using Cards = std::vector<Card*>;
 
+std::string formatCardList(Cards const& cards);
+
 inline Card::Hints operator|(Card::Hints const a, Card::Hints const b) {
     return static_cast<Card::Hints>(int(a) | int(b));
 }

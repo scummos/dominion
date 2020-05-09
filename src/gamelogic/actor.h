@@ -27,6 +27,8 @@ public:
     virtual void react(EventReactOptions& options);
 
 protected:
+    /// The supply of the game. You cannot modify or use it, but inspect its state.
     Supply const* m_supply;
+    /// Your deck. You cannot modify it, but inspect its state.
     Deck const* m_deck;
 };

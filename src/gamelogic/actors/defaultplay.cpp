@@ -88,7 +88,7 @@ void defaultPlayAll(Turn* turn)
     while (didPlaySometing) {
         didPlaySometing = false;
         info(std::cerr << " --- " << std::endl);
-        for (auto& card: hand.cards) {
+        for (auto& card: hand.activeCards()) {
             info(std::cerr << "  Card " << card.card->name() << std::endl);
             didPlaySometing = defaultPlay(turn, card);
             if (didPlaySometing) {

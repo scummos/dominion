@@ -16,9 +16,6 @@ end
 
 strategies
 	strategy
-		playorder
-			Rebuild,
-			:Default
-		end
+		playorder Rebuild, :Default end
 	end
 end
