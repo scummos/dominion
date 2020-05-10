@@ -7,15 +7,6 @@
 
 #include <functional>
 
-enum class Areas {
-    DrawPile,
-    UncoveredDrawPile,
-    DiscardPile,
-    Hand,
-    InPlay,
-    NumAreas
-};
-
 // This class simultaneously represents a player.
 // The deck has ownership of all contained cards.
 class Deck {
@@ -75,6 +66,8 @@ public:
     /// Run @p func for each card in the deck, no matter where it is. This can
     /// for example be used to count score.
     void forEachCard(std::function<void(Card const*)> func) const;
+
+    Supply const* const supply() const;
 
     void setReactCallback(ReactCallback cb);
 

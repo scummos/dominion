@@ -9,12 +9,6 @@ struct NoSuchPileError {
     std::string error;
 };
 
-enum class GainReason {
-    Gain,
-    Buy,
-    Exchange
-};
-
 class SupplyCardPile : public CardPile {
 public:
     using CardPile::CardPile;
@@ -27,7 +21,7 @@ public:
     ~Supply();
 
     CardPile& pile(CardId const id);
-    Card::BasicInfo pileInfo(CardId const id);
+    Card::BasicInfo pileInfo(CardId const id) const;
     CardPile& trashPile();
 
     int countEmptyPiles() const;

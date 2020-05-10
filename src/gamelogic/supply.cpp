@@ -39,6 +39,7 @@ Supply::Supply(int nplayers)
     createPile<Crossroads>(10);
     createPile<Margrave>(10);
     createPile<Militia>(10);
+    createPile<Haggler>(10);
 }
 
 Supply::~Supply()
@@ -71,7 +72,7 @@ CardPile& Supply::pile(const CardId id)
     return *pile;
 }
 
-Card::BasicInfo Supply::pileInfo(const CardId id)
+Card::BasicInfo Supply::pileInfo(const CardId id) const
 {
     auto info = std::find_if(m_pileInfos.begin(), m_pileInfos.end(), [id](auto const& info) { return info.id == id; });
     if (info == m_pileInfos.end()) {

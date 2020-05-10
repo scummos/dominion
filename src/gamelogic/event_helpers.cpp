@@ -19,3 +19,14 @@ Card* cardGainedBySelf(const Event& event)
     }
     return nullptr;
 }
+
+Card* cardBoughtBySelf(const Event& event)
+{
+    if (event.kind == EventKind::YouGainACard) {
+        auto const& evt = static_cast<YouGainACardEvent const&>(event);
+        if (evt.reason == GainReason::Buy) {
+            return evt.card;
+        }
+    }
+    return nullptr;
+}

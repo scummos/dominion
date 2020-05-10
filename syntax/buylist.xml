@@ -28,11 +28,31 @@
       <item>Margrave</item>
       <item>Militia</item>
       <item>Highway</item>
+      <item>Haggler</item>
+      <item>Courtyard</item>
+      <item>Pawn</item>
+      <item>Masquerade</item>
+      <item>ShantyTown</item>
+      <item>Steward</item>
+      <item>Swindler</item>
+      <item>WishingWell</item>
+      <item>Baron</item>
+      <item>Bridge</item>
+      <item>Conspirator</item>
+      <item>Ironworks</item>
+      <item>MiningVillage</item>
+      <item>Duke</item>
+      <item>Minion</item>
+      <item>TradingPost</item>
+      <item>Upgrade</item>
+      <item>Harem</item>
+      <item>Nobles</item>
     </list>
 
     <list name="reactname">
       <item>IgnoreAttack</item>
       <item>Trader</item>
+      <item>Haggler</item>
       <item>DiscardAttack</item>
       <item>TorturerAttack</item>
       <item>MargraveAttack</item>

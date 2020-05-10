@@ -16,6 +16,7 @@ enum class ReactKind {
     Invalid,
     IgnoreAttackReaction, //< Option to ignore an attack (e.g. Moat)
     TraderReaction,
+    HagglerReaction,
     Attack = 0x1000,
     TorturerAttack = 3 | Attack, //< Special attack by torturer card
     NoChoiceAttack = 4 | Attack, //< Generic attack type which does something but gives you no choice

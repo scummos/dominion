@@ -12,6 +12,8 @@ ReactKind reactKind(std::string const& name)
         return ReactKind::IgnoreAttackReaction;
     if (name == "Trader"s)
         return ReactKind::TraderReaction;
+    if (name == "Haggler"s)
+        return ReactKind::HagglerReaction;
 
     if (name == "TorturerAttack"s)
         return ReactKind::TorturerAttack;

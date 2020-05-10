@@ -1,6 +1,7 @@
 #pragma once
 
 #include "reaction.h"
+#include "supply.h"
 
 class Card;
 struct AttackReactOption;
@@ -10,6 +11,12 @@ enum class EventKind {
     CardDiscardedFromHand,
     EnemyGainsACard,
     YouGainACard,
+};
+
+enum class GainReason {
+    Gain,
+    Buy,
+    Exchange
 };
 
 /**
@@ -33,9 +40,10 @@ struct AttackEvent : public Event {
 };
 
 struct YouGainACardEvent : public Event {
-    YouGainACardEvent(Card* card) : Event(EventKind::YouGainACard), card(card) {};
+    YouGainACardEvent(Card* card, GainReason reason) : Event(EventKind::YouGainACard), card(card), reason(reason) {};
 
     Card* card;
+    GainReason reason;
 };
 
 struct EnemyGainsACardEvent : public Event {

@@ -24,7 +24,7 @@ public:
         }
     }
 
-    EventReactOption::Ptr reactToEvent(Event& event, Deck* playerDeck) const override {
+    EventReactOption::Ptr reactToEvent(Event& event, Deck* playerDeck, Areas) const override {
         if (event.kind != EventKind::YouGainACard) {
             return {};
         }

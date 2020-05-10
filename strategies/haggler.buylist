@@ -1,0 +1,30 @@
+buylists
+	list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
+		Province, Duchy, Estate
+	end
+	list if SupplyHasLess(Province, 4)
+		Province, Duchy
+	end
+	list
+		Province if AnyOf(Has(Gold, 1), HasInPlay(Haggler, 1)),
+		Gold,
+		Haggler [1],
+		Smithy [1],
+		Silver
+	end
+end
+
+strategies
+	strategy
+		playorder
+			:ChainDraw,
+			:Default
+		end
+		reactions for Haggler
+			Gold, Silver
+		end
+		reactions for Haggler if not Has(Smithy, 2)
+			Gold, Smithy, Silver
+		end
+	end
+end

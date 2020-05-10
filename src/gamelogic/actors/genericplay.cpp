@@ -1,11 +1,14 @@
 #include "genericplay.h"
 
+#include "supply.h"
+
 #include "remodel.h"
 #include "embassy.h"
 #include "trader.h"
 #include "cartographer.h"
 #include "margrave.h"
 #include "militia.h"
+#include "haggler.h"
 
 #define info(x)
 
@@ -154,11 +157,24 @@ bool genericReact(Deck const* deck, EventReactOption::Ptr reactOption, std::any 
         case ReactKind::TraderReaction: {
             auto reactOpt = std::static_pointer_cast<ReactOptionTrader>(reactOption);
             auto trade = anyToList<CardId>(opt);
-            info(std::cerr << "query trade " << cardName(reactOpt->card()) << std::endl);
             if (std::find(trade.begin(), trade.end(), reactOpt->card()) != trade.end()) {
-                info(std::cerr << "trade accepted" << std::endl);
                 reactOpt->accept();
             }
+            return true;
+        }
+
+        case ReactKind::HagglerReaction: {
+            auto reactOpt = std::static_pointer_cast<ReactOptionHaggler>(reactOption);
+            auto gainList = anyToList<CardId>(opt);
+            auto cost = reactOpt->cost();
+            auto gainIt = std::find_if(gainList.begin(), gainList.end(), [cost, deck](auto card) {
+                return deck->supply()->pileInfo(card).cost.gold() < cost.gold();
+            });
+            if (gainIt == gainList.end()) {
+                // No card specfied which we could gain :(
+                return false;
+            }
+            reactOpt->accept(*gainIt);
             return true;
         }
 

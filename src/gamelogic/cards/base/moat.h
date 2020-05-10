@@ -12,8 +12,8 @@ public:
         turn->draw(2);
     }
 
-    EventReactOption::Ptr reactToEvent(Event& event, Deck*) const override {
-        if (event.kind != EventKind::Attack) {
+    EventReactOption::Ptr reactToEvent(Event& event, Deck*, Areas area) const override {
+        if (area != Areas::Hand | event.kind != EventKind::Attack) {
             return {};
         }
         return std::make_shared<IgnoreAttackReactOption>(event);

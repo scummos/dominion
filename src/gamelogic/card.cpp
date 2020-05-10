@@ -54,7 +54,7 @@ CardTraits Card::traits() const
     return {};
 }
 
-std::shared_ptr<EventReactOption> Card::reactToEvent(Event&, Deck*) const
+std::shared_ptr<EventReactOption> Card::reactToEvent(Event&, Deck*, Areas scope) const
 {
     return {};
 }

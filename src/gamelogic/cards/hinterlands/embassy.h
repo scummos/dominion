@@ -23,7 +23,7 @@ public:
         }
     }
 
-    std::shared_ptr<EventReactOption> reactToEvent(Event& event, Deck* playerDeck) const override {
+    std::shared_ptr<EventReactOption> reactToEvent(Event& event, Deck* playerDeck, Areas) const override {
         if (!eventGainsThisCard(event, this)) {
             return {};
         }

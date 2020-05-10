@@ -4,82 +4,120 @@
 
 enum class CardId {
     Invalid,
-    Copper,
-    Silver,
-    Gold,
-    Estate,
-    Duchy,
-    Province,
-    Smithy,
-    Festival,
-    Chapel,
-    Cellar,
-    Village,
-    Workshop,
+    Baron,
+    Bridge,
     Buerocrat,
-    Moneylender,
-    Remodel,
-    ThroneRoom,
+    Cartographer,
+    Cellar,
+    Chapel,
+    Conspirator,
+    Copper,
     CouncilRoom,
-    Laboratory,
-    Library,
-    Market,
-    Mine,
-    Witch,
-    Curse,
-    Shepherd,
-    Moat,
-    Torturer,
-    Tunnel,
-    Mandarin,
-    FoolsGold,
-    Rebuild,
+    Courtyard,
     Crossroads,
-    Oasis,
+    Curse,
+    Duchy,
+    Duke,
+    Embassy,
+    Estate,
+    Festival,
+    FoolsGold,
+    Gold,
+    Haggler,
+    Harem,
     Highway,
     IllGottenGains,
-    Embassy,
-    Trader,
-    Cartographer,
+    Ironworks,
+    Laboratory,
+    Library,
+    Mandarin,
     Margrave,
+    Market,
+    Masquerade,
     Militia,
-    NumCards
+    Mine,
+    MiningVillage,
+    Minion,
+    Moat,
+    Moneylender,
+    Nobles,
+    Oasis,
+    Pawn,
+    Province,
+    Rebuild,
+    Remodel,
+    ShantyTown,
+    Shepherd,
+    Silver,
+    Smithy,
+    Steward,
+    Swindler,
+    ThroneRoom,
+    Torturer,
+    Trader,
+    TradingPost,
+    Tunnel,
+    Upgrade,
+    Village,
+    WishingWell,
+    Witch,
+    Workshop,
+    NumCards /* don't move me */
 };
 
 static char const* cardName(CardId const id) {
     switch (id) {
-        case CardId::Copper:     return "Copper";
-        case CardId::Silver:     return "Silver";
-        case CardId::Gold:       return "Gold";
-        case CardId::Estate:     return "Estate";
-        case CardId::Duchy:      return "Duchy";
-        case CardId::Province:   return "Province";
-        case CardId::Smithy:     return "Smithy";
-        case CardId::Festival:   return "Festival";
-        case CardId::Chapel:     return "Chapel";
-        case CardId::Shepherd:   return "Shepherd";
-        case CardId::Witch:      return "Witch";
-        case CardId::Curse:      return "Curse";
-        case CardId::Mine:       return "Mine";
-        case CardId::Torturer:   return "Torturer";
-        case CardId::Moat:       return "Moat";
-        case CardId::Moneylender: return "Moneylender";
-        case CardId::Mandarin:   return "Mandarin";
-        case CardId::FoolsGold:  return "FoolsGold";
-        case CardId::Rebuild:    return "Rebuild";
-        case CardId::Crossroads: return "Crossroads";
-        case CardId::Oasis:      return "Oasis";
-        case CardId::Highway:    return "Highway";
-        case CardId::Remodel:    return "Remodel";
-        case CardId::Laboratory: return "Laboratory";
-        case CardId::CouncilRoom: return "CouncilRoom";
-        case CardId::Embassy:    return "Embassy";
+        case CardId::Baron:          return "Baron";
+        case CardId::Bridge:         return "Bridge";
+        case CardId::Cartographer:   return "Cartographer";
+        case CardId::Chapel:         return "Chapel";
+        case CardId::Conspirator:    return "Conspirator";
+        case CardId::Copper:         return "Copper";
+        case CardId::CouncilRoom:    return "CouncilRoom";
+        case CardId::Courtyard:      return "Courtyard";
+        case CardId::Crossroads:     return "Crossroads";
+        case CardId::Curse:          return "Curse";
+        case CardId::Duchy:          return "Duchy";
+        case CardId::Duke:           return "Duke";
+        case CardId::Embassy:        return "Embassy";
+        case CardId::Estate:         return "Estate";
+        case CardId::Festival:       return "Festival";
+        case CardId::FoolsGold:      return "FoolsGold";
+        case CardId::Gold:           return "Gold";
+        case CardId::Haggler:        return "Haggler";
+        case CardId::Harem:          return "Harem";
+        case CardId::Highway:        return "Highway";
         case CardId::IllGottenGains: return "IllGottenGains";
-        case CardId::Trader:     return "Trader";
-        case CardId::Cartographer: return "Cartographer";
-        case CardId::Margrave:   return "Margrave";
-        case CardId::Militia:    return "Militia";
-        default:                 return "Unnamed card";
+        case CardId::Ironworks:      return "Ironworks";
+        case CardId::Laboratory:     return "Laboratory";
+        case CardId::Mandarin:       return "Mandarin";
+        case CardId::Margrave:       return "Margrave";
+        case CardId::Masquerade:     return "Masquerade";
+        case CardId::Militia:        return "Militia";
+        case CardId::Mine:           return "Mine";
+        case CardId::MiningVillage:  return "MiningVillage";
+        case CardId::Minion:         return "Minion";
+        case CardId::Moat:           return "Moat";
+        case CardId::Moneylender:    return "Moneylender";
+        case CardId::Nobles:         return "Nobles";
+        case CardId::Oasis:          return "Oasis";
+        case CardId::Pawn:           return "Pawn";
+        case CardId::Province:       return "Province";
+        case CardId::Rebuild:        return "Rebuild";
+        case CardId::Remodel:        return "Remodel";
+        case CardId::ShantyTown:     return "ShantyTown";
+        case CardId::Shepherd:       return "Shepherd";
+        case CardId::Silver:         return "Silver";
+        case CardId::Smithy:         return "Smithy";
+        case CardId::Steward:        return "Steward";
+        case CardId::Swindler:       return "Swindler";
+        case CardId::Torturer:       return "Torturer";
+        case CardId::Trader:         return "Trader";
+        case CardId::TradingPost:    return "TradingPost";
+        case CardId::Upgrade:        return "Upgrade";
+        case CardId::WishingWell:    return "WishingWell";
+        case CardId::Witch:          return "Witch";
+        default:                     return "Unnamed card";
     }
 }
 

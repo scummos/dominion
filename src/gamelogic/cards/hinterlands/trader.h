@@ -49,8 +49,8 @@ public:
         }
     }
 
-    std::shared_ptr<EventReactOption> reactToEvent(Event& event, Deck* playerDeck) const override {
-        if (!playerDeck->hasCardInHand(this)) {
+    std::shared_ptr<EventReactOption> reactToEvent(Event& event, Deck* playerDeck, Areas area) const override {
+        if (area != Areas::Hand) {
             return {};
         }
         auto gained = cardGainedBySelf(event);

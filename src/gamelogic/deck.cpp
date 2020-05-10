@@ -105,11 +105,11 @@ bool Deck::gainFromSupply(const CardId id, Areas targetArea, GainReason reason)
         return false;
     }
 
-    auto event = YouGainACardEvent(pile.topCard());
+    auto event = YouGainACardEvent(pile.topCard(), reason);
     auto opts = queryCardsForReactions(event);
 
     // the gained card can also react
-    auto gainedReact = event.card->reactToEvent(event, this);
+    auto gainedReact = event.card->reactToEvent(event, this, targetArea);
     if (gainedReact) {
         opts.push_back(gainedReact);
     }
@@ -208,13 +208,15 @@ EventReactOptions Deck::queryCardsForReactions(Event& event)
 {
     EventReactOptions opts;
 
-    for (auto* card: hand().cards()) {
-        auto opt = card->reactToEvent(event, this);
-        if (!opt) {
-            // Card doesn't react to (this type of?) event, or at least doesn't offer options
-            continue;
+    for (auto scope: {Areas::Hand, Areas::InPlay}) {
+        for (auto* card: area(scope).cards()) {
+            auto opt = card->reactToEvent(event, this, scope);
+            if (!opt) {
+                // Card doesn't react to (this type of?) event, or at least doesn't offer options
+                continue;
+            }
+            opts.push_back(opt);
         }
-        opts.push_back(opt);
     }
 
     return opts;
@@ -266,4 +268,9 @@ int Deck::leftInSupply(CardId id) const
 int Deck::emptySupplyPiles() const
 {
     return m_supply->countEmptyPiles();
+}
+
+Supply const *const Deck::supply() const
+{
+    return m_supply;
 }

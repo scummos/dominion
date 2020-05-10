@@ -34,7 +34,18 @@ add_library(dominion STATIC
     src/gamelogic/buylist/conditionfactory.cpp
 )
 
-target_include_directories(dominion PUBLIC src/ src/gamelogic/ src/gamelogic/cards/ src/gamelogic/actors/ src/gamelogic/buylist/)
+target_include_directories(dominion PUBLIC
+    src/
+    src/gamelogic/
+    src/gamelogic/cards/
+    src/gamelogic/cards/base/
+    src/gamelogic/cards/intrigue/
+    src/gamelogic/cards/hinterlands/
+    src/gamelogic/cards/nocturne/
+    src/gamelogic/cards/darkages/
+    src/gamelogic/actors/
+    src/gamelogic/buylist/
+)
 target_link_libraries(dominion tbb)
 
 add_executable(main src/main.cpp)

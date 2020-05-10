@@ -24,6 +24,15 @@ struct CardTraits {
     int treasureValue = 0;
 };
 
+enum class Areas {
+    DrawPile,
+    UncoveredDrawPile,
+    DiscardPile,
+    Hand,
+    InPlay,
+    NumAreas
+};
+
 class Card {
 public:
     enum Type {
@@ -68,7 +77,7 @@ public:
     virtual int victoryPoints() const;
 
     /// Return a structure describing possible reactions if this card reacts to the given event.
-    virtual std::shared_ptr<EventReactOption> reactToEvent(Event& event, Deck* playerDeck) const;
+    virtual std::shared_ptr<EventReactOption> reactToEvent(Event& event, Deck* playerDeck, Areas scope) const;
 
     virtual void playAction(TurnInternal* turn, CardOption* option = nullptr);
     virtual void playTreasure(TurnInternal* turn, CardOption* option = nullptr);
