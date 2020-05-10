@@ -45,6 +45,20 @@ private:
     int m_count;
 };
 
+class HasInPlay : public Condition {
+public:
+    HasInPlay(CardId id, int count) : m_id(id), m_count(count) {}
+    static auto create(CardId id, int count) { return std::make_shared<HasInPlay>(id, count); }
+
+    bool fulfilled(Deck const* deck) override {
+        return deck->constInPlay().count(m_id) >= m_count;
+    }
+
+private:
+    CardId m_id;
+    int m_count;
+};
+
 template<int N>
 class HasNInHand : public Condition {
 public:

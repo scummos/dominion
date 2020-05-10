@@ -16,7 +16,7 @@ protected:
         m_info = {
             CardId::Festival,
             Card::Action,
-            Chain | VirtualMoney,
+            Chain | VirtualMoney | PlusBuy,
             Cost{5}
         };
     }

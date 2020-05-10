@@ -19,6 +19,7 @@
     extern YY_BUFFER_STATE yy_scan_string(char const* base);
     extern void yyrestart(FILE *input_file);
     extern int yycolumn, yylineno;
+    extern void yy_delete_buffer(yy_buffer_state*);
     extern int yylex(yy::parser::semantic_type*, yy::parser::location_type*);
     extern "C" {
         extern FILE *yyin;
@@ -328,13 +329,22 @@ cardoption_tagged_expr_list:
 %%
 
 int parse_buylist(char const* text, BuylistCollection& ret, StrategyCollection& strats) {
-  yy_scan_string(text);
+  auto buf = yy_scan_string(text);
   yycolumn = 1;
   yylineno = 1;
 
-  yy::parser p(ret, strats);
-//   p.set_debug_level(1);
-  int ok = p.parse();
+  int ok = 0;
+  try {
+    yy::parser p(ret, strats);
+    // p.set_debug_level(1);
+    ok = p.parse();
+  }
+  catch (...) {
+    yy_delete_buffer(buf);
+    throw;
+  }
+
+  yy_delete_buffer(buf);
   return ok;
 }
 

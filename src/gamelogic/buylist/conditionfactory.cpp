@@ -115,6 +115,8 @@ Condition::Ptr createCondition(std::string const& condition, const VariantList& 
         return construct_condition<SupplyEmptyPilesGreater>(args);
     if (condition == "HasInHand")
         return construct_condition<HasInHand>(args);
+    if (condition == "HasInPlay")
+        return construct_condition<HasInPlay>(args);
 
     throw InvalidConditionError{"No such condition: " + condition};
 }

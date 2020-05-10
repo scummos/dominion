@@ -1,0 +1,33 @@
+buylists
+	list if HasInPlay(Highway, 5)
+		Province
+	end
+	list if AnyOf(HasInPlay(Highway, 6), SupplyHasLess(Province, 4))
+		Province, Duchy
+	end
+	list if SupplyHasLess(Province, 2)
+		Province, Duchy, Estate
+	end
+	list
+		Highway [2],
+		Chapel [1],
+		Highway [2],
+		Festival [3],
+		CouncilRoom [2],
+		Highway,
+		Festival,
+		Silver [3]
+	end
+end
+
+strategies
+	strategy
+		playorder Highway, Festival, Chapel, :Default end
+		options for Chapel if Has(Silver, 1)
+			Estate, Copper
+		end
+		options for Chapel
+			Estate
+		end
+	end
+end

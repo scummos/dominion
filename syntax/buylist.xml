@@ -26,6 +26,8 @@
       <item>Crossroads</item>
       <item>Torturer</item>
       <item>Margrave</item>
+      <item>Militia</item>
+      <item>Highway</item>
     </list>
 
     <list name="reactname">
@@ -34,6 +36,7 @@
       <item>DiscardAttack</item>
       <item>TorturerAttack</item>
       <item>MargraveAttack</item>
+      <item>MilitiaAttack</item>
     </list>
 
     <list name="conditionfunc">
@@ -44,7 +47,9 @@
       <item>HasExact</item>
       <item>SupplyHasLess</item>
       <item>SupplyEmptyPilesGreater</item>
+      <item>HasMoney</item>
       <item>HasMoneyInHand</item>
+      <item>HasInPlay</item>
       <item>HasInHand</item>
       <item>Has1InHand</item>
       <item>Has2InHand</item>

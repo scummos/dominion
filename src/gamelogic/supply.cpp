@@ -38,6 +38,7 @@ Supply::Supply(int nplayers)
     createPile<Cartographer>(10);
     createPile<Crossroads>(10);
     createPile<Margrave>(10);
+    createPile<Militia>(10);
 }
 
 Supply::~Supply()

@@ -52,7 +52,7 @@ public:
 
     /// Gain a card identified by @p id from the supply, putting it to @p targetArea.
     /// Returns true if the card was gained, false if the supply pile was empty.
-    bool gainFromSupply(CardId const id, Areas targetArea = Areas::DiscardPile);
+    bool gainFromSupply(CardId const id, Areas targetArea = Areas::DiscardPile, GainReason reason = GainReason::Gain);
 
     /// Trash the given @p card from @p sourceArea, putting it into the supply's trash.
     void trash(Card* card, Areas sourceArea);

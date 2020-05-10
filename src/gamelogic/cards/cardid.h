@@ -17,7 +17,6 @@ enum class CardId {
     Village,
     Workshop,
     Buerocrat,
-    Militia,
     Moneylender,
     Remodel,
     ThroneRoom,
@@ -43,6 +42,7 @@ enum class CardId {
     Trader,
     Cartographer,
     Margrave,
+    Militia,
     NumCards
 };
 
@@ -78,6 +78,7 @@ static char const* cardName(CardId const id) {
         case CardId::Trader:     return "Trader";
         case CardId::Cartographer: return "Cartographer";
         case CardId::Margrave:   return "Margrave";
+        case CardId::Militia:    return "Militia";
         default:                 return "Unnamed card";
     }
 }

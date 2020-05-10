@@ -9,6 +9,12 @@ struct NoSuchPileError {
     std::string error;
 };
 
+enum class GainReason {
+    Gain,
+    Buy,
+    Exchange
+};
+
 class SupplyCardPile : public CardPile {
 public:
     using CardPile::CardPile;

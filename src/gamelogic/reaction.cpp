@@ -13,10 +13,10 @@ ReactKind reactKind(std::string const& name)
     if (name == "Trader"s)
         return ReactKind::TraderReaction;
 
-    if (name == "DiscardAttack"s)
-        return ReactKind::DiscardAttack;
     if (name == "TorturerAttack"s)
         return ReactKind::TorturerAttack;
+    if (name == "MilitiaAttack"s)
+        return ReactKind::MilitiaAttack;
 
     return ReactKind::Invalid;
 }
@@ -25,10 +25,6 @@ GainAttackReactOption::GainAttackReactOption(Deck* deck, CardId gain, int count)
     : AttackReactOption(ReactKind::NoChoiceAttack, deck)
     , m_gain(gain)
     , m_count(count)
-{
-}
-
-void DiscardAttackReactOption::defaultAction()
 {
 }
 
@@ -62,3 +58,19 @@ IgnoreAttackReactOption::IgnoreAttackReactOption(Event& event)
     , event(event)
 {
 }
+
+void discardDownTo(Deck* deck, int n, const DiscardFunc& prefer)
+{
+    for (auto* card: prefer(deck->constHand().cards())) {
+        if (deck->constHand().count() <= n) {
+            break;
+        }
+        deck->discardFromHand(card);
+    }
+
+    // If we didn't get enough cards to discard, enforce by just discarding whatever.
+    while (deck->constHand().count() > n) {
+        deck->discardFromHand(deck->constHand().cards().back());
+    }
+}
+

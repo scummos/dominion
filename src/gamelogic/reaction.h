@@ -17,10 +17,10 @@ enum class ReactKind {
     IgnoreAttackReaction, //< Option to ignore an attack (e.g. Moat)
     TraderReaction,
     Attack = 0x1000,
-    DiscardAttack = 2 | Attack, //< You are forced to discard some cards
     TorturerAttack = 3 | Attack, //< Special attack by torturer card
     NoChoiceAttack = 4 | Attack, //< Generic attack type which does something but gives you no choice
-    MargraveAttack = 5 | Attack
+    MargraveAttack = 5 | Attack,
+    MilitiaAttack = 6 | Attack
 };
 
 ReactKind reactKind(std::string const& name);
@@ -68,21 +68,6 @@ protected:
     Deck* m_deck;
 };
 
-/// Forces the player to discard down to N, or M cards from his hand, but lets him
-/// chose which ones.
-struct DiscardAttackReactOption : public AttackReactOption {
-    DiscardAttackReactOption(Deck* deck);
-
-    void accept(std::vector<Card*> const& discard);
-    void defaultAction() override;
-
-private:
-    std::optional<int> m_downto;
-    std::optional<int> m_count;
-
-    bool m_done = false;
-};
-
 /// Forces the player to gain a card. No options.
 struct GainAttackReactOption : public AttackReactOption {
     GainAttackReactOption(Deck* deck, CardId gain, int count);
@@ -107,4 +92,6 @@ struct IgnoreAttackReactOption : public EventReactOption {
 private:
     Event& event;
 };
+
+void discardDownTo(Deck* deck, int n, DiscardFunc const& prefer);
 

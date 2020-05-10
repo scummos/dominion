@@ -19,6 +19,7 @@
 #include "mandarin.h"
 #include "foolsgold.h"
 #include "crossroads.h"
+#include "militia.h"
 #include "margrave.h"
 #include "oasis.h"
 #include "highway.h"

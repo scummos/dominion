@@ -5,6 +5,7 @@
 #include "trader.h"
 #include "cartographer.h"
 #include "margrave.h"
+#include "militia.h"
 
 #define info(x)
 
@@ -73,6 +74,19 @@ namespace {
                     out.push_back(card);
                 }
             }
+            return out;
+        });
+    }
+
+    auto makeDiscardOrderFunc(std::vector<CardId> const& discard) {
+        return std::function([discard](const Cards& in) {
+            Cards out = in;
+            std::sort(out.begin(), out.end(), [&discard](auto c1, auto c2) {
+                auto discard_c1 = std::distance(discard.begin(), std::find(discard.begin(), discard.end(), c1->id()));
+                auto discard_c2 = std::distance(discard.begin(), std::find(discard.begin(), discard.end(), c2->id()));
+                return   discard_c1 == discard_c2 ? c1->cost().gold() > c2->cost().gold()
+                       : discard_c1 < discard_c2;
+            });
             return out;
         });
     }
@@ -169,7 +183,13 @@ bool genericReact(Deck const* deck, EventReactOption::Ptr reactOption, std::any 
 
         case ReactKind::MargraveAttack: {
             auto reactOpt = std::static_pointer_cast<MargraveAttackReactOption>(reactOption);
-            reactOpt->chooseDiscard(makeDiscardFunc(getTaggedCardList(opt, OptionTag::Discard)));
+            reactOpt->chooseDiscard(makeDiscardOrderFunc(getTaggedCardList(opt, OptionTag::Discard)));
+            return true;
+        }
+
+        case ReactKind::MilitiaAttack: {
+            auto reactOpt = std::static_pointer_cast<MilitiaAttackReactOption>(reactOption);
+            reactOpt->chooseDiscard(makeDiscardOrderFunc(getTaggedCardList(opt, OptionTag::Discard)));
             return true;
         }
 

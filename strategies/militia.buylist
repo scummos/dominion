@@ -6,22 +6,15 @@ buylists
 		Province, Duchy
 	end
 	list
-		Province if Has(Gold, 1),
+		Province if Has(Gold, 2),
 		Gold,
-		Smithy [2] if Has(Gold, 1),
-		Smithy [1],
+		Militia [2],
 		Silver
 	end
 end
 
 strategies
 	strategy
-		playorder
-			:ChainDraw,
-			:Default
-		end
-		reactions for MilitiaAttack
-			discard (Estate, Province, Duchy, Copper)
-		end
+		playorder Militia, :Default end
 	end
 end

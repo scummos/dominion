@@ -98,7 +98,7 @@ void Deck::discardFromHand(Card* card)
     }
 }
 
-bool Deck::gainFromSupply(const CardId id, Areas targetArea)
+bool Deck::gainFromSupply(const CardId id, Areas targetArea, GainReason reason)
 {
     auto& pile = m_supply->pile(id);
     if (pile.empty()) {

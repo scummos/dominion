@@ -105,7 +105,7 @@ void Turn::buy(CardId id)
     m_internal.addBuys(-1);
     m_internal.addMoney(-cost.gold());
 
-    deck()->gainFromSupply(id);
+    deck()->gainFromSupply(id, Areas::DiscardPile, GainReason::Buy);
 }
 
 Hand::Hand(const Cards& cards, Turn* turn)

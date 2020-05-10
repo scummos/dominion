@@ -15,7 +15,7 @@ void defaultVillageDraw(Turn* turn, int wantActionsRemain)
             }
         }
 
-        // Play all draw cards.
+        // Play one draw card.
         hand = turn->currentHand();
         auto draw = hand.findCards(Card::Draw);
 
@@ -152,10 +152,6 @@ void defaultReact(Deck const* deck, EventReactOption::Ptr option) {
     case ReactKind::MargraveAttack: {
         genericReact(deck, option, std::vector<std::any>{CardId::Province, CardId::Duchy, CardId::Estate, CardId::Curse, CardId::Copper});
         break;
-    }
-
-    case ReactKind::DiscardAttack: {
-        // TODO
     }
 
     default:
