@@ -5,7 +5,7 @@
 template<int COST, int VP, CardId ID>
 class PlainVictory : public Card {
 public:
-    int victoryPoints() const override {
+    int victoryPoints(Deck const*) const override {
         return VP;
     }
 

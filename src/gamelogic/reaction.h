@@ -11,17 +11,23 @@
 class Deck;
 
 using DiscardFunc = std::function<Cards(Cards const&)>;
+using CardTransformFunc = std::function<CardId(CardId const)>;
+
+template<typename T> T identity(T const& t) { return t; }
 
 enum class ReactKind {
     Invalid,
     IgnoreAttackReaction, //< Option to ignore an attack (e.g. Moat)
     TraderReaction,
     HagglerReaction,
+    MasqueradeReaction,
     Attack = 0x1000,
     TorturerAttack = 3 | Attack, //< Special attack by torturer card
     NoChoiceAttack = 4 | Attack, //< Generic attack type which does something but gives you no choice
     MargraveAttack = 5 | Attack,
-    MilitiaAttack = 6 | Attack
+    MilitiaAttack = 6 | Attack,
+    SwindlerAttack = 7 | Attack,
+    MinionAttack = 8 | Attack,
 };
 
 ReactKind reactKind(std::string const& name);

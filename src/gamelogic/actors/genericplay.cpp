@@ -9,6 +9,17 @@
 #include "margrave.h"
 #include "militia.h"
 #include "haggler.h"
+#include "masquerade.h"
+#include "courtyard.h"
+#include "steward.h"
+#include "swindler.h"
+#include "baron.h"
+#include "ironworks.h"
+#include "miningvillage.h"
+#include "minion.h"
+#include "tradingpost.h"
+#include "upgrade.h"
+#include "nobles.h"
 
 #define info(x)
 
@@ -145,6 +156,15 @@ namespace {
     }
 
     using CardPair = std::pair<CardId, CardId>;
+    CardTransformFunc makeTransformFunc(std::vector<CardPair> const& pairs) {
+        return [pairs](CardId id) {
+            auto findId = [id](CardPair const& p) { return p.first == id; };
+            if (auto it = std::find_if(pairs.begin(), pairs.end(), findId); it != pairs.end()) {
+                return it->second;
+            }
+            return id;
+        };
+    }
 }
 
 bool genericReact(Deck const* deck, EventReactOption::Ptr reactOption, std::any opt)
@@ -206,6 +226,12 @@ bool genericReact(Deck const* deck, EventReactOption::Ptr reactOption, std::any 
         case ReactKind::MilitiaAttack: {
             auto reactOpt = std::static_pointer_cast<MilitiaAttackReactOption>(reactOption);
             reactOpt->chooseDiscard(makeDiscardOrderFunc(getTaggedCardList(opt, OptionTag::Discard)));
+            return true;
+        }
+
+        case ReactKind::MasqueradeReaction: {
+            auto reactOpt = std::static_pointer_cast<MasqueradeReactOption>(reactOption);
+            reactOpt->setCard(firstChoice(deck->constHand(), anyToList<CardId>(opt)));
             return true;
         }
 
@@ -287,6 +313,111 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
             card.playAction(&opt);
             return true;
         }
+
+        case CardId::Masquerade: {
+            auto part = getTagged(opt, OptionTag::Trash);
+            auto const& choices = anyToList<CardId>(part);
+            CardOptionMasquerade opt;
+            opt.trash = makeDiscardOrderFunc(choices);
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::Courtyard: {
+            auto part = getTagged(opt, OptionTag::Discard);
+            auto const& choices = anyToList<CardId>(part);
+            CardOptionCourtyard opt;
+            opt.putBack = makeDiscardOrderFunc(choices);
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::Steward: {
+            auto choice = static_cast<CardOptionSteward::Choice>(getSelectedOption(opt));
+            CardOptionSteward copt;
+            copt.choice = choice;
+            if (choice == CardOptionSteward::TrashTwo) {
+                copt.trash = makeDiscardOrderFunc(getTaggedCardList(opt, OptionTag::Trash, TagRequirement::Explicit));
+            }
+            card.playAction(&copt);
+            return true;
+        }
+
+        case CardId::Swindler: {
+            auto const& transforms = anyToList<CardPair>(opt);
+            CardOptionSwindler opt;
+            opt.swap = makeTransformFunc(transforms);
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::Baron: {
+            auto doDiscard = std::any_cast<int>(getTagged(opt, OptionTag::ChooseOption)) == 1;
+            CardOptionBaron opt;
+            opt.doDiscard = doDiscard;
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::Ironworks: {
+            auto gain = anyToList<CardId>(opt);
+            CardOptionIronworks opt;
+            if (!gain.empty()) {
+                opt.gain = gain.front();
+            }
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::MiningVillage: {
+            auto doTrash = std::any_cast<int>(getTagged(opt, OptionTag::ChooseOption)) == 1;
+            CardOptionMiningVillage opt;
+            opt.doTrash = doTrash;
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::Minion: {
+            auto choice = std::any_cast<int>(getTagged(opt, OptionTag::ChooseOption));
+            CardOptionMinion opt;
+            opt.choice = static_cast<CardOptionMinion::Choice>(choice);
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::TradingPost: {
+            auto const& choices = getTaggedCardList(opt, OptionTag::Trash);
+            auto trash = findInHand(hand.cards, choices, 2);
+            if (trash.size() < 2) {
+                return false;
+            }
+            CardOptionTradingPost opt;
+            opt.trash = trash;
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::Upgrade: {
+            auto const& choices = anyToList<CardPair>(opt);
+            std::vector<CardId> discard;
+            discard.reserve(choices.size());
+            std::transform(choices.begin(), choices.end(), std::back_inserter(discard), [](auto const& d) { return d.first; });
+
+            CardOptionUpgrade opt;
+            opt.trash = makeDiscardOrderFunc(discard);
+            opt.transform = makeTransformFunc(choices);
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::Nobles: {
+            auto choice = std::any_cast<int>(getTagged(opt, OptionTag::ChooseOption));
+            CardOptionNobles opt;
+            opt.choice = static_cast<CardOptionNobles::Choice>(choice);
+            card.playAction(&opt);
+            return true;
+        }
+
         default: break;
     }
 

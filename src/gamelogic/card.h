@@ -55,6 +55,7 @@ public:
         Choice = 0x40, //< there are choices when playing this card
         Trasher = 0x80, //< maybe can trash something using this card
         Attack = 0x100, //< an attack card
+        Discount = 0x200, //< provides discount (e.g. Bridge)
     };
 
     struct BasicInfo {
@@ -74,7 +75,7 @@ public:
 
     // These by default do nothing or return a zero value, but most cards will override some.
     /// How many victory points this card is worth.
-    virtual int victoryPoints() const;
+    virtual int victoryPoints(Deck const* deck) const;
 
     /// Return a structure describing possible reactions if this card reacts to the given event.
     virtual std::shared_ptr<EventReactOption> reactToEvent(Event& event, Deck* playerDeck, Areas scope) const;

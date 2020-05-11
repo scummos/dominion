@@ -70,14 +70,20 @@ void Deck::trash(Card* card, Areas sourceArea)
     area(sourceArea).moveCardTo(card, m_supply->trashPile());
 }
 
-void Deck::moveCard(int index, Areas from, Areas to)
+void Deck::moveCard(int index, Areas from, Areas to, Deck* targetDeck)
 {
-    area(from).moveCardTo(index, area(to));
+    if (!targetDeck) {
+        targetDeck = this;
+    }
+    area(from).moveCardTo(index, targetDeck->area(to));
 }
 
-void Deck::moveCard(Card* card, Areas from, Areas to)
+void Deck::moveCard(Card* card, Areas from, Areas to, Deck* targetDeck)
 {
-    area(from).moveCardTo(card, area(to));
+    if (!targetDeck) {
+        targetDeck = this;
+    }
+    area(from).moveCardTo(card, targetDeck->area(to));
 }
 
 void Deck::moveAllCards(Areas from, Areas to)
@@ -159,8 +165,8 @@ int Deck::totalCards(CardId id) const
 int Deck::countScore() const
 {
     int score = 0;
-    forEachCard([&score](Card const* card) {
-        score += card->victoryPoints();
+    forEachCard([&score, this](Card const* card) {
+        score += card->victoryPoints(this);
     });
     return score;
 }
@@ -231,6 +237,16 @@ void Deck::eventOccured(Event& event)
     if (m_react && !opts.empty()) {
         m_react(opts);
     }
+}
+
+void Deck::choiceGiven(EventReactOption::Ptr opt)
+{
+    if (m_react) {
+        auto opts = EventReactOptions{opt};
+        m_react(opts);
+    }
+
+    opt->defaultAction();
 }
 
 void Deck::attacked(AttackEvent& event)

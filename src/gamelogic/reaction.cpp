@@ -14,11 +14,17 @@ ReactKind reactKind(std::string const& name)
         return ReactKind::TraderReaction;
     if (name == "Haggler"s)
         return ReactKind::HagglerReaction;
+    if (name == "Masquerade"s)
+        return ReactKind::MasqueradeReaction;
 
     if (name == "TorturerAttack"s)
         return ReactKind::TorturerAttack;
     if (name == "MilitiaAttack"s)
         return ReactKind::MilitiaAttack;
+    if (name == "SwindlerAttack"s)
+        return ReactKind::SwindlerAttack;
+    if (name == "MinionAttack"s)
+        return ReactKind::MinionAttack;
 
     return ReactKind::Invalid;
 }

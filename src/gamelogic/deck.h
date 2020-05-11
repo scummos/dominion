@@ -22,10 +22,10 @@ public:
     CardPile const& area(Areas area) const;
 
     /// Move the indicated card from area @p from to area @p to.
-    void moveCard(Card* card, Areas from, Areas to);
+    void moveCard(Card* card, Areas from, Areas to, Deck* targetDeck = nullptr);
 
     /// Move the card with index @p index in @p from to @p to.
-    void moveCard(int index, Areas from, Areas to);
+    void moveCard(int index, Areas from, Areas to, Deck* targetDeck = nullptr);
 
     /// Move all card in @p from to @p to.
     void moveAllCards(Areas from, Areas to);
@@ -62,6 +62,9 @@ public:
 
     /// Handle some other event occuring (e.g. enemy gains a card, ...)
     void eventOccured(Event& event);
+
+    /// Process a choice given to this player outside of his turn which is not an attack; e.g. Masquerade.
+    void choiceGiven(EventReactOption::Ptr opt);
 
     /// Run @p func for each card in the deck, no matter where it is. This can
     /// for example be used to count score.

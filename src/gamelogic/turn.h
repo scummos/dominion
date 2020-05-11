@@ -73,6 +73,7 @@ struct TurnInternal {
     int countCardsInHand(Card::Type type) const;
     void attackEachEnemy(AttackReactOption::Factory attack);
     int numPlayed(CardId card) const;
+    int numPlayed(Card::Type type) const;
 
 private:
     int m_actions = 1;

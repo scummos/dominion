@@ -277,6 +277,18 @@ int TurnInternal::numPlayed(CardId card) const
     return m_numPlayed.find(card)->second;
 }
 
+int TurnInternal::numPlayed(Card::Type type) const
+{
+    int ret = 0;
+    for (auto const& entry: m_numPlayed) {
+        auto const info = supply->pileInfo(entry.first);
+        if (info.types & type) {
+            ret += entry.second;
+        }
+    }
+    return ret;
+}
+
 int TurnInternal::draw(int n)
 {
     int ret = deck->drawCards(n);

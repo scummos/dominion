@@ -4,7 +4,7 @@
 
 class Curse : public Card {
 public:
-    int victoryPoints() const override {
+    int victoryPoints(Deck const*) const override {
         return -1;
     }
 

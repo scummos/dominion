@@ -110,6 +110,8 @@ CardId upgradeTreasure(CardId id) {
 }
 
 void defaultReact(Deck const* deck, EventReactOption::Ptr option) {
+    using AnyVector = std::vector<std::any>;
+
     switch (option->kind()) {
     case ReactKind::TorturerAttack: {
         auto opt = std::static_pointer_cast<TorturerAttackReactOption>(option);
@@ -145,12 +147,17 @@ void defaultReact(Deck const* deck, EventReactOption::Ptr option) {
         break;
 
     case ReactKind::TraderReaction: {
-        genericReact(deck, option, std::vector<std::any>{CardId::Curse});
+        genericReact(deck, option, AnyVector{CardId::Curse});
         break;
     }
 
     case ReactKind::MargraveAttack: {
-        genericReact(deck, option, std::vector<std::any>{CardId::Province, CardId::Duchy, CardId::Estate, CardId::Curse, CardId::Copper});
+        genericReact(deck, option, AnyVector{CardId::Province, CardId::Duchy, CardId::Estate, CardId::Curse, CardId::Copper});
+        break;
+    }
+
+    case ReactKind::MasqueradeReaction: {
+        genericReact(deck, option, AnyVector{CardId::Curse, CardId::Copper, CardId::Estate});
         break;
     }
 

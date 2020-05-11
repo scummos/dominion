@@ -53,10 +53,13 @@
       <item>IgnoreAttack</item>
       <item>Trader</item>
       <item>Haggler</item>
+      <item>Masquerade</item>
       <item>DiscardAttack</item>
       <item>TorturerAttack</item>
       <item>MargraveAttack</item>
       <item>MilitiaAttack</item>
+      <item>MinionAttack</item>
+      <item>SwindlerAttack</item>
     </list>
 
     <list name="conditionfunc">

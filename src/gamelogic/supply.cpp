@@ -40,6 +40,7 @@ Supply::Supply(int nplayers)
     createPile<Margrave>(10);
     createPile<Militia>(10);
     createPile<Haggler>(10);
+    createPile<Nobles>(10);
 }
 
 Supply::~Supply()

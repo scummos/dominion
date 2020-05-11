@@ -47,6 +47,7 @@ target_include_directories(dominion PUBLIC
     src/gamelogic/buylist/
 )
 target_link_libraries(dominion tbb)
+target_compile_options(dominion PUBLIC "-Wimplicit-fallthrough")
 
 add_executable(main src/main.cpp)
 target_link_libraries(main dominion)

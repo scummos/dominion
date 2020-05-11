@@ -75,6 +75,9 @@ bool defaultPlay(Turn* turn, ActiveCard& card)
         case CardId::Trader:
             return genericPlay(turn, card, std::vector<std::any>{CardId::Estate});
 
+        case CardId::Steward:
+            return genericPlay(turn, card, std::vector<TaggedExpr>{TaggedExpr{OptionTag::ChooseOption, 1}});
+
         default: break;
     }
     info(std::cerr << "Info: cannot default-play card " << card.card->name() << std::endl);
