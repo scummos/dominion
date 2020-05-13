@@ -69,7 +69,9 @@ static char const* cardName(CardId const id) {
     switch (id) {
         case CardId::Baron:          return "Baron";
         case CardId::Bridge:         return "Bridge";
+        case CardId::Buerocrat:      return "Buerocrat";
         case CardId::Cartographer:   return "Cartographer";
+        case CardId::Cellar:         return "Cellar";
         case CardId::Chapel:         return "Chapel";
         case CardId::Conspirator:    return "Conspirator";
         case CardId::Copper:         return "Copper";
@@ -90,8 +92,10 @@ static char const* cardName(CardId const id) {
         case CardId::IllGottenGains: return "IllGottenGains";
         case CardId::Ironworks:      return "Ironworks";
         case CardId::Laboratory:     return "Laboratory";
+        case CardId::Library:        return "Library";
         case CardId::Mandarin:       return "Mandarin";
         case CardId::Margrave:       return "Margrave";
+        case CardId::Market:         return "Market";
         case CardId::Masquerade:     return "Masquerade";
         case CardId::Militia:        return "Militia";
         case CardId::Mine:           return "Mine";
@@ -111,12 +115,15 @@ static char const* cardName(CardId const id) {
         case CardId::Smithy:         return "Smithy";
         case CardId::Steward:        return "Steward";
         case CardId::Swindler:       return "Swindler";
+        case CardId::ThroneRoom:     return "ThroneRoom";
         case CardId::Torturer:       return "Torturer";
         case CardId::Trader:         return "Trader";
         case CardId::TradingPost:    return "TradingPost";
         case CardId::Upgrade:        return "Upgrade";
+        case CardId::Village:        return "Village";
         case CardId::WishingWell:    return "WishingWell";
         case CardId::Witch:          return "Witch";
+        case CardId::Workshop:       return "Workshop";
         default:                     return "Unnamed card";
     }
 }

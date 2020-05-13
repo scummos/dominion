@@ -44,7 +44,7 @@ std::optional<GenericReactOption> Strategy::optionForReaction(ReactKind kind, De
     return it == m_reactions.end() ? std::nullopt : std::make_optional(*it);
 }
 
-Playorders Strategy::playorder() const
+Playorders const& Strategy::playorder() const
 {
     return m_playorder;
 }

@@ -13,6 +13,8 @@ class SupplyCardPile : public CardPile {
 public:
     using CardPile::CardPile;
     CardId kind;
+    bool filled = false;
+    int initialCount = 10;
 };
 
 class Supply {
@@ -27,8 +29,9 @@ public:
     int countEmptyPiles() const;
 
 protected:
-    template<typename T>
-    void createPile(int count);
+    void fillPile(SupplyCardPile& p);
+    Card* createCard(CardId id);
+    void createPile(CardId id, int count);
 
 private:
     std::vector<SupplyCardPile> m_piles;
@@ -37,15 +40,3 @@ private:
 };
 
 // template implementations
-template<typename T> void Supply::createPile(int count)
-{
-    static_assert(sizeof(T) == sizeof(Card), "invalid Card type");
-
-    SupplyCardPile pile;
-    pile.kind = T().basicInfo().id;
-    for (int i = 0; i < count; i++) {
-        pile.put(new T);
-    }
-    m_pileInfos.emplace_back(pile.topCard()->basicInfo());
-    m_piles.emplace_back(std::move(pile));
-}

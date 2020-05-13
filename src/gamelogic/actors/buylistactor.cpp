@@ -89,14 +89,14 @@ void BuylistActor::executeTurn(Turn* turn)
         return std::nullopt;
     };
 
-    auto hand = turn->currentHand();
-    while (hand.hasCard(Card::Treasure)) {
-        for (auto& hcard: hand.activeCards()) {
-            if (hcard.card->hasType(Card::Treasure)) {
-                genericPlayTreasure(turn, hcard, option(treasureOption(hcard.card->id())));
+    while (turn->currentHand().hasCard(Card::Treasure)) {
+        for (int i = 0; i < turn->currentHandSize(); i++) {
+            auto& hcard = turn->currentHand().cards[i];
+            if (hcard->hasType(Card::Treasure)) {
+                auto active = turn->currentHand().activeCard(hcard);
+                genericPlayTreasure(turn, active, option(treasureOption(hcard->id())));
             }
         }
-        hand = turn->currentHand();
     }
 
     buylists.buy(turn);

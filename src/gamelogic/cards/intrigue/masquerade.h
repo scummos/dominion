@@ -50,7 +50,7 @@ public:
         }
 
         for (int i = 0; i < players.size(); i++) {
-            auto const next = i % players.size();
+            auto const next = (i + 1) % players.size();
             if (!pass[i]) {
                 // can happen if a player should have 0 hand cards
                 continue;

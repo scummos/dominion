@@ -1,0 +1,38 @@
+buylists
+	list if Has(Gold, 1)
+		Duchy [3], Duke [3],
+		Duchy [4], Duke [4],
+		Duchy [5], Duke [5],
+		Duchy [6], Duke [6],
+		Duchy [7], Duke [7],
+		Duchy [8], Duke [8],
+		Duchy [9], Duke [9],
+		Duchy [10], Duke [10],
+		Province
+	end
+	list
+		Gold,
+		Highway [3],
+		Ironworks [2],
+		Silver
+	end
+end
+
+strategies
+	strategy if HasInPlay(Highway, 1)
+		playorder Highway, Ironworks, :Default end
+		options for Ironworks 
+			Duchy 
+		end
+	end
+	strategy
+		playorder
+			Highway,
+			Ironworks,
+			:Default
+		end
+		options for Ironworks
+			Silver
+		end
+	end
+end

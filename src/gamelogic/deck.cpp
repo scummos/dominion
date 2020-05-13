@@ -21,6 +21,9 @@ Deck::Deck(std::vector<Card*> startingCards, Supply* supply, int playerIndex)
     , m_playerIndex(playerIndex)
 {
     m_areas.resize(static_cast<int>(Areas::NumAreas));
+    for (auto& area: m_areas) {
+        area.reserve(16);
+    }
 
     for (auto* card: startingCards) {
         drawPile().put(card);
@@ -195,12 +198,12 @@ int Deck::playerIndex() const
     return m_playerIndex;
 }
 
-std::vector<Deck*> Deck::enemies() const
+std::vector<Deck*> const& Deck::enemies() const
 {
     return m_enemies;
 }
 
-void Deck::setEnemies(std::vector<Deck *> enemies)
+void Deck::setEnemies(std::vector<Deck*> const& enemies)
 {
     m_enemies = enemies;
 }

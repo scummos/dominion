@@ -77,9 +77,9 @@ public:
     EventReactOptions queryCardsForReactions(Event& event);
 
     /// Get enemies in the game.
-    std::vector<Deck*> enemies() const;
+    std::vector<Deck*> const& enemies() const;
     /// Set enemies in the game.
-    void setEnemies(std::vector<Deck*> enemies);
+    void setEnemies(std::vector<Deck*> const& enemies);
 
     /// Convenience getters for the piles.
     auto const& constDrawPile() const          { return area(Areas::DrawPile); }

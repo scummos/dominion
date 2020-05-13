@@ -10,12 +10,13 @@ class Ironworks: public Card {
 public:
     void playAction(TurnInternal* turn, CardOption* option_) override {
         auto* option = static_cast<CardOptionIronworks*>(option_);
-        auto info = turn->supply->pileInfo(option->gain);
-        if (info.cost.hasAdvancedCost() || info.cost.gold() > 4) {
+        auto cost = turn->cardCost(option->gain);
+        if (cost.hasAdvancedCost() || cost.gold() > 4) {
             throw InvalidPlayError{"Ironworks gains cards costing up to 4 only"};
         }
         turn->deck->gainFromSupply(option->gain);
 
+        auto info = turn->supply->pileInfo(option->gain);
         if (info.types & Card::Action)
             turn->addActions(1);
         if (info.types & Card::Treasure)

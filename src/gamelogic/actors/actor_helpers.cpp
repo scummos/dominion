@@ -6,18 +6,20 @@
 void defaultVillageDraw(Turn* turn, int wantActionsRemain)
 {
     while (turn->currentActions() > wantActionsRemain) {
-        auto hand = turn->currentHand();
         // Play all cards that give actions.
-        for (auto& card: hand.activeCards()) {
-            auto hints = card.card->hints();
+        for (int i = 0; i < turn->currentHandSize(); i++) {
+            auto const& hand = turn->currentHand();
+            auto* card = hand.cards.at(i);
+            auto activeCard = hand.activeCard(card);
+            auto hints = card->hints();
             if ((hints & Card::Chain) && !(hints & Card::Choice)) {
-                card.playAction();
+                activeCard.playAction();
             }
         }
 
         // Play one draw card.
-        hand = turn->currentHand();
-        auto draw = hand.findCards(Card::Draw);
+        auto const& hand2 = turn->currentHand();
+        auto draw = hand2.findCards(Card::Draw);
 
         // remove choice cards
         draw.erase(std::remove_if(draw.begin(), draw.end(), [](ActiveCard const& c) {

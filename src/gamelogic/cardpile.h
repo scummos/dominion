@@ -11,6 +11,7 @@ public:
     CardPile() = default;
     CardPile(Cards const& cards);
 
+    void reserve(int n);
     bool empty() const;
 
     void put(Card* card);

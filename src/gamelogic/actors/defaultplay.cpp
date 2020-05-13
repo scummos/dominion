@@ -86,21 +86,20 @@ bool defaultPlay(Turn* turn, ActiveCard& card)
 
 void defaultPlayAll(Turn* turn)
 {
-    auto hand = turn->currentHand();
     auto didPlaySometing = true;
     while (didPlaySometing) {
         didPlaySometing = false;
         info(std::cerr << " --- " << std::endl);
-        for (auto& card: hand.activeCards()) {
-            info(std::cerr << "  Card " << card.card->name() << std::endl);
-            didPlaySometing = defaultPlay(turn, card);
+        for (auto* card: turn->currentHand().cards) {
+            info(std::cerr << "  Card " << card->name() << std::endl);
+            auto active = turn->currentHand().activeCard(card);
+            didPlaySometing = defaultPlay(turn, active);
             if (didPlaySometing) {
                 // Might be that our hand changed
-                info(std::cerr << "* Card " << card.card->name() << " played" << std::endl);
+                info(std::cerr << "* Card " << card->name() << " played" << std::endl);
                 break;
             }
         }
-        hand = turn->currentHand();
     }
 }
 

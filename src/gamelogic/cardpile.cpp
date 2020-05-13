@@ -11,6 +11,11 @@ CardPile::CardPile(Cards const& cards)
 {
 }
 
+void CardPile::reserve(int n)
+{
+    m_cards.reserve(n);
+}
+
 Card* CardPile::draw()
 {
     if (m_cards.empty())

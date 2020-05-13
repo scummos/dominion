@@ -6,9 +6,10 @@ buylists
 		Province, Duchy
 	end
 	list
-		Province if Has(Gold, 2),
+		Province if Has(Gold, 1),
 		Gold,
-		Masquerade [2],
+		Masquerade [1],
+		Masquerade [2] if Has(Gold, 1),
 		Silver
 	end
 end
@@ -17,10 +18,17 @@ strategies
 	strategy
 		playorder Masquerade, :Default end
 		options for Masquerade
-			Curse, Estate, Copper
+			trash (Curse, Estate, Copper)
 		end
 		reactions for Masquerade
 			Curse, Estate, Copper
+		end
+		reactions for TorturerAttack if HasInHand(Masquerade, 1)
+			choose option 2
+		end
+		reactions for TorturerAttack
+			choose option 1,
+			discard (Estate, Duchy, Province, Curse, Copper)
 		end
 	end
 end

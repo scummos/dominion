@@ -21,7 +21,7 @@ public:
     bool conditionFulfilled(Deck const* deck) const;
     std::optional<GenericCardOption> optionForCard(CardId id, Turn* turn) const;
     std::optional<GenericReactOption> optionForReaction(ReactKind kind, Deck const* deck) const;
-    Playorders playorder() const;
+    Playorders const& playorder() const;
 
 private:
     Condition::Ptr m_condition;

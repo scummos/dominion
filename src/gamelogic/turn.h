@@ -100,6 +100,7 @@ public:
 
     Hand currentHand();
     Cards currentHandCards();
+    int currentHandSize() const;
     ActiveCards cardsInPlay() const;
     TurnPhase currentPhase();
     int turnCount();
@@ -153,9 +154,10 @@ struct ActiveCard {
 struct Hand {
     Hand(Cards const& cards, Turn* turn);
 
-    Cards cards;
+    Cards const& cards;
 
     ActiveCards activeCards() const;
+    ActiveCard activeCard(Card* card) const;
 
     ActiveCards treasureCards() const;
     ActiveCards findCards(CardId id) const;
@@ -167,5 +169,6 @@ struct Hand {
 
 private:
     Turn* turn;
+    Card* ignored = nullptr;
 };
 

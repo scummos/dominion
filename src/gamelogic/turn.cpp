@@ -25,7 +25,7 @@ ActiveCards Hand::treasureCards() const
 {
     ActiveCards ret;
     for (auto const& c: cards) {
-        if (c->hasType(Card::Treasure)) {
+        if (c != ignored && c->hasType(Card::Treasure)) {
             ret.emplace_back(ActiveCard{turn, c});
         }
     }
@@ -34,14 +34,14 @@ ActiveCards Hand::treasureCards() const
 
 void Hand::ignore(Card* card)
 {
-    cards.erase(std::remove_if(cards.begin(), cards.end(), [card](Card* c) { return c == card; }), cards.end());
+    ignored = card;
 }
 
 ActiveCards Hand::findCards(CardId id) const
 {
     ActiveCards ret;
     for (auto const& card: cards) {
-        if (card->basicInfo().id == id) {
+        if (card != ignored && card->basicInfo().id == id) {
             ret.emplace_back(ActiveCard{turn, card});
         }
     }
@@ -52,7 +52,7 @@ ActiveCards Hand::findCards(Card::Type type) const
 {
     ActiveCards ret;
     for (auto const& card: cards) {
-        if (card->hasType(type)) {
+        if (card != ignored && card->hasType(type)) {
             ret.emplace_back(ActiveCard{turn, card});
         }
     }
@@ -63,7 +63,7 @@ ActiveCards Hand::findCards(Card::Hints hints) const
 {
     ActiveCards ret;
     for (auto const& card: cards) {
-        if (card->hints() & hints) {
+        if (card != ignored && card->hints() & hints) {
             ret.emplace_back(ActiveCard{turn, card});
         }
     }
@@ -72,15 +72,15 @@ ActiveCards Hand::findCards(Card::Hints hints) const
 
 bool Hand::hasCard(CardId id) const
 {
-    return std::any_of(cards.begin(), cards.end(), [id](Card* c) {
-        return c->basicInfo().id == id;
+    return std::any_of(cards.begin(), cards.end(), [id, this](Card* c) {
+        return c != ignored && c->basicInfo().id == id;
     });
 }
 
 bool Hand::hasCard(Card::Type type) const
 {
-    return std::any_of(cards.begin(), cards.end(), [type](Card* c) {
-        return c->types() & type;
+    return std::any_of(cards.begin(), cards.end(), [type, this](Card* c) {
+        return c!= ignored && c->types() & type;
     });
 }
 
@@ -121,6 +121,11 @@ ActiveCards Hand::activeCards() const
     return ret;
 }
 
+ActiveCard Hand::activeCard(Card* card) const
+{
+    return ActiveCard{turn, card};
+}
+
 Hand Turn::currentHand()
 {
     return Hand(
@@ -132,6 +137,10 @@ Hand Turn::currentHand()
 Cards Turn::currentHandCards()
 {
     return m_internal.deck->constHand().cards();
+}
+
+int Turn::currentHandSize() const {
+    return m_internal.deck->constHand().count();
 }
 
 int Turn::currentMoney() const
