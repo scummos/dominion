@@ -27,6 +27,7 @@
       <item>Torturer</item>
       <item>Margrave</item>
       <item>Militia</item>
+      <item>Market</item>
       <item>Highway</item>
       <item>Haggler</item>
       <item>Courtyard</item>
@@ -47,6 +48,11 @@
       <item>Upgrade</item>
       <item>Harem</item>
       <item>Nobles</item>
+      <item>Village</item>
+      <item>Cellar</item>
+      <item>Workshop</item>
+      <item>ThroneRoom</item>
+      <item>Nothing</item>
     </list>
 
     <list name="reactname">

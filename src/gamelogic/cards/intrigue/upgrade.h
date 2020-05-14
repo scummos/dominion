@@ -14,7 +14,7 @@ public:
         turn->addActions(1);
 
         auto* option = static_cast<CardOptionUpgrade*>(option_);
-        if (!option->trash || option->transform) {
+        if (!option->trash || !option->transform) {
             throw InvalidPlayError{"Invalid options for Upgrade"};
         }
 
@@ -24,18 +24,28 @@ public:
         if (trash.empty()) {
             throw InvalidPlayError{"Didn't select a card for Upgrade"};
         }
-        auto gain = option->transform(trash.front()->id());
+        auto* trashCard = trash.front();
+        auto gain = option->transform(trashCard->id());
 
         // Check card rules.
-        auto oldCost = trash.front()->cost().gold();
-        auto newCost = turn->cardCost(gain).gold();
-        if (newCost != oldCost + 1) {
-            throw InvalidPlayError{"Upgrade requires newPrice = oldPrice + 1"};
+        auto oldCost = trashCard->cost();
+        auto requiredCost = oldCost;
+        requiredCost.m_gold += 1;
+        if (turn->deck->supply()->getAnyWithCost(requiredCost) != CardId::Invalid) {
+            if (gain == CardId::NoCard) {
+                throw InvalidPlayError{"Cannot trash card with Upgrade when there is a card that could be gained"};
+            }
+            auto newCost = turn->cardCost(gain);
+            if (newCost != requiredCost) {
+                throw InvalidPlayError{"Upgrade requires newGoldPrice = oldGoldPrice + 1"};
+            }
         }
 
         // Do upgrade.
-        turn->trashFromHand(trash.front());
-        turn->deck->gainFromSupply(gain);
+        turn->trashFromHand(trashCard);
+        if (gain != CardId::NoCard) {
+            turn->deck->gainFromSupply(gain);
+        }
     }
 
 protected:

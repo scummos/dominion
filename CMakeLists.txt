@@ -10,6 +10,11 @@ set(CMAKE_AUTORCC ON)
 
 enable_testing()
 
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+message(STATUS "Building configuration: ${CMAKE_BUILD_TYPE}")
+
 add_library(dominion STATIC
     src/gamelogic/card.cpp
     src/gamelogic/cardpile.cpp
@@ -49,19 +54,22 @@ target_include_directories(dominion PUBLIC
 target_link_libraries(dominion tbb)
 target_compile_options(dominion PUBLIC "-Wimplicit-fallthrough")
 
-add_executable(main src/main.cpp)
-target_link_libraries(main dominion)
-
-find_package(Qt5 COMPONENTS Core Gui Widgets Concurrent REQUIRED)
-find_package(Qwt REQUIRED)
-find_package(KF5SyntaxHighlighting REQUIRED)
-add_executable(uimain
-    src/ui/main.cpp
-    src/ui/mainwindow.cpp
-    src/ui/resources.qrc
-)
-target_link_libraries(uimain dominion Qt5::Core Qt5::Gui Qt5::Widgets QwtLib KF5::SyntaxHighlighting Qt5::Concurrent)
-
 add_executable(histogram_test src/gamelogic/tests/histogram_test.cpp)
 target_link_libraries(histogram_test dominion)
 add_test(histogram_test histogram_test)
+
+add_executable(dominion_cli src/main.cpp)
+target_link_libraries(dominion_cli dominion)
+
+option(BUILD_GUI "Build the graphical user interface" ON)
+if (BUILD_GUI)
+    find_package(Qt5 COMPONENTS Core Gui Widgets Concurrent REQUIRED)
+    find_package(Qwt REQUIRED)
+    find_package(KF5SyntaxHighlighting REQUIRED)
+    add_executable(dominion_qt
+        src/ui/main.cpp
+        src/ui/mainwindow.cpp
+        src/ui/resources.qrc
+    )
+    target_link_libraries(dominion_qt dominion Qt5::Core Qt5::Gui Qt5::Widgets QwtLib KF5::SyntaxHighlighting Qt5::Concurrent)
+endif()

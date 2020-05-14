@@ -35,7 +35,7 @@ Card* Supply::createCard(CardId id)
         case CardId::Bridge:         return new Bridge();
 //         case CardId::Buerocrat:      return new Buerocrat();
         case CardId::Cartographer:   return new Cartographer();
-//         case CardId::Cellar:         return new Cellar();
+        case CardId::Cellar:         return new Cellar();
         case CardId::Chapel:         return new Chapel();
         case CardId::Conspirator:    return new Conspirator();
         case CardId::Copper:         return new Copper();
@@ -87,7 +87,7 @@ Card* Supply::createCard(CardId id)
         case CardId::Village:        return new Village();
 //         case CardId::WishingWell:    return new WishingWell();
         case CardId::Witch:          return new Witch();
-//         case CardId::Workshop:       createPile<Workshop>(); break;
+        case CardId::Workshop:       return new Workshop();
         default: throw SetupError{"Invalid card requested (card not implemented?)"};
     }
 }
@@ -138,6 +138,7 @@ Supply::Supply(int nplayers)
     createPile(CardId::Harem, 10);
     createPile(CardId::Ironworks, 10);
     createPile(CardId::Masquerade, 10);
+    createPile(CardId::Market, 10);
     createPile(CardId::MiningVillage, 10);
     createPile(CardId::Minion, 10);
     createPile(CardId::Nobles, 10);
@@ -148,6 +149,10 @@ Supply::Supply(int nplayers)
     createPile(CardId::Torturer, 10);
     createPile(CardId::TradingPost, 10);
     createPile(CardId::Upgrade, 10);
+    createPile(CardId::Village, 10);
+    createPile(CardId::Cellar, 10);
+    createPile(CardId::Workshop, 10);
+    createPile(CardId::ThroneRoom, 10);
 }
 
 Supply::~Supply()
@@ -193,3 +198,11 @@ Card::BasicInfo Supply::pileInfo(const CardId id) const
     return *info;
 }
 
+CardId Supply::getAnyWithCost(const Cost& cost) const
+{
+    // TODO check pile empty
+    auto it = std::find_if(m_pileInfos.begin(), m_pileInfos.end(), [cost](auto const& info) {
+        return info.cost == cost;
+    });
+    return it == m_pileInfos.end() ? CardId::Invalid : it->id;
+}

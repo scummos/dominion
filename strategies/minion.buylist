@@ -1,0 +1,43 @@
+buylists
+	list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
+		Province, Duchy, Estate
+	end
+	list if SupplyHasLess(Province, 4)
+		Province, Duchy
+	end
+	list
+		Province if Has(Minion, 3),
+		Chapel [1],
+		Silver [2],
+		Minion,
+		Silver
+	end
+end
+
+strategies
+	strategy if AllOf(HasInHand(Chapel, 1), Has(Copper, 2), Has(Silver, 2))
+		playorder 
+			Chapel, :Default 
+		end
+		options for Chapel
+			Copper, Estate
+		end
+	end
+	strategy
+		playorder 
+			Minion, Chapel, :Default 
+		end
+		options for Chapel
+			Copper, Estate
+		end
+		options for Minion if HasInHand(Minion, 2)
+			choose option 1
+		end
+		options for Minion if not HasMoneyInHand(8)
+			choose option 2
+		end
+		options for Minion
+			choose option 1
+		end
+	end
+end

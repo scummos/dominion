@@ -7,6 +7,7 @@
 #include "base/curse.h"
 
 #include "base/chapel.h"
+#include "base/cellar.h"
 #include "base/councilroom.h"
 #include "base/festival.h"
 #include "base/laboratory.h"
@@ -21,6 +22,7 @@
 #include "base/throneroom.h"
 #include "base/village.h"
 #include "base/witch.h"
+#include "base/workshop.h"
 
 #include "intrigue/baron.h"
 #include "intrigue/bridge.h"

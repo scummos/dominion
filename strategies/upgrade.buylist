@@ -8,19 +8,21 @@ buylists
 	list
 		Province if Has(Gold, 1),
 		Gold,
-		Smithy [2] if Has(Gold, 1),
-		Smithy [1],
+		Upgrade [1],
 		Silver
 	end
 end
 
 strategies
 	strategy
-		playorder
-			:Default
-		end
-		reactions for MilitiaAttack
-			discard (Estate, Province, Duchy, Copper)
+		playorder Upgrade, Smithy, :Default end
+		options for Upgrade
+			Estate -> Silver,
+			Upgrade -> Gold,
+			Copper -> Nothing,
+			Silver -> Smithy,
+			Smithy -> Duchy,
+			Duchy -> Gold
 		end
 	end
 end

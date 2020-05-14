@@ -5,8 +5,8 @@
 
 struct CardOptionMinion : public CardOption {
     enum Choice {
-        TwoMoney,
-        DrawNewHand
+        TwoMoney = 1,
+        DrawNewHand = 2
     };
     Choice choice = TwoMoney;
 };
@@ -15,7 +15,8 @@ struct MinionAttackReactOption : public AttackReactOption {
     MinionAttackReactOption(Deck* deck) : AttackReactOption(ReactKind::MinionAttack, deck) {}
 
     virtual void defaultAction() override {
-        for (auto* card: m_deck->constHand().cards()) {
+        auto cards = m_deck->constHand().cards();
+        for (auto* card: cards) {
             m_deck->discardFromHand(card);
         }
         m_deck->drawCards(4);
@@ -25,6 +26,8 @@ struct MinionAttackReactOption : public AttackReactOption {
 class Minion: public Card {
 public:
     void playAction(TurnInternal* turn, CardOption* option_) override {
+        turn->addActions(1);
+
         auto* opt = static_cast<CardOptionMinion*>(option_);
         switch (opt->choice) {
             case CardOptionMinion::TwoMoney:
@@ -32,7 +35,8 @@ public:
                 break;
 
             case CardOptionMinion::DrawNewHand: {
-                for (auto* card: turn->deck->constHand().cards()) {
+                auto handCards = turn->deck->constHand().cards();
+                for (auto* card: handCards) {
                     turn->discardFromHand(card);
                 }
                 turn->draw(4);

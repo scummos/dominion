@@ -4,6 +4,7 @@
 
 enum class CardId {
     Invalid,
+    NoCard,
     Baron,
     Bridge,
     Buerocrat,
@@ -67,6 +68,7 @@ enum class CardId {
 
 static char const* cardName(CardId const id) {
     switch (id) {
+        case CardId::NoCard:         return "Nothing";
         case CardId::Baron:          return "Baron";
         case CardId::Bridge:         return "Bridge";
         case CardId::Buerocrat:      return "Buerocrat";

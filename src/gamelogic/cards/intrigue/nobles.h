@@ -4,8 +4,8 @@
 
 struct CardOptionNobles : public CardOption {
     enum Choice {
-        ThreeCards,
-        TwoActions
+        ThreeCards = 1,
+        TwoActions = 2
     };
     Choice choice = ThreeCards;
 };
@@ -38,7 +38,7 @@ protected:
         m_info = {
             CardId::Nobles,
             Card::Action | Card::Victory,
-            NoHints,
+            Choice,
             6
         };
     }

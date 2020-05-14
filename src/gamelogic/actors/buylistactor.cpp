@@ -36,6 +36,23 @@ void BuylistActor::executeTurn(Turn* turn)
 {
     info(std::cerr << "*** Turn " << turn->turnCount() << std::endl);
 
+    auto playAllByType = [turn](Strategy const& strat, auto cardType) {
+        auto playedSomething = true;
+        while (playedSomething) {
+            playedSomething = false;
+            auto cards = turn->currentHand().findCards(cardType);
+            if (!cards.empty()) {
+                auto const& card = cards.back();
+                // We have to pass this as a functor, since genericPlay might need to call it
+                // for other cards than the passed one (think Throne Room).
+                auto optionFunc = [turn, &strat](CardId id) {
+                    return option(strat.optionForCard(id, turn));
+                };
+                playedSomething = genericPlay(turn, card, optionFunc);
+            }
+        }
+    };
+
     // Strategies are processed top to bottom, just once.
     std::vector<Strategy const*> usedStrategies;
     for (auto const& strat: strats) {
@@ -46,14 +63,7 @@ void BuylistActor::executeTurn(Turn* turn)
         for (auto const& entry: strat.playorder()) {
             if (auto cardType = std::get_if<CardId>(&entry)) {
                 info(std::cerr << "executing playorder entry " << cardName(*cardType) << std::endl);
-                auto playedSomething = true;
-                while (playedSomething) {
-                    playedSomething = false;
-                    auto cards = turn->currentHand().findCards(*cardType);
-                    if (!cards.empty()) {
-                        playedSomething = genericPlay(turn, cards.back(), option(strat.optionForCard(*cardType, turn)));
-                    }
-                }
+                playAllByType(strat, *cardType);
             }
             else {
                 auto composite = std::get<std::string>(entry);
@@ -63,7 +73,7 @@ void BuylistActor::executeTurn(Turn* turn)
                 }
                 else if (composite == "Default") {
                     defaultVillageDraw(turn, 0);
-                    defaultPlayAll(turn);
+                    playAllByType(strat, Card::Action);
                 }
                 else {
                     throw InvalidPlayError{"Invalid composite action"};

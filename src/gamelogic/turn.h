@@ -136,18 +136,31 @@ private:
     Game::LogFunction m_logFunc;
 };
 
-/// Convenience wrapper which puts together a card and a turn.
+/// Structure enabling the user to play a card. The playActionImpl and playTreasureImpl function pointers
+/// are usually populated by the turn, but there are other circumstances which can cause a card
+/// to be played (think Throne Room).
 struct ActiveCard {
-    Turn* turn;
     Card* card;
+    bool requiresActionToPlay = true;
 
-    void playAction(CardOption* option = nullptr) {
-        turn->playAction(card, option);
+    using PlayCardFunc = std::function<void(CardOption* opt)>;
+    PlayCardFunc playActionImpl;
+    PlayCardFunc playTreasureImpl;
+
+    void playAction(CardOption* opt = nullptr) {
+        // This is just turn->playAction(card), which is just "use up an action, call
+        // card->playAction" in the normal case, i.e. when the card is used by playing
+        // it from your hand as an action. There are other circumstances that can cause a card
+        // to be played as an action, which might do something different here.
+        playActionImpl(opt);
     }
 
-    void playTreasure(CardOption* option = nullptr) {
-        turn->playTreasure(card, option);
+    void playTreasure(CardOption* opt = nullptr) {
+        playTreasureImpl(opt);
     }
+
+    // Convenience constructor for the "play a card from your hand" case
+    static ActiveCard create(Turn* turn, Card* card);
 };
 
 /// Convenience wrapper which represents cards in your hand.
@@ -155,6 +168,7 @@ struct Hand {
     Hand(Cards const& cards, Turn* turn);
 
     Cards const& cards;
+    Cards remainingCards() const;
 
     ActiveCards activeCards() const;
     ActiveCard activeCard(Card* card) const;

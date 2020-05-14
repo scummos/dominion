@@ -6,6 +6,7 @@
 #include "embassy.h"
 #include "trader.h"
 #include "cartographer.h"
+#include "cellar.h"
 #include "margrave.h"
 #include "militia.h"
 #include "haggler.h"
@@ -20,6 +21,9 @@
 #include "tradingpost.h"
 #include "upgrade.h"
 #include "nobles.h"
+#include "workshop.h"
+#include "pawn.h"
+#include "throneroom.h"
 
 #define info(x)
 
@@ -43,10 +47,10 @@ namespace {
         Explicit //< the above returns null instead, need "options for Chapel trash Curse end" for it to work
     };
 
-    std::any getTagged(std::any any, OptionTag tag, TagRequirement mode = TagRequirement::Implicit) {
+    std::any getTagged(std::any any, OptionTag tag, TagRequirement mode = TagRequirement::Implicit, int offset = 0) {
         using VE = std::vector<TaggedExpr>;
         info(std::cerr << "getTagged from " << any.type().name() << std::endl);
-        if (any.type() == typeid(TaggedExpr)) {
+        if (any.type() == typeid(TaggedExpr) && !offset) {
             auto expr = std::any_cast<TaggedExpr>(any);
             if (expr.tag == tag) {
                 return expr.option;
@@ -54,14 +58,14 @@ namespace {
         }
         if (any.type() == typeid(VE)) {
             auto v = std::any_cast<VE>(any);
-            auto it = std::find_if(v.begin(), v.end(), [tag](TaggedExpr const& e) {
-                return e.tag == tag;
+            auto it = std::find_if(v.begin(), v.end(), [tag, &offset](TaggedExpr const& e) {
+                return offset-- == 0 && e.tag == tag;
             });
             if (it != v.end()) {
                 return it->option;
             }
         }
-        if (mode == TagRequirement::Implicit) {
+        if (mode == TagRequirement::Implicit && !offset) {
             // Just assume the whole option refers to this tag, if requested
             return any;
         }
@@ -240,11 +244,13 @@ bool genericReact(Deck const* deck, EventReactOption::Ptr reactOption, std::any 
     return false;
 }
 
-bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
+bool genericPlay(Turn* turn, ActiveCard card, std::function<std::any(CardId card)> optFunc)
 {
-    if (turn->currentActions() <= 0) {
+    if (card.requiresActionToPlay && turn->currentActions() <= 0) {
         return false;
     }
+
+    auto opt = optFunc(card.card->id());
     if (!opt.has_value() || !(card.card->hints() & Card::Choice)) {
         return defaultPlay(turn, card);
     }
@@ -270,7 +276,7 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
 
         case CardId::Chapel: {
             auto const& choices = getTaggedCardList(opt, OptionTag::Trash);
-            auto trash = findInHand(hand.cards, choices, 4);
+            auto trash = findInHand(hand.remainingCards(), choices, 4);
 
             if (trash.size() > 0) {
                 CardOptionChapel opt;
@@ -284,7 +290,7 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
         case CardId::Embassy: {
             auto chooseDiscard = [opt](Hand const& hand) {
                 auto const& choices = getTaggedCardList(opt, OptionTag::Discard);
-                return findInHandExact(hand.cards, choices, 3);
+                return findInHandExact(hand.remainingCards(), choices, 3);
             };
             CardOptionEmbassy opt;
             opt.discard = chooseDiscard;
@@ -295,7 +301,7 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
         case CardId::Trader: {
             auto part = getTagged(opt, OptionTag::Trash);
             auto const& choices = anyToList<CardId>(part);
-            auto* choice = firstChoice(hand.cards, choices);
+            auto* choice = firstChoice(hand.remainingCards(), choices);
             if (!choice) {
                 return false;
             }
@@ -369,6 +375,16 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
             return true;
         }
 
+        case CardId::Workshop: {
+            auto gain = anyToList<CardId>(opt);
+            CardOptionWorkshop opt;
+            if (!gain.empty()) {
+                opt.gain = gain.front();
+            }
+            card.playAction(&opt);
+            return true;
+        }
+
         case CardId::MiningVillage: {
             auto doTrash = std::any_cast<int>(getTagged(opt, OptionTag::ChooseOption)) == 1;
             CardOptionMiningVillage opt;
@@ -387,7 +403,7 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
 
         case CardId::TradingPost: {
             auto const& choices = getTaggedCardList(opt, OptionTag::Trash);
-            auto trash = findInHand(hand.cards, choices, 2);
+            auto trash = findInHand(hand.remainingCards(), choices, 2);
             if (trash.size() < 2) {
                 return false;
             }
@@ -414,6 +430,48 @@ bool genericPlay(Turn* turn, ActiveCard card, std::any opt)
             auto choice = std::any_cast<int>(getTagged(opt, OptionTag::ChooseOption));
             CardOptionNobles opt;
             opt.choice = static_cast<CardOptionNobles::Choice>(choice);
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::Pawn: {
+            auto choice1 = std::any_cast<int>(getTagged(opt, OptionTag::ChooseOption, TagRequirement::Explicit, 0));
+            auto choice2 = std::any_cast<int>(getTagged(opt, OptionTag::ChooseOption, TagRequirement::Explicit, 1));
+            CardOptionPawn opt;
+            opt.choice1 = static_cast<CardOptionPawn::Choice>(choice1);
+            opt.choice2 = static_cast<CardOptionPawn::Choice>(choice2);
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::Cellar: {
+            auto discard = getTaggedCardList(opt, OptionTag::Discard);
+            CardOptionCellar opt;
+            opt.discard = findInHand(hand.remainingCards(), discard);
+            card.playAction(&opt);
+            return true;
+        }
+
+        case CardId::ThroneRoom: {
+            auto select = anyToList<CardId>(opt);
+            auto cards = findInHand(hand.remainingCards(), select);
+            if (cards.empty()) {
+                // We play the Throne Room without selecting a card neverthereless. Not doing to
+                // causes hard-to-fix loops. Example: TR plays another TR, which plays
+                // two Villages in its first invocation, but doesn't have anything to play for its
+                // second invocation. The first TR will then complain that its child card (the second TR)
+                // was played only once, which is not allowed. The user has to ensure all other cards he passes
+                // to TR can actually be played twice with the arguments he provides, but for TR itself
+                // that is hard to do.
+                card.playAction(nullptr);
+                return true;
+            }
+            auto playTwice = cards.front();
+            CardOptionThroneRoom opt;
+            opt.card = playTwice;
+            opt.playFunc = [turn, optFunc](ActiveCard& card) {
+                genericPlay(turn, card, optFunc);
+            };
             card.playAction(&opt);
             return true;
         }

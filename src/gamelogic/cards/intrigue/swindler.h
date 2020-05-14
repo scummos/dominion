@@ -17,9 +17,15 @@ struct SwindlerAttack : public AttackReactOption {
             return;
         }
         auto* card = m_deck->constUncoveredDrawPile().cards().front();
-        m_deck->trash(card, Areas::UncoveredDrawPile);
 
-        m_deck->gainFromSupply(m_swap(card->id()));
+        auto const newCard = m_swap(card->id());
+        auto const info = m_deck->supply()->pileInfo(newCard);
+        if (info.cost != card->cost()) {
+            throw InvalidPlayError{"Cost of replacement card must be equal to cost of trashed card for Swindler"};
+        }
+
+        m_deck->trash(card, Areas::UncoveredDrawPile);
+        m_deck->gainFromSupply(newCard);
     }
 
 private:

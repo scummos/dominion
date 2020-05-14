@@ -11,6 +11,15 @@ using std::operator""s;
 #define do_log(x) if(loggingEnabled()) log(x);
 #define do_log_internal(x) if(turn->loggingEnabled()) turn->log(x);
 
+ActiveCard ActiveCard::create(Turn* turn, Card* card) {
+    return ActiveCard{
+        card,
+        true,
+        [turn, card](CardOption* opt) { turn->playAction(card, opt); },
+        [turn, card](CardOption* opt) { turn->playTreasure(card, opt); }
+    };
+}
+
 Turn::Turn(Supply* supply, Deck* deck, Logger::PlayerData& logData, Game::LogFunction func)
     : m_logData(logData)
     , m_logFunc(func)
@@ -26,7 +35,7 @@ ActiveCards Hand::treasureCards() const
     ActiveCards ret;
     for (auto const& c: cards) {
         if (c != ignored && c->hasType(Card::Treasure)) {
-            ret.emplace_back(ActiveCard{turn, c});
+            ret.emplace_back(ActiveCard::create(turn, c));
         }
     }
     return ret;
@@ -37,12 +46,19 @@ void Hand::ignore(Card* card)
     ignored = card;
 }
 
+Cards Hand::remainingCards() const
+{
+    Cards ret;
+    std::copy_if(cards.begin(), cards.end(), std::back_inserter(ret), [this](auto* c) { return c != ignored; });
+    return ret;
+}
+
 ActiveCards Hand::findCards(CardId id) const
 {
     ActiveCards ret;
     for (auto const& card: cards) {
         if (card != ignored && card->basicInfo().id == id) {
-            ret.emplace_back(ActiveCard{turn, card});
+            ret.emplace_back(ActiveCard::create(turn, card));
         }
     }
     return ret;
@@ -53,7 +69,7 @@ ActiveCards Hand::findCards(Card::Type type) const
     ActiveCards ret;
     for (auto const& card: cards) {
         if (card != ignored && card->hasType(type)) {
-            ret.emplace_back(ActiveCard{turn, card});
+            ret.emplace_back(ActiveCard::create(turn, card));
         }
     }
     return ret;
@@ -64,7 +80,7 @@ ActiveCards Hand::findCards(Card::Hints hints) const
     ActiveCards ret;
     for (auto const& card: cards) {
         if (card != ignored && card->hints() & hints) {
-            ret.emplace_back(ActiveCard{turn, card});
+            ret.emplace_back(ActiveCard::create(turn, card));
         }
     }
     return ret;
@@ -92,12 +108,12 @@ void Turn::buy(CardId id)
     m_internal.phase = TurnPhase::Buy;
 
     if (m_internal.buys() <= 0) {
-        throw InvalidCardUsage{"You have no buys."};
+        throw InvalidPlayError{"You have no buys."};
     }
 
     auto const cost = m_internal.cardCost(id);
     if (!cost.canPay({currentMoney()})) {
-        throw InvalidPlayError{"You don't have enough money to pay for this card."};
+        throw InvalidPlayError{"You do not have enough money to pay for this card."};
     }
 
     do_log("Buy card: "s + cardName(id) + " from " + std::to_string(m_internal.money()));
@@ -117,13 +133,13 @@ Hand::Hand(const Cards& cards, Turn* turn)
 ActiveCards Hand::activeCards() const
 {
     ActiveCards ret;
-    std::transform(cards.begin(), cards.end(), std::back_inserter(ret), [this](Card* c) { return ActiveCard{turn, c}; });
+    std::transform(cards.begin(), cards.end(), std::back_inserter(ret), [this](Card* c) { return ActiveCard::create(turn, c); });
     return ret;
 }
 
 ActiveCard Hand::activeCard(Card* card) const
 {
-    return ActiveCard{turn, card};
+    return ActiveCard::create(turn, card);
 }
 
 Hand Turn::currentHand()

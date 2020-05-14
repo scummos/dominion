@@ -25,6 +25,7 @@ public:
     CardPile& pile(CardId const id);
     Card::BasicInfo pileInfo(CardId const id) const;
     CardPile& trashPile();
+    CardId getAnyWithCost(Cost const& cost) const;
 
     int countEmptyPiles() const;
 

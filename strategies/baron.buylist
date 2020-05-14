@@ -8,6 +8,7 @@ buylists
 	list
 		Province if Has(Gold, 1),
 		Gold,
+		Baron [1],
 		Smithy [2] if Has(Gold, 1),
 		Smithy [1],
 		Silver
@@ -15,12 +16,25 @@ buylists
 end
 
 strategies
+	strategy if AllOf(HasInHand(Baron, 1), HasInHand(Estate, 1))
+		playorder
+			Baron, :Default
+		end
+		options for Baron
+			choose option 1
+		end
+	end
+	strategy if SupplyHasLess(Province, 3)
+		playorder
+			Baron, :Default
+		end
+		options for Baron
+			choose option 2
+		end
+	end
 	strategy
 		playorder
-			:Default
-		end
-		reactions for MilitiaAttack
-			discard (Estate, Province, Duchy, Copper)
+			Smithy
 		end
 	end
 end

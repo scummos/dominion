@@ -14,7 +14,7 @@ public:
         if (cost.hasAdvancedCost() || cost.gold() > 4) {
             throw InvalidPlayError{"Workshop only gains cards costing up to 4."};
         }
-        turn->deck->gainFromSupply(turn->supply, option->gain);
+        turn->deck->gainFromSupply(option->gain);
     }
 
 protected:

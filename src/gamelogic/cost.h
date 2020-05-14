@@ -21,6 +21,13 @@ public:
     Cost() = default;
     Cost(int gold);
 
+    bool operator==(Cost const& other) const {
+        return m_gold == other.m_gold;
+    }
+    bool operator!=(Cost const& other) const {
+        return !operator==(other);
+    }
+
     PayResult canPay(Resources const& resources) const;
     int gold() const { return m_gold; }
     bool hasAdvancedCost() const { return false; }

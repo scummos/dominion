@@ -8,19 +8,27 @@ buylists
 	list
 		Province if Has(Gold, 1),
 		Gold,
-		Smithy [2] if Has(Gold, 1),
+		TradingPost [1],
 		Smithy [1],
 		Silver
 	end
 end
 
 strategies
+	strategy if HasInHand(Estate, 1)
+		playorder
+			TradingPost, :Default
+		end
+		options for TradingPost
+			trash (Estate, Copper)
+		end
+	end
 	strategy
 		playorder
-			:Default
+			Smithy, TradingPost, :Default
 		end
-		reactions for MilitiaAttack
-			discard (Estate, Province, Duchy, Copper)
+		options for TradingPost
+			trash (Estate, Copper)
 		end
 	end
 end

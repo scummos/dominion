@@ -213,12 +213,14 @@ void MainWindow::showAvailableResults()
     int winner1 = 0;
     int winner2 = 0;
     int draws = 0;
+    int errors = 0;
     for (int i = 0; i < available; i++) {
         auto winner = m_winners.resultAt(i);
         switch (winner) {
+            case -2: errors++; break;
+            case -1: draws++; break;
             case 0: winner1++; break;
             case 1: winner2++; break;
-            default: draws++; break;
         }
     }
     ui->winrate->setMinimum(0);
@@ -230,6 +232,11 @@ void MainWindow::showAvailableResults()
     ui->draws->setMinimum(0);
     ui->draws->setMaximum(available);
     ui->draws->setValue(draws);
+
+    if (errors != 0) {
+        ui->errorStack->setCurrentIndex(1);
+        ui->syntaxError->setText(QString("%1 games failed to run, check logic (see console for more info)").arg(errors));
+    }
 
     showGraphDelayed();
 }
@@ -338,7 +345,7 @@ void MainWindow::recomputeRefined(int games)
             game.setLogFunction(logFunc);
         }
         game.setFirstPlayer(enemyFirst ? 1 : 0);
-        int winner = -1;
+        int winner = -2;
         try {
             winner = game.run();
         }

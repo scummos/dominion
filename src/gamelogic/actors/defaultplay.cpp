@@ -5,7 +5,7 @@
 
 bool defaultPlay(Turn* turn, ActiveCard& card)
 {
-    if (turn->currentActions() <= 0 || !card.card->hasType(Card::Action)) {
+    if ((card.requiresActionToPlay && turn->currentActions() <= 0) || !card.card->hasType(Card::Action)) {
         return false;
     }
 
@@ -70,13 +70,13 @@ bool defaultPlay(Turn* turn, ActiveCard& card)
         }
 
         case CardId::Embassy:
-            return genericPlay(turn, card, std::vector<std::any>{CardId::Curse, CardId::Estate, CardId::Duchy, CardId::Province, CardId::Copper});
+            return genericPlayStatic(turn, card, std::vector<std::any>{CardId::Curse, CardId::Estate, CardId::Duchy, CardId::Province, CardId::Copper});
 
         case CardId::Trader:
-            return genericPlay(turn, card, std::vector<std::any>{CardId::Estate});
+            return genericPlayStatic(turn, card, std::vector<std::any>{CardId::Estate});
 
         case CardId::Steward:
-            return genericPlay(turn, card, std::vector<TaggedExpr>{TaggedExpr{OptionTag::ChooseOption, 1}});
+            return genericPlayStatic(turn, card, std::vector<TaggedExpr>{TaggedExpr{OptionTag::ChooseOption, 1}});
 
         default: break;
     }
