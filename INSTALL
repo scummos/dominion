@@ -1,0 +1,31 @@
+A program which plays Dominion. See README for documentation on its usage.
+
+Installation
+============
+
+Requires a C++20-capable compiler and version 3.14+ of the CMake build system.
+To build the graphical user interface, requires a recent version of Qt (written for 5.14, older versions might work but untested),
+the KF5::SyntaxHighlighting framework, and the Qwt (Qt Widgets for Technical Applications) libraries version 6+.
+
+To build:
+# mkdir build
+# cd build
+# cmake ..
+# make -j 4
+
+Usage
+=====
+
+To run the GUI application, start
+# ./dominion_qt
+
+To run the CLI application, provide it with two strategy files (.buylist):
+# ./dominion_cli ../strategies/witch.buylist ../strategies/bm.buylist
+ Reading file ../strategies/witch.buylist
+ Reading file ../strategies/bm.buylist
+ Player 1 wins 23258 out of 25000 games, 427 draws
+ (winrate 93.032% vs 5.26%)
+
+The result is at best moderately useful, if you want to use the CLI application, you
+most likely want to customize what it does by modifying main.cpp. It can produce various statistics,
+some examples are shown there.

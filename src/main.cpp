@@ -17,6 +17,7 @@ namespace {
     };
 
     std::string readFile(char const* fn) {
+        std::cout << "Reading file " << fn << std::endl;
         std::ifstream stream(fn);
         if (!stream) {
             throw IOError{"Failed to open file: "s + std::string(fn)};
