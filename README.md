@@ -17,47 +17,47 @@ The syntax of the strategy files looks something like this:
 
 ```
 buylists
-	list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
-		Province, Duchy, Estate
-	end
-	list if SupplyHasLess(Province, 4)
-		Province, Duchy
-	end
-	list
-		Province if Has(IllGottenGains, 5),
-		Smithy [1],
-		IllGottenGains,
-		Silver [2]
-	end
+    list if AnyOf(SupplyHasLess(Province, 2), SupplyEmptyPilesGreater(1))
+        Province, Duchy, Estate
+    end
+    list if SupplyHasLess(Province, 4)
+        Province, Duchy
+    end
+    list
+        Province if Has(IllGottenGains, 5),
+        Smithy [1],
+        IllGottenGains,
+        Silver [2]
+    end
 end
 
 strategies
-	strategy
-		playorder
-			Smithy,
-			:Default
-		end
-		options for IllGottenGains
-			choose option
-		end
-	end
+    strategy
+        playorder
+            Smithy,
+            :Default
+        end
+        options for IllGottenGains
+            choose option
+        end
+    end
 end
 ```
 
 Pretty much all sections are required; the minimum file is similar to this:
 ```
 buylists
-	list
-		Estate
-	end
+    list
+        Estate
+    end
 end
 
 strategies
-	strategy
-		playorder
-			:Default
-		end
-	end
+    strategy
+        playorder
+            :Default
+        end
+    end
 end
 ```
 
@@ -117,10 +117,10 @@ behaviour depending on other circumstances. Its body differs depending on the ca
 In addition, a condition can be specified after the card name, e.g.
 ```
 options for Chapel if Has(Silver, 2)
-	trash (Estate, Copper)
+    trash (Estate, Copper)
 end
 options for Chapel
-	trash (Estate)
+    trash (Estate)
 end
 ```
 can be used to trash all Estates and Coppers if your deck contains 2 silvers, but only Estates otherwise.
@@ -130,13 +130,13 @@ can have both an `options for` and a `reactions for` section.
 For example,
 ```
 reactions for TorturerAttack if HasInHand(Trader, 1)
-	choose option 2
+    choose option 2
 end
 reactions for Trader
-	Curse, Copper
+    Curse, Copper
 end
 options for Trader
-	Estate, Curse, Copper
+    Estate, Curse, Copper
 end
 ```
 can be used to choose gaining a curse when attacked by a Torturer while having a Trader in hand, and telling the Trader
@@ -151,20 +151,20 @@ implemented using the Not(), AllOf(), and AnyOf() expressions, the latter two ta
 Conditions can always be omitted, in which case they evalute to True.
 
 The following expressions are available:
-	`AllOf(expr, expr, ...)` -- true if all of its arguments are true.
-	`AnyOf(expr, expr, ...)` -- true if any of its arguments is true.
-	`Not(expr)` -- true if its one argument is not true.
-	`Has1InHand(Card1, Card2, ...)` -- true if you have 1 of the provided cards in your hand
-	`Has2InHand(Card1, Card2, ...)` -- same for 2 cards
-	`Has3InHand(Card1, Card2, ...)` -- same for 3 cards
-	`HasInHand(CardName, N)` -- true if there are at least N instances of CardName in your hand
-	`HasMoney(N)` -- true if at the current point in time, you have at least N virtual money. This does not include cards in your hand!
-	`HasMoneyInHand(N)` -- true if the (estimated) combined value of treasure cards in your hand is at least N.
-	`Has(CardName, N)` -- true if you have at least N of CardName in your deck in total
-	`HasExact(CardName, N)` -- true if you have exactly N of CardName in your deck in total
-	`SupplyHasLess(CardName, N)` -- true if the supply pile of CardName has less than N cards
-	`SupplyEmptyPilesGreater(N)` -- true if there are more then N empty supply piles
-	`HasInPlay(CardName, N)` -- true if at the current time, you have at least N instances of CardName in play (useful for e.g. Bridge)
+    `AllOf(expr, expr, ...)` -- true if all of its arguments are true.
+    `AnyOf(expr, expr, ...)` -- true if any of its arguments is true.
+    `Not(expr)` -- true if its one argument is not true.
+    `Has1InHand(Card1, Card2, ...)` -- true if you have 1 of the provided cards in your hand
+    `Has2InHand(Card1, Card2, ...)` -- same for 2 cards
+    `Has3InHand(Card1, Card2, ...)` -- same for 3 cards
+    `HasInHand(CardName, N)` -- true if there are at least N instances of CardName in your hand
+    `HasMoney(N)` -- true if at the current point in time, you have at least N virtual money. This does not include cards in your hand!
+    `HasMoneyInHand(N)` -- true if the (estimated) combined value of treasure cards in your hand is at least N.
+    `Has(CardName, N)` -- true if you have at least N of CardName in your deck in total
+    `HasExact(CardName, N)` -- true if you have exactly N of CardName in your deck in total
+    `SupplyHasLess(CardName, N)` -- true if the supply pile of CardName has less than N cards
+    `SupplyEmptyPilesGreater(N)` -- true if there are more then N empty supply piles
+    `HasInPlay(CardName, N)` -- true if at the current time, you have at least N instances of CardName in play (useful for e.g. Bridge)
 
 Note that conditions not applicable to Reactions (e.g. HasMoney) will silently evalute to False in that context.
 
@@ -244,7 +244,7 @@ generic Dominion game logic library.
 7.  If your card provides a choice, provide an option struct. If your card is an attack, provide a react option struct.
     See the appropriate examples on how to do that.
 8.  To make your card supported in the language, in genericplay.cpp, add a case to the switch handling all the cards
-	in genericPlay(). Again, copy code from a similar card and adjust it accordingly.
+    in genericPlay(). Again, copy code from a similar card and adjust it accordingly.
 9.  If you want, you can do the same in defaultplay.cpp to offer an option for how to play the card by default, when the
     user does not provide options for it.
 10. Add your card to the supply by adding it to the factory in supply.cpp, and creating a pile for it in Supply::Supply.
