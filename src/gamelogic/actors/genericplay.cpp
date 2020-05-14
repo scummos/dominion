@@ -49,7 +49,6 @@ namespace {
 
     std::any getTagged(std::any any, OptionTag tag, TagRequirement mode = TagRequirement::Implicit, int offset = 0) {
         using VE = std::vector<TaggedExpr>;
-        info(std::cerr << "getTagged from " << any.type().name() << std::endl);
         if (any.type() == typeid(TaggedExpr) && !offset) {
             auto expr = std::any_cast<TaggedExpr>(any);
             if (expr.tag == tag) {
@@ -59,7 +58,7 @@ namespace {
         if (any.type() == typeid(VE)) {
             auto v = std::any_cast<VE>(any);
             auto it = std::find_if(v.begin(), v.end(), [tag, &offset](TaggedExpr const& e) {
-                return offset-- == 0 && e.tag == tag;
+                return e.tag == tag && offset-- == 0;
             });
             if (it != v.end()) {
                 return it->option;
