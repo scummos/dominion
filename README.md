@@ -109,7 +109,7 @@ behaviour depending on other circumstances. Its body differs depending on the ca
  * Card association list: `Copper -> Estate, Estate -> Silver, Gold -> Province` (used for e.g. Remodel)
  * Yes/No decision: `choose option` or `ignore option` (e.g. Ill-Gotten Gains)
  * Choice: `choose option 1`, options are numbered starting from 1 in the order they appear on the card.
- * Choice with options: `choose option 1, discard (Curse, Estate, Copper)`; the "options" are any of the first three forms (e.g. Cellar)
+ * Choice with options: `choose option 1, discard (Curse, Estate, Copper)`; the "options" are any of the first three forms (e.g. Torturer reaction)
  * Choice list: `choose option 1, choose option 3` (e.g. Pawn)
  * Annotated fragments: `discard (Curse, Estate), ...`; these are used by some cards to process multiple options, and are
    optional for others to improve readability. For example, for Chapel, `trash (Curse, Copper)` and just `Curse, Copper` means the same.
@@ -151,20 +151,20 @@ implemented using the Not(), AllOf(), and AnyOf() expressions, the latter two ta
 Conditions can always be omitted, in which case they evalute to True.
 
 The following expressions are available:
-    `AllOf(expr, expr, ...)` -- true if all of its arguments are true.
-    `AnyOf(expr, expr, ...)` -- true if any of its arguments is true.
-    `Not(expr)` -- true if its one argument is not true.
-    `Has1InHand(Card1, Card2, ...)` -- true if you have 1 of the provided cards in your hand
-    `Has2InHand(Card1, Card2, ...)` -- same for 2 cards
-    `Has3InHand(Card1, Card2, ...)` -- same for 3 cards
-    `HasInHand(CardName, N)` -- true if there are at least N instances of CardName in your hand
-    `HasMoney(N)` -- true if at the current point in time, you have at least N virtual money. This does not include cards in your hand!
-    `HasMoneyInHand(N)` -- true if the (estimated) combined value of treasure cards in your hand is at least N.
-    `Has(CardName, N)` -- true if you have at least N of CardName in your deck in total
-    `HasExact(CardName, N)` -- true if you have exactly N of CardName in your deck in total
-    `SupplyHasLess(CardName, N)` -- true if the supply pile of CardName has less than N cards
-    `SupplyEmptyPilesGreater(N)` -- true if there are more then N empty supply piles
-    `HasInPlay(CardName, N)` -- true if at the current time, you have at least N instances of CardName in play (useful for e.g. Bridge)
+  * `AllOf(expr, expr, ...)` -- true if all of its arguments are true.
+  * `AnyOf(expr, expr, ...)` -- true if any of its arguments is true.
+  * `Not(expr)` -- true if its one argument is not true.
+  * `Has1InHand(Card1, Card2, ...)` -- true if you have 1 of the provided cards in your hand
+  * `Has2InHand(Card1, Card2, ...)` -- same for 2 cards
+  * `Has3InHand(Card1, Card2, ...)` -- same for 3 cards
+  * `HasInHand(CardName, N)` -- true if there are at least N instances of CardName in your hand
+  * `HasMoney(N)` -- true if at the current point in time, you have at least N virtual money. This does not include cards in your hand!
+  * `HasMoneyInHand(N)` -- true if the (estimated) combined value of treasure cards in your hand is at least N.
+  * `Has(CardName, N)` -- true if you have at least N of CardName in your deck in total
+  * `HasExact(CardName, N)` -- true if you have exactly N of CardName in your deck in total
+  * `SupplyHasLess(CardName, N)` -- true if the supply pile of CardName has less than N cards
+  * `SupplyEmptyPilesGreater(N)` -- true if there are more then N empty supply piles
+  * `HasInPlay(CardName, N)` -- true if at the current time, you have at least N instances of CardName in play (useful for e.g. Bridge)
 
 Note that conditions not applicable to Reactions (e.g. HasMoney) will silently evalute to False in that context.
 
